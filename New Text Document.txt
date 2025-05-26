@@ -1,0 +1,6 @@
+http://localhost/exploresri/
+http://localhost/phpmyadmin
+http://localhost/exploresri/admin/login.php
+
+Username: admin
+Password: admin123

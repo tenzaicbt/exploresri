@@ -1,0 +1,1 @@
+<footer><hr><p>&copy; 2025 ExploreSri</p></footer>
