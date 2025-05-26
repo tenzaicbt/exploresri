@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS admins (
 
 -- admin user
 INSERT INTO admins (username, password)
-VALUES ('admin123');
+VALUES ('$2y$10$byWenGXV5oBZelWH2yDuD.kTHr686WKzwNsH2of/SO5NYrE1LQuo.');
