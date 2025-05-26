@@ -91,8 +91,7 @@ CREATE TABLE IF NOT EXISTS admins (
 );
 
 INSERT INTO admins (username, password)
-VALUES ('admin', '$2y$10$wfyRHMz1a7xwYdPBcrZ8YOdEIlUeT6ZLq2biZrbXBGS6gCk.qgmuC');
--- Password: admin123
+VALUES ('admin', 'admin123');
 
 
 INSERT INTO destinations (name, description, image) VALUES

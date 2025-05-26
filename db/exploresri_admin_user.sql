@@ -6,6 +6,6 @@ CREATE TABLE IF NOT EXISTS admins (
     password VARCHAR(255) NOT NULL
 );
 
--- Insert default admin user (username: admin, password: admin123)
+-- admin user
 INSERT INTO admins (username, password)
-VALUES ('admin', '$2y$10$wfyRHMz1a7xwYdPBcrZ8YOdEIlUeT6ZLq2biZrbXBGS6gCk.qgmuC'); -- password = admin123
+VALUES ('admin123');
