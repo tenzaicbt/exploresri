@@ -84,26 +84,16 @@ CREATE TABLE itinerary_details (
     FOREIGN KEY (destination_id) REFERENCES destinations(destination_id)
 );
 
--- -- Sample data for destinations
--- INSERT INTO destinations (name, description, location, category, image) VALUES
--- ('Ella', 'A beautiful mountain village with hiking trails and waterfalls.', 'Badulla', 'Nature', 'ella.jpg'),
--- ('Sigiriya', 'Ancient rock fortress with historic frescoes.', 'Matale', 'Historical', 'sigiriya.jpg'),
--- ('Galle Fort', 'Colonial-era fort with vibrant streets and ocean views.', 'Galle', 'Coastal', 'galle.jpg');
+CREATE TABLE IF NOT EXISTS admins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
 
--- INSERT INTO destinations (name, description, image) VALUES
--- ('Colombo', 'Capital city with vibrant culture and beaches.', 'colombo.jpg'),
--- ('Kandy', 'Hill city famous for its temple and lake.', 'kandy.jpg');
+INSERT INTO admins (username, password)
+VALUES ('admin', '$2y$10$wfyRHMz1a7xwYdPBcrZ8YOdEIlUeT6ZLq2biZrbXBGS6gCk.qgmuC');
+-- Password: admin123
 
--- INSERT INTO hotels (name, destination_id, description, image, price, address, contact) VALUES
--- ('Cinnamon Grand Colombo', 1, '5-star luxury hotel in Colombo.', 'cinnamon_grand.jpg', 200.00, '77 Galle Road, Colombo', '+94 11 243 3333'),
--- ('The Kandy House', 2, 'Boutique hotel in the heart of Kandy.', 'kandy_house.jpg', 150.00, '15/5 Mahaiyawa Rd, Kandy', '+94 81 223 1234');
-
--- INSERT INTO destinations (name) VALUES ('Colombo');
-
--- INSERT INTO hotels (name, destination_id, description, price)
--- VALUES ('Hotel Paradise', 1, 'A beautiful hotel in the heart of Colombo.', 120.00);
-
--- Sample Destinations
 
 INSERT INTO destinations (name, description, image) VALUES
 ('Galle', 'Historic city with colonial architecture and beach views.', 'galle.jpg'),

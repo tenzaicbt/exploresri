@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS admins (
 
 -- Insert default admin user (username: admin, password: admin123)
 INSERT INTO admins (username, password)
-VALUES ('admin', 'admin123'); -- hashed "admin123"
+VALUES ('admin', '$2y$10$wfyRHMz1a7xwYdPBcrZ8YOdEIlUeT6ZLq2biZrbXBGS6gCk.qgmuC'); -- password = admin123
