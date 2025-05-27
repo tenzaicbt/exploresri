@@ -75,6 +75,17 @@ if (!isset($_SESSION['admin'])) {
         <span>Welcome, <?= htmlspecialchars($_SESSION['admin']) ?> 👋</span>
       </div>
 
+      <div class="mt-4">
+        <div class="row g-4">
+          <div class="col-md-3">
+            <div class="card text-white bg-primary shadow">
+              <div class="card-body">
+                <h5 class="card-title">Hotels</h5>
+                <p class="card-text">View and manage all hotels.</p>
+                <a href="manage_hotels.php" class="btn btn-light btn-sm">Go to Hotels</a>
+              </div>
+            </div>
+          </div>
           <div class="col-md-3">
             <div class="card text-white bg-primary shadow">
               <div class="card-body">
@@ -87,16 +98,17 @@ if (!isset($_SESSION['admin'])) {
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card text-white bg-success shadow">
-              <div class="card-body">
-                <h5 class="card-title">Manage Places</h5>
-                <p class="card-text">Edit or delete destination places.</p>
-                <a href="manage_places.php" class="btn btn-light btn-sm">
-                  <i class="bi bi-map"></i> Manage Places
-                </a>
-              </div>
+          <div class="card text-white bg-success shadow">
+            <div class="card-body">
+              <h5 class="card-title">Manage Places</h5>
+              <p class="card-text">Edit or delete destination places.</p>
+              <a href="manage_places.php" class="btn btn-light btn-sm">
+                <i class="bi bi-map"></i> Manage Places
+              </a>
             </div>
           </div>
+        </div>
+
           <div class="col-md-3">
             <div class="card text-white bg-info shadow">
               <div class="card-body">
@@ -106,6 +118,18 @@ if (!isset($_SESSION['admin'])) {
               </div>
             </div>
           </div>
+
+          <!-- ✅ Add Hotel Card -->
+          <div class="col-md-3">
+            <div class="card text-white bg-danger shadow">
+              <div class="card-body">
+                <h5 class="card-title">Add Hotel</h5>
+                <p class="card-text">Create and list a new hotel.</p>
+                <a href="add_hotel.php" class="btn btn-light btn-sm">Add Hotel</a>
+              </div>
+            </div>
+          </div>
+          <!-- End Add Hotel -->
         </div>
       </div>
     </main>
