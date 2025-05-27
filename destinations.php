@@ -2,62 +2,114 @@
 include 'config/db.php';
 include 'includes/header.php';
 
-// Fetch all destinations
-$stmt = $conn->prepare("SELECT * FROM destinations ORDER BY destination_id DESC");
-$stmt->execute();
-$destinations = $stmt->fetchAll();
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    echo "<div class='container mt-5'><h2>Invalid destination ID.</h2></div>";
+    include 'includes/footer.php';
+    exit;
+}
+
+$id = (int)$_GET['id'];
+$stmt = $conn->prepare("SELECT * FROM destinations WHERE destination_id = ?");
+$stmt->execute([$id]);
+$dest = $stmt->fetch();
+
+if (!$dest) {
+    echo "<div class='container mt-5'><h2>Destination not found.</h2></div>";
+    include 'includes/footer.php';
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Destinations - ExploreSri</title>
+  <title><?php echo htmlspecialchars($dest['name']); ?> - ExploreSri</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       background: linear-gradient(to right, #003049, #669bbc);
       color: #fff;
+      font-family: 'Segoe UI', sans-serif;
     }
-    .card {
-      background-color: rgba(255, 255, 255, 0.1);
-      border: none;
+    .container {
+      max-width: 900px;
+      margin-top: 50px;
     }
-    .card img {
-      height: 200px;
+    .img-fluid {
+      border-radius: 15px;
+      max-height: 400px;
       object-fit: cover;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
     }
-    .card-title {
-      color: #fff;
+    .section {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      animation: fadeInUp 0.6s ease;
     }
-    .btn-primary {
-      background-color: #fcbf49;
-      border: none;
+    .section h4 {
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 5px;
+    }
+    iframe {
+      width: 100%;
+      height: 350px;
+      border-radius: 12px;
+      border: 0;
+    }
+    .btn-warning {
+      margin-top: 30px;
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-<div class="container mt-5">
-  <h1 class="mb-4 text-center">Popular Destinations in Sri Lanka</h1>
+<div class="container text-center">
+  <h1><?php echo htmlspecialchars($dest['name']); ?></h1>
+  <img src="images/<?php echo htmlspecialchars($dest['image']); ?>" class="img-fluid my-4" alt="<?php echo htmlspecialchars($dest['name']); ?>">
 
-  <div class="row">
-    <?php if (count($destinations) > 0): ?>
-      <?php foreach ($destinations as $dest): ?>
-        <div class="col-md-4 mb-4">
-          <div class="card h-100">
-            <img src="images/<?php echo htmlspecialchars($dest['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($dest['name']); ?>">
-            <div class="card-body">
-              <h5 class="card-title"><?php echo htmlspecialchars($dest['name']); ?></h5>
-              <a href="destination.php?id=<?php echo $dest['destination_id']; ?>" class="btn btn-primary">View</a>
-            </div>
-          </div>
-        </div>
-      <?php endforeach; ?>
-    <?php else: ?>
-      <p>No destinations found.</p>
-    <?php endif; ?>
+  <div class="section text-start">
+    <h4>Description</h4>
+    <p><?php echo nl2br(htmlspecialchars($dest['description'])); ?></p>
   </div>
+
+  <div class="section text-start">
+    <h4>Province</h4>
+    <p><?php echo htmlspecialchars($dest['province']); ?></p>
+  </div>
+
+  <div class="section text-start">
+    <h4>Location</h4>
+    <p><?php echo htmlspecialchars($dest['location']); ?></p>
+  </div>
+
+  <div class="section text-start">
+    <h4>Category</h4>
+    <p><?php echo htmlspecialchars($dest['category']); ?></p>
+  </div>
+
+  <div class="section text-start">
+    <h4>Top Attractions</h4>
+    <p><?php echo nl2br(htmlspecialchars($dest['top_attractions'])); ?></p>
+  </div>
+
+  <?php if (!empty($dest['latitude']) && !empty($dest['longitude'])): ?>
+    <div class="section">
+      <h4>Google Map</h4>
+      <iframe
+        src="https://www.google.com/maps?q=<?php echo $dest['latitude']; ?>,<?php echo $dest['longitude']; ?>&output=embed">
+      </iframe>
+    </div>
+  <?php endif; ?>
+
+  <a href="destinations.php" class="btn btn-warning">← Back to Destinations</a>
 </div>
 
 </body>

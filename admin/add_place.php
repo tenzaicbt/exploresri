@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </form>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrzAEKa33t2DVHLXBkAUcdZAaFIN5tGG8"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=GOOGLEAPK"></script>
 <script>
   function initMap() {
     const defaultLocation = { lat: 7.8731, lng: 80.7718 };
