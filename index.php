@@ -37,7 +37,7 @@
   <p>Your gateway to travel and explore the beauty of Sri Lanka</p>
   <div class="d-flex justify-content-center gap-3 flex-wrap">
     <a href="destinations.php" class="btn btn-warning btn-custom"><i class="bi bi-geo-alt-fill"></i> Explore Destinations</a>
-    <a href="hotels.php" class="btn btn-light btn-custom"><i class="bi bi-building"></i> Find Hotels</a>
+    <a href="hotels_all.php" class="btn btn-light btn-custom"><i class="bi bi-building"></i> Find Hotels</a>
   </div>
 </div>
 </body>

@@ -1,9 +1,17 @@
-
 <?php
 include 'config/db.php';
 include 'includes/header.php';
 
-$stmt = $conn->query("SELECT * FROM hotels ORDER BY rating DESC LIMIT 10");
+if (!isset($_GET['destination_id']) || !is_numeric($_GET['destination_id'])) {
+    echo "<div class='container mt-5'><h2>Invalid destination ID.</h2></div>";
+    include 'includes/footer.php';
+    exit;
+}
+
+$destination_id = (int)$_GET['destination_id'];
+
+$stmt = $conn->prepare("SELECT * FROM hotels WHERE destination_id = ?");
+$stmt->execute([$destination_id]);
 $hotels = $stmt->fetchAll();
 ?>
 
@@ -11,56 +19,80 @@ $hotels = $stmt->fetchAll();
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Top 10 Hotels in Sri Lanka</title>
+  <title>Hotels - ExploreSri</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: #fff;
+      background-color: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
     }
     .card {
-      background: #ffffff10;
-      color: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       border: none;
-      backdrop-filter: blur(6px);
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
     }
     .card img {
-      height: 200px;
+      height: 220px;
       object-fit: cover;
     }
+    .card-body {
+      background: #fff;
+      padding: 1.5rem;
+    }
+    h1 {
+      font-weight: 700;
+      color: #343a40;
+    }
+    .rating {
+      color: #fcbf49;
+      font-size: 1.1rem;
+    }
     .btn-book {
-      background-color: #ffc107;
+      background-color: #198754;
+      color: white;
+      padding: 0.5rem 1rem;
       border: none;
-      color: #000;
+      border-radius: 8px;
     }
     .btn-book:hover {
-      background-color: #e0a800;
+      background-color: #157347;
     }
   </style>
 </head>
 <body>
+
 <div class="container mt-5">
-  <h1 class="text-center mb-4">Top 10 Hotels in Sri Lanka</h1>
+  <h1 class="text-center mb-4">Available Hotels</h1>
+
   <div class="row">
-    <?php foreach ($hotels as $hotel): ?>
-      <div class="col-md-6 mb-4">
-        <div class="card shadow">
-          <img src="images/<?= htmlspecialchars($hotel['image']); ?>" class="card-img-top" alt="<?= htmlspecialchars($hotel['name']); ?>">
-          <div class="card-body">
-            <h5 class="card-title"><?= htmlspecialchars($hotel['name']); ?></h5>
-            <p class="card-text"><?= htmlspecialchars($hotel['description']); ?></p>
-            <p><strong>Price:</strong> $<?= number_format($hotel['price'], 2); ?></p>
-            <p><strong>Location:</strong> <?= htmlspecialchars($hotel['address']); ?></p>
-            <div class="d-flex justify-content-between mt-3">
-              <a href="hotel_detail.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-outline-light btn-sm">View Details</a>
-              <a href="booking_form.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-book btn-sm">Book Now</a>
+    <?php if (count($hotels) > 0): ?>
+      <?php foreach ($hotels as $hotel): ?>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img src="images/<?php echo htmlspecialchars($hotel['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($hotel['name']); ?>">
+            <div class="card-body">
+              <h5 class="card-title"><?php echo htmlspecialchars($hotel['name']); ?></h5>
+              <p class="text-muted mb-1"><?php echo htmlspecialchars($hotel['location']); ?></p>
+              <p class="mb-1">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / night</p>
+              <p class="rating mb-2">★ <?php echo htmlspecialchars($hotel['rating']); ?> / 5</p>
+              <a href="book.php?hotel_id=<?php echo $hotel['hotel_id']; ?>&destination_id=<?php echo $destination_id; ?>" class="btn btn-book w-100">Book Now</a>
             </div>
           </div>
         </div>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <div class="col-12">
+        <div class="alert alert-warning text-center">No hotels found for this destination.</div>
       </div>
-    <?php endforeach; ?>
+    <?php endif; ?>
   </div>
 </div>
+
 </body>
 </html>
 
