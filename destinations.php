@@ -64,13 +64,16 @@ $destinations = $stmt->fetchAll();
             <p class="card-text"><?php echo htmlspecialchars($dest['description']); ?></p>
 
               <?php
-                $destinationName = strtolower($dest['name']);
-                if ($destinationName === 'colombo') {
-                    echo '<a href="places/colombo.php" class="btn btn-primary">View</a>';
+                $fileName = strtolower(str_replace(' ', '_', $dest['name'])) . '.php';
+                $filePath = 'places/' . $fileName;
+
+                if (file_exists($filePath)) {
+                    echo '<a href="' . $filePath . '" class="btn btn-primary">View</a>';
                 } else {
                     echo '<a href="destination.php?id=' . $dest['destination_id'] . '" class="btn btn-primary">View</a>';
                 }
               ?>
+
 
 
           </div>

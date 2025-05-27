@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Explore Colombo</title>
+  <title>Explore Arugam Bay</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
@@ -16,7 +16,7 @@
     }
     .hero {
       position: relative;
-      background: url('../images/colombo.jpg') center center / cover no-repeat;
+      background: url('../images/arugam_bay.jpg') center center / cover no-repeat;
       height: 60vh;
       display: flex;
       align-items: center;
@@ -74,14 +74,14 @@
 <body>
 
 <section class="hero" data-aos="fade-in">
-  <h1>Discover Colombo</h1>
+  <h1>Discover Arugam Bay</h1>
 </section>
 
 <div class="container">
   <div class="card p-4" data-aos="fade-up">
-    <h2 class="section-title">About Colombo</h2>
+    <h2 class="section-title">About Arugam Bay</h2>
     <p><strong>Province:</strong> Sri Lanka</p>
-    <p>Colombo is one of the most popular tourist destinations in Sri Lanka, known for its beauty and unique experiences.</p>
+    <p>Arugam Bay is one of the most popular tourist destinations in Sri Lanka, known for its beauty and unique experiences.</p>
 
     <h2 class="section-title mt-4" data-aos="fade-right">Top Attractions</h2>
     <ul>
@@ -90,9 +90,9 @@
       <li>Local Attraction 3</li>
     </ul>
 
-    <h2 class="section-title mt-4" data-aos="zoom-in">Colombo on the Map</h2>
+    <h2 class="section-title mt-4" data-aos="zoom-in">Arugam Bay on the Map</h2>
     <div class="map-container">
-      <iframe src="https://www.google.com/maps?q=Sri+Lanka+Colombo&output=embed" allowfullscreen="" loading="lazy"></iframe>
+      <iframe src="https://www.google.com/maps?q=Sri+Lanka+Arugam+Bay&output=embed" allowfullscreen="" loading="lazy"></iframe>
     </div>
   </div>
 </div>
