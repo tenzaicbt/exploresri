@@ -92,21 +92,3 @@ CREATE TABLE IF NOT EXISTS admins (
 
 INSERT INTO admins (username, password)
 VALUES ('admin', '$2y$10$byWenGXV5oBZelWH2yDuD.kTHr686WKzwNsH2of/SO5NYrE1LQuo.');
-
-
-INSERT INTO destinations (name, description, image) VALUES
-('Galle', 'Historic city with colonial architecture and beach views.', 'galle.jpg'),
-('Sigiriya', 'Ancient rock fortress with gardens and frescoes.', 'sigiriya.jpg'),
-('Colombo', 'Capital city with a mix of modern and colonial buildings.', 'colombo.jpg'),
-('Kandy', 'Sacred city with the Temple of the Tooth and lake views.', 'kandy.jpg');
-
--- Sample Hotels (Sri Lankan data)
-INSERT INTO hotels (name, location, description, price_per_night, contact_info, image, destination_id) VALUES
-('Jetwing Lighthouse', 'Galle', 'Luxury hotel by the sea with excellent views.', 250.00, '+94 91 2223744', 'jetwing_lighthouse.jpg', 1),
-('Le Grand Galle', 'Galle', 'Upscale beachside hotel near Galle Fort.', 230.00, '+94 91 2228228', 'le_grand_galle.jpg', 1),
-('Heritance Kandalama', 'Dambulla', 'Eco-friendly hotel with scenic architecture.', 220.00, '+94 66 5555000', 'heritance_kandalama.jpg', 2),
-('Aliya Resort & Spa', 'Sigiriya', 'Nature-themed resort near Sigiriya Rock.', 190.00, '+94 66 2050250', 'aliya_resort.jpg', 2),
-('Cinnamon Grand Colombo', 'Colombo', 'Luxury 5-star hotel with fine dining.', 200.00, '+94 11 2437437', 'cinnamon_grand.jpg', 3),
-('Cinnamon Red Colombo', 'Colombo', 'Modern city hotel with rooftop pool.', 130.00, '+94 11 2145145', 'cinnamon_red.jpg', 3),
-('Amaya Hills', 'Kandy', 'Hilltop resort with views of Kandy.', 175.00, '+94 81 4474022', 'amaya_hills.jpg', 4),
-('Golden Crown Hotel', 'Kandy', 'Elegant hotel with modern facilities.', 185.00, '+94 81 2030500', 'golden_crown.jpg', 4);

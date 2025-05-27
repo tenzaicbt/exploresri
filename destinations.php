@@ -62,7 +62,17 @@ $destinations = $stmt->fetchAll();
           <div class="card-body">
             <h5 class="card-title"><?php echo htmlspecialchars($dest['name']); ?></h5>
             <p class="card-text"><?php echo htmlspecialchars($dest['description']); ?></p>
-            <a href="hotels.php?destination_id=<?php echo $dest['destination_id']; ?>" class="btn btn-primary">View Hotels</a>
+
+              <?php
+                $destinationName = strtolower($dest['name']);
+                if ($destinationName === 'colombo') {
+                    echo '<a href="places/colombo.php" class="btn btn-primary">View</a>';
+                } else {
+                    echo '<a href="destination.php?id=' . $dest['destination_id'] . '" class="btn btn-primary">View</a>';
+                }
+              ?>
+
+
           </div>
         </div>
       </div>
