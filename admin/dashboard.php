@@ -50,6 +50,7 @@ if (!isset($_SESSION['admin'])) {
       <a href="dashboard.php"><i class="bi bi-house"></i> Dashboard</a>
       <a href="manage_hotels.php"><i class="bi bi-building"></i> Manage Hotels</a>
       <a href="manage_destinations.php"><i class="bi bi-geo-alt"></i> Manage Destinations</a>
+      <a href="add_place.php"><i class="bi bi-plus-circle"></i> Add New Place</a>
       <a href="manage_bookings.php"><i class="bi bi-calendar-event"></i> Manage Bookings</a>
       <a href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
     </nav>
@@ -61,7 +62,7 @@ if (!isset($_SESSION['admin'])) {
       </div>
       <div class="mt-4">
         <div class="row g-4">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="card text-white bg-primary shadow">
               <div class="card-body">
                 <h5 class="card-title">Hotels</h5>
@@ -70,7 +71,7 @@ if (!isset($_SESSION['admin'])) {
               </div>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="card text-white bg-success shadow">
               <div class="card-body">
                 <h5 class="card-title">Destinations</h5>
@@ -79,7 +80,16 @@ if (!isset($_SESSION['admin'])) {
               </div>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
+            <div class="card text-white bg-warning shadow">
+              <div class="card-body">
+                <h5 class="card-title">Add New Place</h5>
+                <p class="card-text">Add a new travel destination.</p>
+                <a href="add_place.php" class="btn btn-light btn-sm">Add Place</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
             <div class="card text-white bg-info shadow">
               <div class="card-body">
                 <h5 class="card-title">Bookings</h5>
