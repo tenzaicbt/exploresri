@@ -29,7 +29,7 @@ $hotels = $stmt->fetchAll();
   <table class="table table-bordered table-hover">
     <thead class="table-dark">
       <tr>
-        <th>Image</th>
+        <!-- <th>Image</th> -->
         <th>Hotel Name</th>
         <th>Location</th>
         <th>Price/Night</th>
@@ -41,9 +41,9 @@ $hotels = $stmt->fetchAll();
     <tbody>
       <?php foreach ($hotels as $hotel): ?>
         <tr>
-          <td>
+          <!-- <td>
             <img src="../uploads/<?= htmlspecialchars($hotel['image']) ?>" width="100" height="70" style="object-fit:cover; border-radius:6px;">
-          </td>
+          </td> -->
           <td><?= htmlspecialchars($hotel['name']) ?></td>
           <td><?= htmlspecialchars($hotel['location']) ?></td>
           <td>$<?= number_format($hotel['price_per_night'], 2) ?></td>
