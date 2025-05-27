@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="file" name="image" id="image" accept="image/*" required class="form-control">
     </div>
     <button type="submit" class="btn btn-success">Add Hotel</button>
-    <a href="dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
+    <a href="manage_hotels.php" class="btn btn-secondary">Back to Dashboard</a>
   </form>
 </div>
 

@@ -87,20 +87,24 @@ if (!isset($_SESSION['admin'])) {
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card text-white bg-success shadow">
+            <div class="card text-white bg-primary shadow">
               <div class="card-body">
-                <h5 class="card-title">Destinations</h5>
-                <p class="card-text">Manage tourist destinations.</p>
-                <a href="manage_destinations.php" class="btn btn-light btn-sm">Go to Destinations</a>
+                <h5 class="card-title">Manage Hotels</h5>
+                <p class="card-text">Edit or delete hotels from the list.</p>
+                <a href="manage_hotels.php" class="btn btn-light btn-sm">
+                  <i class="bi bi-pencil-square"></i> Manage Hotels
+                </a>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card text-dark bg-warning shadow">
+            <div class="card text-white bg-success shadow">
               <div class="card-body">
-                <h5 class="card-title">Add New Place</h5>
-                <p class="card-text">Add a new travel destination.</p>
-                <a href="add_place.php" class="btn btn-light btn-sm">Add Place</a>
+                <h5 class="card-title">Manage Places</h5>
+                <p class="card-text">Edit or delete destination places.</p>
+                <a href="manage_places.php" class="btn btn-light btn-sm">
+                  <i class="bi bi-map"></i> Manage Places
+                </a>
               </div>
             </div>
           </div>
