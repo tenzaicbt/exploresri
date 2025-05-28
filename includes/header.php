@@ -11,12 +11,58 @@ if (session_status() == PHP_SESSION_NONE) {
   <title>ExploreSri</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      background: linear-gradient(to right, #003049, #669bbc);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      animation: fadeInBody 0.8s ease-in;
+    }
+
+    @keyframes fadeInBody {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    nav.navbar {
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      animation: slideDown 0.7s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .navbar-nav .nav-link {
+      color: #fff !important;
+      transition: color 0.3s ease;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #ffd60a !important;
+      transform: scale(1.05);
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff !important;
+      transition: transform 0.3s;
+    }
+
+    .navbar-brand:hover {
+      transform: scale(1.1);
+      color: #ffd60a !important;
+    }
+  </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-4">
+<nav class="navbar navbar-expand-lg shadow-sm mb-4">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="/exploresri/index.php">
+    <a class="navbar-brand" href="/exploresri/index.php">
       <i class="bi bi-globe2"></i> ExploreSri
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
@@ -41,7 +87,7 @@ if (session_status() == PHP_SESSION_NONE) {
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/exploresri/logout.php">
-              <i class="bi bi-box-arrow-right"></i> Logout (<?php echo htmlspecialchars($_SESSION['user_name']); ?>)
+              <i class="bi bi-box-arrow-right"></i> Logout (<?= htmlspecialchars($_SESSION['user_name']); ?>)
             </a>
           </li>
         <?php else: ?>

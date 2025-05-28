@@ -2,6 +2,8 @@
 session_start();
 include '../config/db.php';
 
+$error = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
@@ -10,13 +12,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute([$username]);
     $admin = $stmt->fetch();
 
-    if ($admin && password_verify($password, $admin['password'])) {
+    if ($admin) {
+    if (password_verify($password, $admin['password'])) {
         $_SESSION['admin'] = $admin['username'];
         header('Location: dashboard.php');
         exit;
     } else {
-        $error = "Invalid username or password.";
+        $error = "Password incorrect.";
     }
+} else {
+    $error = "Username not found.";
+}
+
 }
 ?>
 
@@ -48,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="login-container">
     <h3 class="text-center mb-4">Admin Login</h3>
     <?php if (!empty($error)): ?>
-      <div class="alert alert-danger"><?= $error ?></div>
+      <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
     <form method="post">
       <div class="mb-3">
@@ -60,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="password" class="form-control" id="password" name="password" required>
       </div>
       <div class="d-grid">
-        <button type="submit" class="btn btn-primary btn-block">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>
       </div>
     </form>
   </div>

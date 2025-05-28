@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'config/db.php';
+include 'includes/header.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -26,8 +27,9 @@ $bookings = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>My Bookings - ExploreSri</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -43,30 +45,38 @@ $bookings = $stmt->fetchAll();
             margin-bottom: 20px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            animation: fadeInUp 0.5s ease-in-out;
         }
         .booking-card img {
             height: 180px;
             object-fit: cover;
             border-radius: 15px 15px 0 0;
+            width: 100%;
         }
         .card-body {
             color: #fff;
         }
         .status {
             font-weight: bold;
+            text-transform: capitalize;
         }
-        .status.Pending {
+        .status.pending {
             color: #fcbf49;
         }
-        .status.Confirmed {
+        .status.confirmed {
             color: #80ed99;
         }
-        .status.Cancelled {
+        .status.cancelled {
             color: #ff6b6b;
+        }
+        @keyframes fadeInUp {
+            from {opacity: 0; transform: translateY(30px);}
+            to {opacity: 1; transform: translateY(0);}
         }
     </style>
 </head>
 <body>
+
 <div class="container py-5">
     <h1 class="text-center mb-4">My Bookings</h1>
 
@@ -80,7 +90,11 @@ $bookings = $stmt->fetchAll();
                             <h4><?= htmlspecialchars($booking['hotel_name']) ?></h4>
                             <p><strong>Destination:</strong> <?= htmlspecialchars($booking['destination_name']) ?></p>
                             <p><strong>Travel Date:</strong> <?= htmlspecialchars($booking['travel_date']) ?></p>
-                            <p><strong>Status:</strong> <span class="status <?= $booking['status'] ?>"><?= $booking['status'] ?></span></p>
+                            <p><strong>Status:</strong> 
+                                <span class="status <?= strtolower($booking['status']) ?>">
+                                    <?= htmlspecialchars($booking['status']) ?>
+                                </span>
+                            </p>
                             <p><small>Booked on <?= date('F j, Y', strtotime($booking['booking_date'])) ?></small></p>
                         </div>
                     </div>
@@ -88,8 +102,12 @@ $bookings = $stmt->fetchAll();
             <?php endforeach; ?>
         </div>
     <?php else: ?>
-        <p class="text-center">You have no bookings yet.</p>
+        <div class="text-center">
+            <p>You have no bookings yet.</p>
+        </div>
     <?php endif; ?>
 </div>
+
+<?php include 'includes/footer.php'; ?>
 </body>
 </html>
