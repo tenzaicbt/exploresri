@@ -2,6 +2,8 @@
 include 'config/db.php';
 include 'includes/header.php';
 
+$is_logged_in = isset($_SESSION['user_id']);
+
 $stmt = $conn->query("SELECT * FROM hotels ORDER BY hotel_id DESC");
 $hotels = $stmt->fetchAll();
 ?>
@@ -73,7 +75,12 @@ $hotels = $stmt->fetchAll();
               <p class="card-text"><?php echo htmlspecialchars($hotel['location']); ?></p>
               <p class="card-text">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / night</p>
               <p class="card-text text-warning">★ <?php echo htmlspecialchars($hotel['rating']); ?> / 5</p>
-              <a href="book.php?hotel_id=<?php echo $hotel['hotel_id']; ?>&destination_id=<?php echo $hotel['destination_id']; ?>" class="btn btn-primary mt-2">Book Now</a>
+              <?php if ($is_logged_in): ?>
+                <a href="book.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-primary mt-2">Book Now</a>
+              <?php else: ?>
+                <a href="/exploresri/user/login.php" class="btn btn-warning mt-2">Login to Book</a>
+              <?php endif; ?>
+
             </div>
           </div>
         </div>
