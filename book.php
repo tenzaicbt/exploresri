@@ -31,8 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare("INSERT INTO booking (user_id, destination_id, hotel_id, travel_date, status, booking_date) VALUES (?, ?, ?, ?, 'Pending', NOW())");
     $stmt->execute([$user_id, $destination_id, $hotel_id, $travel_date]);
 
-    header('Location: my_bookings.php?success=1');
+    header("Location: payment.php?booking_id=" . $conn->lastInsertId());
     exit;
+
 }
 ?>
 

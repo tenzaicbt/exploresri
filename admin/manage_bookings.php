@@ -13,6 +13,7 @@ $stmt = $conn->prepare("
         b.booking_date,
         b.travel_date,
         b.status,
+        b.payment_status,
         h.name AS hotel_name,
         u.name AS user_name
     FROM booking b
@@ -47,6 +48,7 @@ $bookings = $stmt->fetchAll();
           <th>Booking Date</th>
           <th>Travel Date</th>
           <th>Status</th>
+          <th>Payment</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -71,6 +73,13 @@ $bookings = $stmt->fetchAll();
               </form>
             </td>
             <td>
+              <?php if ($b['payment_status'] === 'paid'): ?>
+                <span class="badge bg-success">Paid</span>
+              <?php else: ?>
+                <span class="badge bg-warning text-dark">Unpaid</span>
+              <?php endif; ?>
+            </td>
+            <td>
               <a href="delete_booking.php?id=<?= $b['booking_id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this booking?')">
                 <i class="bi bi-trash"></i> Delete
               </a>
@@ -80,7 +89,7 @@ $bookings = $stmt->fetchAll();
       </tbody>
     </table>
   <?php endif; ?>
-<a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
+  <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
 </div>
 </body>
 </html>

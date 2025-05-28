@@ -95,6 +95,11 @@ $bookings = $stmt->fetchAll();
                                     <?= htmlspecialchars($booking['status']) ?>
                                 </span>
                             </p>
+                            <p><strong>Payment:</strong> 
+                                <span class="<?= $booking['payment_status'] === 'paid' ? 'text-success' : 'text-warning' ?>">
+                                    <?= ucfirst($booking['payment_status']) ?>
+                                </span>
+                            </p>
                             <p><small>Booked on <?= date('F j, Y', strtotime($booking['booking_date'])) ?></small></p>
                             <form action="delete_booking_user.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this booking?')">
                                 <input type="hidden" name="booking_id" value="<?= $booking['booking_id'] ?>">
@@ -102,7 +107,6 @@ $bookings = $stmt->fetchAll();
                                     <i class="bi bi-trash"></i> Cancel Booking
                                 </button>
                             </form>
-
                         </div>
                     </div>
                 </div>
