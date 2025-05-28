@@ -61,13 +61,13 @@ $bookings = $stmt->fetchAll();
             text-transform: capitalize;
         }
         .status.pending {
-            color: #fcbf49;
+            color:rgb(255, 176, 18);
         }
         .status.confirmed {
-            color: #80ed99;
+            color:rgb(20, 255, 75);
         }
         .status.cancelled {
-            color: #ff6b6b;
+            color:rgb(255, 29, 29);
         }
         @keyframes fadeInUp {
             from {opacity: 0; transform: translateY(30px);}
