@@ -184,7 +184,7 @@ $revenue_percent = $monthly_target > 0 ? round(($revenue / $monthly_target) * 10
                   <div class="card-body">
                     <h5 class="card-title">Bookings</h5>
                     <p class="card-text">Review and control bookings.</p>
-                    <a href="manage_bookings.php" class="btn btn-light btn-sm">Go to Bookings</a>
+                    <a href="manage_bookings.php" class="btn btn-light btn-sm">Manage Bookings</a>
                   </div>
                 </div>
               </div>
