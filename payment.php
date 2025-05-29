@@ -34,6 +34,31 @@ if (!$booking) {
 
 // Handle payment form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $method = $_POST['payment_method'] ?? '';
+
+    // Basic validation for required fields
+    if ($method === 'paypal') {
+        $paypal_email = $_POST['paypal_email'] ?? '';
+        if (!filter_var($paypal_email, FILTER_VALIDATE_EMAIL)) {
+            echo "Invalid PayPal email.";
+            exit;
+        }
+        // Simulate PayPal processing...
+    } else {
+        $card_number = $_POST['card_number'] ?? '';
+        $card_name = $_POST['card_name'] ?? '';
+        $expiry = $_POST['expiry'] ?? '';
+        $cvv = $_POST['cvv'] ?? '';
+
+        if (!$card_number || !$card_name || !$expiry || !$cvv) {
+            echo "Please fill in all card details.";
+            exit;
+        }
+
+        // Simulate card processing...
+    }
+
+    // Update payment status
     $update = $conn->prepare("UPDATE bookings SET payment_status = 'paid' WHERE booking_id = ?");
     $update->execute([$booking_id]);
 
@@ -62,31 +87,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       box-shadow: 0 8px 16px rgba(0,0,0,0.3);
       max-width: 550px;
       margin: 80px auto;
-      animation: slideUp 0.5s ease-in-out;
     }
-    .payment-card h3 {
-      font-weight: 700;
-    }
-    .form-label {
-      font-weight: 600;
-    }
-    .btn-pay {
-      background-color: #28a745;
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      padding: 12px;
-      font-size: 1rem;
-      margin-top: 20px;
-    }
-    .btn-pay:hover {
-      background-color: #218838;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    .hidden {
+      display: none;
     }
   </style>
+  <script>
+    function toggleFields() {
+      const method = document.getElementById('method').value;
+      document.getElementById('card-fields').classList.toggle('hidden', method === 'paypal');
+      document.getElementById('paypal-field').classList.toggle('hidden', method !== 'paypal');
+    }
+  </script>
 </head>
 <body>
 
@@ -96,41 +108,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <p><strong>Status:</strong> <?= htmlspecialchars($booking['status']) ?></p>
   <p><strong>Total Amount:</strong> Rs. <?= htmlspecialchars($booking['price']) ?></p>
 
-  <form method="post">
+  <form method="post" onsubmit="return confirm('Proceed with payment?')">
     <div class="mb-3">
       <label for="method" class="form-label">Payment Method</label>
-      <select id="method" name="payment_method" class="form-select" required>
+      <select id="method" name="payment_method" class="form-select" onchange="toggleFields()" required>
         <option value="credit_card">Credit Card</option>
         <option value="debit_card">Debit Card</option>
         <option value="paypal">PayPal</option>
-        <option value="bank_transfer">Bank Transfer</option>
       </select>
     </div>
 
-    <div class="mb-3">
-      <label for="cardNumber" class="form-label">Card Number</label>
-      <input type="text" id="cardNumber" class="form-control" placeholder="XXXX-XXXX-XXXX-XXXX" required>
-    </div>
-
-    <div class="mb-3">
-      <label for="cardName" class="form-label">Cardholder Name</label>
-      <input type="text" id="cardName" class="form-control" placeholder="Full Name" required>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="expiry" class="form-label">Expiry Date</label>
-        <input type="text" id="expiry" class="form-control" placeholder="MM/YY" required>
+    <div id="card-fields">
+      <div class="mb-3">
+        <label class="form-label">Card Number</label>
+        <input type="text" class="form-control" name="card_number" placeholder="XXXX-XXXX-XXXX-XXXX">
       </div>
-      <div class="col-md-6 mb-3">
-        <label for="cvv" class="form-label">CVV</label>
-        <input type="text" id="cvv" class="form-control" placeholder="123" required>
+      <div class="mb-3">
+        <label class="form-label">Cardholder Name</label>
+        <input type="text" class="form-control" name="card_name" placeholder="Full Name">
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Expiry Date</label>
+          <input type="text" class="form-control" name="expiry" placeholder="MM/YY">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">CVV</label>
+          <input type="text" class="form-control" name="cvv" placeholder="123">
+        </div>
       </div>
     </div>
 
-    <button type="submit" class="btn btn-pay w-100">Pay Now</button>
+    <div class="mb-3 hidden" id="paypal-field">
+      <label class="form-label">PayPal Email</label>
+      <input type="email" class="form-control" name="paypal_email" placeholder="example@paypal.com">
+    </div>
+
+    <button type="submit" class="btn btn-success w-100 mt-3">Pay Now</button>
   </form>
 </div>
+
+<script>
+  toggleFields();
+</script>
 
 </body>
 </html>
