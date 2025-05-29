@@ -14,14 +14,15 @@ $stmt = $conn->prepare("
     SELECT 
         b.*, 
         h.name AS hotel_name, 
-        h.image AS hotel_image, 
+        h.image AS hotel_image,
         d.name AS destination_name
-    FROM booking b
+    FROM bookings b
     JOIN hotels h ON b.hotel_id = h.hotel_id
-    JOIN destinations d ON b.destination_id = d.destination_id
+    LEFT JOIN destinations d ON b.destination_id = d.destination_id
     WHERE b.user_id = ?
     ORDER BY b.booking_date DESC
 ");
+
 $stmt->execute([$user_id]);
 $bookings = $stmt->fetchAll();
 ?>

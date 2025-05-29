@@ -16,7 +16,7 @@ $stmt = $conn->prepare("
         b.payment_status,
         h.name AS hotel_name,
         u.name AS user_name
-    FROM booking b
+    FROM bookings b
     JOIN hotels h ON b.hotel_id = h.hotel_id
     JOIN users u ON b.user_id = u.user_id
     ORDER BY b.booking_id DESC
@@ -36,6 +36,14 @@ $bookings = $stmt->fetchAll();
 <body>
 <div class="container mt-5">
   <h2 class="mb-4">Manage Bookings</h2>
+
+  <?php if (isset($_SESSION['success'])): ?>
+    <div class="alert alert-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+  <?php endif; ?>
+
+  <?php if (isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+  <?php endif; ?>
 
   <?php if (count($bookings) === 0): ?>
     <div class="alert alert-info text-center">No bookings found.</div>
@@ -80,15 +88,15 @@ $bookings = $stmt->fetchAll();
               <?php endif; ?>
             </td>
             <td>
-              <a href="delete_booking.php?id=<?= $b['booking_id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this booking?')">
-                <i class="bi bi-trash"></i> Delete
-              </a>
+             <a href="delete_bookings.php?id=<?= $b['booking_id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
             </td>
           </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
   <?php endif; ?>
+
   <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
 </div>
 </body>

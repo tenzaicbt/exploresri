@@ -7,18 +7,24 @@ if (!isset($_SESSION['admin'])) {
     exit;
 }
 
-$hotel_stmt = $conn->query("SELECT COUNT(*) as total FROM hotels");
-$total_hotels = $hotel_stmt->fetch()['total'];
+try {
+    $hotel_stmt = $conn->query("SELECT COUNT(*) as total FROM hotels");
+    $total_hotels = $hotel_stmt->fetch()['total'];
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+    $total_hotels = 0;
+}
+
 
 $active_hotel_stmt = $conn->query("SELECT COUNT(*) as active FROM hotels WHERE status='active'");
 $active_hotels = $active_hotel_stmt->fetch()['active'];
 
 $hotel_percent = $total_hotels > 0 ? round(($active_hotels / $total_hotels) * 100) : 0;
 
-$booking_stmt = $conn->query("SELECT COUNT(*) as total FROM booking");
+$booking_stmt = $conn->query("SELECT COUNT(*) as total FROM bookings");
 $total_bookings = $booking_stmt->fetch()['total'];
 
-$confirmed_booking_stmt = $conn->query("SELECT COUNT(*) as confirmed FROM booking WHERE status='confirmed'");
+$confirmed_booking_stmt = $conn->query("SELECT COUNT(*) as confirmed FROM bookings WHERE status='confirmed'");
 $confirmed_bookings = $confirmed_booking_stmt->fetch()['confirmed'];
 
 $booking_percent = $total_bookings > 0 ? round(($confirmed_bookings / $total_bookings) * 100) : 0;

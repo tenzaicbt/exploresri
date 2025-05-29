@@ -1,27 +1,25 @@
 <?php
 session_start();
-include('../config/db.php');
 
-if (!isset($_SESSION['user_id'])) {
-    // Not logged in, redirect to login
-    header('Location: ../login.php');
+if (!isset($_SESSION['admin'])) {
+    header("Location: login.php");
     exit;
 }
 
-$user_id = $_SESSION['user_id'];
+include '../config/db.php';
 
-// Validate and sanitize booking_id from URL
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $booking_id = (int) $_GET['id'];
+    $booking_id = (int)$_GET['id'];
 
-    // Delete the booking (only if it belongs to the logged-in user)
-    $stmt = $conn->prepare("DELETE FROM booking WHERE booking_id = ? AND user_id = ?");
-    $stmt->execute([$booking_id, $user_id]);
-
-    // Optional: Set session message (flash message)
-    $_SESSION['success'] = "Booking deleted successfully.";
+    $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ?");
+    if ($stmt->execute([$booking_id])) {
+        $_SESSION['success'] = "Booking deleted successfully.";
+    } else {
+        $_SESSION['error'] = "Failed to delete booking.";
+    }
+} else {
+    $_SESSION['error'] = "Invalid booking ID.";
 }
 
-// Redirect back to bookings page
 header("Location: manage_bookings.php");
 exit;

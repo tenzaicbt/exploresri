@@ -1,119 +1,316 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: May 29, 2025 at 05:26 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
--- ExploreSri Database SQL Dump
-
-CREATE DATABASE IF NOT EXISTS exploresri;
-USE exploresri;
-
--- Users Table
-CREATE TABLE users (
-  user_id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  email VARCHAR(150) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  role ENUM('user', 'admin') DEFAULT 'user',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Destinations Table
-CREATE TABLE destinations (
-  destination_id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(150) NOT NULL,
-  description TEXT NOT NULL,
-  image VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
--- Hotels Table
-CREATE TABLE hotels (
-  hotel_id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(150) NOT NULL,
-  destination_id INT NOT NULL,
-  description TEXT NOT NULL,
-  image VARCHAR(255),
-  price DECIMAL(10,2) NOT NULL,
-  address VARCHAR(255),
-  contact VARCHAR(100),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (destination_id) REFERENCES destinations(destination_id) ON DELETE CASCADE
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- Bookings Table
-CREATE TABLE bookings (
-  booking_id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  hotel_id INT NOT NULL,
-  check_in DATE NOT NULL,
-  check_out DATE NOT NULL,
-  guests INT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-  FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id) ON DELETE CASCADE
-);
+--
+-- Database: `exploresri`
+--
 
+-- --------------------------------------------------------
 
--- Reviews Table
-CREATE TABLE reviews (
-    review_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    destination_id INT,
-    rating INT,
-    comment TEXT,
-    date_posted DATE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (destination_id) REFERENCES destinations(destination_id)
-);
+--
+-- Table structure for table `admins`
+--
 
--- Itineraries Table
-CREATE TABLE itineraries (
-    itinerary_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    title VARCHAR(100),
-    created_at DATE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+CREATE TABLE `admins` (
+  `admin_id` int(11) NOT NULL,
+  `username` varchar(100) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Itinerary Details Table
-CREATE TABLE itinerary_details (
-    detail_id INT AUTO_INCREMENT PRIMARY KEY,
-    itinerary_id INT,
-    day INT,
-    destination_id INT,
-    notes TEXT,
-    FOREIGN KEY (itinerary_id) REFERENCES itineraries(itinerary_id),
-    FOREIGN KEY (destination_id) REFERENCES destinations(destination_id)
-);
+--
+-- Dumping data for table `admins`
+--
 
-CREATE TABLE IF NOT EXISTS admins (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
+INSERT INTO `admins` (`admin_id`, `username`, `password`) VALUES
+(1, 'admin', '$2y$10$eGc.f8sTrFHUvd9lRnAkBeBY3w2NCWrUIymuFEMwHogYBzdHFqhB.');
 
+-- --------------------------------------------------------
 
-INSERT INTO admins (email, password)
-VALUES ('admin@gmail.com', '$2y$10$bIqRXm9j00Dg6F7x2H91ruagcfTinDDM3EF8QufSIMgvoS9I/AHyy');
+--
+-- Table structure for table `bookings`
+--
 
+CREATE TABLE `bookings` (
+  `booking_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `destination_id` int(11) DEFAULT NULL,
+  `hotel_id` int(11) NOT NULL,
+  `booking_date` datetime DEFAULT current_timestamp(),
+  `travel_date` date NOT NULL,
+  `status` varchar(50) DEFAULT 'pending',
+  `payment_status` varchar(50) DEFAULT 'unpaid'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
-INSERT INTO destinations 
-(name, description, location, category, image, province, top_attractions, latitude, longitude) 
-VALUES 
-('Colombo', 'Capital city with modern and colonial mix.', 'Colombo', 'City', 'colombo.jpg', 'Western', 'Galle Face Green, Gangaramaya Temple, Pettah Market', 6.927079, 79.861244),
-('Kandy', 'A picturesque city surrounded by hills, famous for the Temple of the Tooth.', 'Kandy', 'Cultural', 'kandy.jpg', 'Central', 'Temple of the Tooth, Kandy Lake, Royal Botanical Gardens', 7.290571, 80.633728),
-('Galle', 'A historic fortified city on the southwest coast.', 'Galle', 'Heritage', 'galle.jpg', 'Southern', 'Galle Fort, Lighthouse, Dutch Church', 6.032987, 80.217002),
-('Nuwara Eliya', 'Cool climate town often called "Little England".', 'Nuwara Eliya', 'Hill Country', 'nuwara_eliya.jpg', 'Central', 'Gregory Lake, Horton Plains, Pedro Tea Estate', 6.949722, 80.789444),
-('Sigiriya', 'Ancient rock fortress known as Lion Rock.', 'Sigiriya', 'Historic', 'sigiriya.jpg', 'Central', 'Sigiriya Rock Fortress, Frescoes, Water Gardens', 7.9570, 80.7603),
-('Ella', 'A laid-back hill town with scenic beauty and hiking trails.', 'Ella', 'Hill Country', 'ella.jpg', 'Uva', 'Nine Arches Bridge, Little Adam’s Peak, Ravana Falls', 6.8753, 81.0460),
-('Anuradhapura', 'An ancient city with massive stupas and sacred sites.', 'Anuradhapura', 'Cultural', 'anuradhapura.jpg', 'North Central', 'Sri Maha Bodhi, Ruwanwelisaya, Abhayagiri Dagoba', 8.3114, 80.4037),
-('Mirissa', 'Popular beach town with whale watching.', 'Mirissa', 'Beach', 'mirissa.jpg', 'Southern', 'Whale Watching, Coconut Tree Hill, Secret Beach', 5.9485, 80.4550),
-('Trincomalee', 'Eastern port city with rich history and beaches.', 'Trincomalee', 'Coastal', 'trincomalee.jpg', 'Eastern', 'Nilaveli Beach, Koneswaram Temple, Fort Frederick', 8.5874, 81.2152),
-('Jaffna', 'Cultural and spiritual center of the Tamil community.', 'Jaffna', 'Cultural', 'jaffna.jpg', 'Northern', 'Nallur Temple, Jaffna Fort, Casuarina Beach', 9.6685, 80.0074);
+--
+-- Table structure for table `destinations`
+--
 
-INSERT INTO hotels (name, location, description, price_per_night, contact_info, image, destination_id, rating, address, price)
-VALUES 
-('Galle Face Hotel', 'Colombo', 'A historic seafront hotel offering colonial elegance and luxury.', 22000, '0112 541010', 'galle_face_hotel.jpg', 1, 4.6, '2 Galle Road, Colombo 03', 22000),
-('Earls Regency', 'Kandy', 'Luxury hotel nestled in the hills with panoramic views of the Mahaweli River.', 18000, '0812 422122', 'earls_regency.jpg', 2, 4.5, '84 Tenna Kumbura, Kandy', 18000),
-('Jetwing Lighthouse', 'Galle', 'A modern heritage hotel designed by Geoffrey Bawa near Galle Fort.', 25000, '0912 224745', 'jetwing_lighthouse.jpg', 3, 4.7, 'Dadella, Galle 80000', 25000),
-('Grand Hotel', 'Nuwara Eliya', 'A colonial-style hotel with British charm and beautiful gardens.', 16000, '0522 222881', 'grand_hotel.jpg', 4, 4.4, 'Grand Hotel Road, Nuwara Eliya 22200', 16000),
-('98 Acres Resort & Spa', 'Ella', 'Eco-luxury resort surrounded by tea plantations and mountain views.', 28000, '0572 050050', '98_acres.jpg', 6, 4.8, 'Passara Rd, Ella 90090', 28000);
+CREATE TABLE `destinations` (
+  `destination_id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `category` varchar(50) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `province` varchar(255) DEFAULT NULL,
+  `top_attractions` varchar(255) DEFAULT NULL,
+  `latitude` varchar(50) DEFAULT NULL,
+  `longitude` varchar(50) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `destinations`
+--
+
+INSERT INTO `destinations` (`destination_id`, `name`, `description`, `location`, `category`, `image`, `province`, `top_attractions`, `latitude`, `longitude`, `status`) VALUES
+(2, '1', '1', NULL, NULL, 'DSC_7549.jpg', '1', '1', '7.8731', '80.7718', 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hotels`
+--
+
+CREATE TABLE `hotels` (
+  `hotel_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `price_per_night` decimal(10,2) DEFAULT NULL,
+  `contact_info` varchar(255) DEFAULT NULL,
+  `rating` decimal(2,1) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `destination_id` int(11) DEFAULT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `hotels`
+--
+
+INSERT INTO `hotels` (`hotel_id`, `name`, `location`, `description`, `price_per_night`, `contact_info`, `rating`, `address`, `destination_id`, `latitude`, `longitude`, `image`, `status`) VALUES
+(6, '1', '1', '1', 1.00, '1', 1.0, '1', NULL, 7.87310000, 80.77180000, 'DSC_7549.jpg', 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `itineraries`
+--
+
+CREATE TABLE `itineraries` (
+  `itinerary_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `destination_id` int(11) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `itinerary`
+--
+
+CREATE TABLE `itinerary` (
+  `id` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `details` text DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `payment_id` int(11) NOT NULL,
+  `booking_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `payment_date` datetime DEFAULT current_timestamp(),
+  `status` varchar(50) DEFAULT 'paid'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reviews`
+--
+
+CREATE TABLE `reviews` (
+  `review_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `hotel_id` int(11) DEFAULT NULL,
+  `rating` int(11) DEFAULT NULL,
+  `comment` text DEFAULT NULL,
+  `review_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `is_verified` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` varchar(50) DEFAULT 'active',
+  `role` varchar(50) DEFAULT 'user'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `is_verified`, `created_at`, `status`, `role`) VALUES
+(1, 'yohan', 'ethozhub@gmail.com', '$2y$10$0sC5j.4UeUgaLz4k09Jrr.qVLRDGyA7aCRsknRm14yz1PyHmLNsN2', 0, '2025-05-28 17:48:20', 'active', 'user');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`admin_id`);
+
+--
+-- Indexes for table `bookings`
+--
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`booking_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `destination_id` (`destination_id`),
+  ADD KEY `hotel_id` (`hotel_id`);
+
+--
+-- Indexes for table `destinations`
+--
+ALTER TABLE `destinations`
+  ADD PRIMARY KEY (`destination_id`);
+
+--
+-- Indexes for table `hotels`
+--
+ALTER TABLE `hotels`
+  ADD PRIMARY KEY (`hotel_id`),
+  ADD KEY `destination_id` (`destination_id`);
+
+--
+-- Indexes for table `payments`
+--
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`payment_id`),
+  ADD KEY `booking_id` (`booking_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `bookings`
+--
+ALTER TABLE `bookings`
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `destinations`
+--
+ALTER TABLE `destinations`
+  MODIFY `destination_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `hotels`
+--
+ALTER TABLE `hotels`
+  MODIFY `hotel_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `payments`
+--
+ALTER TABLE `payments`
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `bookings`
+--
+ALTER TABLE `bookings`
+  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`destination_id`) REFERENCES `destinations` (`destination_id`),
+  ADD CONSTRAINT `bookings_ibfk_3` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`hotel_id`);
+
+--
+-- Constraints for table `hotels`
+--
+ALTER TABLE `hotels`
+  ADD CONSTRAINT `hotels_ibfk_1` FOREIGN KEY (`destination_id`) REFERENCES `destinations` (`destination_id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `payments`
+--
+ALTER TABLE `payments`
+  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

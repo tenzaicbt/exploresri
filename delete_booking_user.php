@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
     $booking_id = $_POST['booking_id'];
     $user_id = $_SESSION['user_id'];
 
-    $stmt = $conn->prepare("DELETE FROM booking WHERE booking_id = ? AND user_id = ?");
+    $stmt = $conn->prepare("DELETE FROM bookings WHERE booking_id = ? AND user_id = ?");
     $stmt->execute([$booking_id, $user_id]);
 
     header("Location: my_bookings.php?deleted=1");

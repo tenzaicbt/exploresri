@@ -1,18 +1,22 @@
 <?php
 session_start();
 include 'config/db.php';
+
+// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-if (!isset($_GET['hotel_id'])) {
+// Check hotel_id in URL
+if (!isset($_GET['hotel_id']) || empty($_GET['hotel_id'])) {
     echo "Invalid request.";
     exit;
 }
 
 $hotel_id = $_GET['hotel_id'];
 
+// Fetch hotel info
 $stmt = $conn->prepare("SELECT * FROM hotels WHERE hotel_id = ?");
 $stmt->execute([$hotel_id]);
 $hotel = $stmt->fetch();
@@ -24,18 +28,22 @@ if (!$hotel) {
 
 $destination_id = $hotel['destination_id'];
 
+// Handle booking form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $travel_date = $_POST['travel_date'];
     $user_id = $_SESSION['user_id'];
 
-    $stmt = $conn->prepare("INSERT INTO booking (user_id, destination_id, hotel_id, travel_date, status, booking_date) VALUES (?, ?, ?, ?, 'Pending', NOW())");
+    // Insert booking into bookings table
+    $stmt = $conn->prepare("INSERT INTO bookings (user_id, destination_id, hotel_id, travel_date, status, booking_date) VALUES (?, ?, ?, ?, 'Pending', NOW())");
     $stmt->execute([$user_id, $destination_id, $hotel_id, $travel_date]);
 
-    header("Location: payment.php?booking_id=" . $conn->lastInsertId());
+    // Get last inserted ID and redirect to payment
+    $booking_id = $conn->lastInsertId();
+    header("Location: payment.php?booking_id=" . $booking_id);
     exit;
-
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>

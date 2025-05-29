@@ -9,17 +9,18 @@ if (!isset($_SESSION['user_id'])) {
 
 $booking_id = $_GET['booking_id'] ?? null;
 
-if (!$booking_id) {
+if (!$booking_id || !is_numeric($booking_id)) {
     echo "Invalid booking ID.";
     exit;
 }
 
+// Fetch booking info with user validation
 $stmt = $conn->prepare("
     SELECT 
         b.*, 
         h.name AS hotel_name, 
         h.price_per_night AS price 
-    FROM booking b 
+    FROM bookings b 
     JOIN hotels h ON b.hotel_id = h.hotel_id 
     WHERE b.booking_id = ? AND b.user_id = ?
 ");
@@ -31,9 +32,11 @@ if (!$booking) {
     exit;
 }
 
-// Handle fake payment
+// Handle payment form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $conn->prepare("UPDATE booking SET payment_status = 'paid' WHERE booking_id = ?")->execute([$booking_id]);
+    $update = $conn->prepare("UPDATE bookings SET payment_status = 'paid' WHERE booking_id = ?");
+    $update->execute([$booking_id]);
+
     header("Location: my_bookings.php?paid=1");
     exit;
 }

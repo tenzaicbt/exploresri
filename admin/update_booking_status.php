@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'], $_POST[
     $booking_id = $_POST['booking_id'];
     $status = $_POST['status'];
 
-    $stmt = $conn->prepare("UPDATE booking SET status = :status WHERE booking_id = :booking_id");
+    $stmt = $conn->prepare("UPDATE bookings SET status = :status WHERE booking_id = :booking_id");
     $stmt->bindParam(':status', $status);
     $stmt->bindParam(':booking_id', $booking_id);
 
@@ -24,3 +24,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'], $_POST[
 
 header("Location: manage_bookings.php");
 exit;
+?>

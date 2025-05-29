@@ -26,13 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $target_path = '../images/' . basename($image_name);
 
     if (move_uploaded_file($image_tmp, $target_path)) {
-        $stmt = $conn->prepare("INSERT INTO hotels (name, location, description, price_per_night, contact_info, rating, address, destination_id, latitude, longitude, image)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$name, $location, $description, $price_per_night, $contact_info, $rating, $address, $destination_id, $latitude, $longitude, $image_name]);
-        $message = "Hotel added successfully!";
+    $stmt = $conn->prepare("INSERT INTO hotels (name, location, description, price_per_night, contact_info, rating, address, destination_id, latitude, longitude, image)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$name, $location, $description, $price_per_night, $contact_info, $rating, $address, $destination_id, $latitude, $longitude, $image_name]);
+    $message = "Hotel added successfully!";
     } else {
         $message = "Failed to upload image.";
     }
+
 }
 ?>
 
