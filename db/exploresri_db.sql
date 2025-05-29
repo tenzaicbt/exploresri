@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2025 at 05:26 AM
+-- Generation Time: May 29, 2025 at 05:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -82,7 +82,16 @@ CREATE TABLE `destinations` (
 --
 
 INSERT INTO `destinations` (`destination_id`, `name`, `description`, `location`, `category`, `image`, `province`, `top_attractions`, `latitude`, `longitude`, `status`) VALUES
-(2, '1', '1', NULL, NULL, 'DSC_7549.jpg', '1', '1', '7.8731', '80.7718', 'active');
+(1, 'Colombo', 'The vibrant commercial capital of Sri Lanka, known for its colonial heritage and seaside views', 'Colombo', 'City', 'colombo.jpg', 'Western', 'Galle Face Green, Gangaramaya Temple, Pettah Market', '6.9271', '79.8612', 'active'),
+(2, 'Kandy', 'Famous for the Temple of the Tooth and lush hill-country scenery.', 'Kandy', 'Cultural', 'kandy.jpg', 'Central', 'Temple of the Tooth, Kandy Lake, Royal Botanical Gardens', '7.2906', '80.6337', 'active'),
+(3, 'Sigiriya', 'An ancient rock fortress and UNESCO World Heritage Site.', 'Sigiriya', 'Historical', 'sigiriya.jpg', 'Central', 'Sigiriya Rock Fortress, Frescoes, Water Gardens', '7.9570', '80.7603', 'active'),
+(4, 'Ella', 'A small mountain town with panoramic views and tea plantations.', 'Ella', 'Nature', 'ella.jpg', 'Uva', 'Nine Arches Bridge, Little Adam’s Peak, Ella Rock', '6.8667', '81.0461', 'active'),
+(5, 'Galle', 'A fortified city on the southwest coast, famous for its Dutch colonial architecture.', 'Galle', 'Coastal', 'galle.jpg', 'Southern', 'Galle Fort, Lighthouse, Unawatuna Beach', '6.0535', '80.2210', 'active'),
+(6, 'Nuwara Eliya', 'Known as \"Little England\" for its cool climate and British-style buildings.', 'Nuwara Eliya', 'Hill Station', 'nuwaraeliya.jpg', 'Central', 'Gregory Lake, Tea Estates, Horton Plains', '6.9497', '80.7891', 'active'),
+(7, 'Anuradhapura', 'A sacred city with ancient Buddhist ruins and stupas.', 'Anuradhapura', 'Heritage', 'anuradhapura.jpg', 'North Central', 'Ruwanwelisaya, Sri Maha Bodhi, Isurumuniya', '8.3114', '80.4037', 'active'),
+(8, 'Polonnaruwa', 'A well-preserved medieval capital with impressive archaeological ruins.', 'Polonnaruwa', 'Historical', 'polonnaruwa.jpg', 'North Central', 'Gal Vihara, Royal Palace, Parakrama Samudraya', '7.9403', '81.0188', 'active'),
+(9, 'Trincomalee', 'A port city with beautiful beaches and cultural landmarks.', 'Trincomalee', 'Beach', 'trincomalee.jpg', 'Eastern', 'Nilaveli Beach, Fort Frederick, Koneswaram Temple', '8.5874', '81.2152', 'active'),
+(10, 'Mirissa', 'A laid-back beach town known for whale watching and surfing.', 'Mirissa', 'Beach', 'mirissa.jpg', 'Southern', 'Whale Watching, Mirissa Beach, Coconut Tree Hill', '5.9476', '80.4591', 'active');
 
 -- --------------------------------------------------------
 
@@ -111,7 +120,11 @@ CREATE TABLE `hotels` (
 --
 
 INSERT INTO `hotels` (`hotel_id`, `name`, `location`, `description`, `price_per_night`, `contact_info`, `rating`, `address`, `destination_id`, `latitude`, `longitude`, `image`, `status`) VALUES
-(6, '1', '1', '1', 1.00, '1', 1.0, '1', NULL, 7.87310000, 80.77180000, 'DSC_7549.jpg', 'active');
+(7, 'Jetwing Lighthouse', 'Galle', 'Colonial-style beachfront hotel offering panoramic views and heritage luxury.', 28000.00, '+94 91 222 3744', 5.0, 'Dadella, Galle 80000', 5, NULL, NULL, 'jetwinglighthouse.jpg', 'active'),
+(8, '98 Acres Resort & Spa', 'Ella', 'Eco-friendly resort nestled among tea plantations with stunning Ella Gap views.', 35000.00, '+94 57 222 8888', 5.0, 'Passara Road, Ella 90090', 4, NULL, NULL, '98acres.jpg', 'active'),
+(9, 'Earl’s Regency', 'Kandy', 'Elegant hillside hotel with views of the Mahaweli River and royal heritage.', 32000.00, '+94 81 242 2122', 5.0, 'Earl’s Regency, Tennekumbura, Kandy', 3, NULL, NULL, 'earlsregency.jpg', 'active'),
+(10, 'Galle Face Hotel', 'Colombo', 'Historic oceanfront hotel with colonial charm and sunset views.', 40000.00, '+94 11 254 1010', 5.0, '2 Galle Road, Colombo 03', 2, NULL, NULL, '6837d72c88d7a_gallefacehotel.jpg', 'active'),
+(11, 'Grand Hotel', 'Nuwara Eliya', 'Iconic British-era hotel with lush gardens and mountain views.', 30000.00, '+94 52 222 2881', 5.0, 'Nuwara Eliya 22200', 1, NULL, NULL, 'grandhotel.jpg', 'active');
 
 -- --------------------------------------------------------
 
@@ -259,19 +272,19 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `destinations`
 --
 ALTER TABLE `destinations`
-  MODIFY `destination_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `destination_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `hotels`
 --
 ALTER TABLE `hotels`
-  MODIFY `hotel_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `hotel_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `payments`
