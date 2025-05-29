@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2025 at 10:12 AM
+-- Generation Time: May 29, 2025 at 01:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -54,7 +54,9 @@ CREATE TABLE `bookings` (
   `booking_date` datetime DEFAULT current_timestamp(),
   `travel_date` date NOT NULL,
   `status` varchar(50) DEFAULT 'pending',
-  `payment_status` varchar(50) DEFAULT 'unpaid'
+  `payment_status` varchar(50) DEFAULT 'unpaid',
+  `nights` int(11) DEFAULT 1,
+  `total_price` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -272,7 +274,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `destinations`
