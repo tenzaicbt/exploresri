@@ -56,10 +56,17 @@ if (session_status() == PHP_SESSION_NONE) {
       transform: scale(1.1);
       color: #ffd60a !important;
     }
+
+    .navbar .btn {
+      transition: all 0.3s ease;
+    }
+
+    .navbar .btn:hover {
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
-
 <nav class="navbar navbar-expand-lg shadow-sm mb-4">
   <div class="container">
     <a class="navbar-brand" href="/exploresri/index.php">
@@ -70,32 +77,32 @@ if (session_status() == PHP_SESSION_NONE) {
     </button>
 
     <div class="collapse navbar-collapse" id="navMenu">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
         <li class="nav-item">
-          <a class="nav-link" href="/exploresri/index.php"><i class="bi bi-house-door"></i> Home</a>
+          <a class="nav-link" href="/exploresri/index.php"><i class=""></i> Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/exploresri/destinations.php"><i class="bi bi-geo-alt-fill"></i> Destinations</a>
+          <a class="nav-link" href="/exploresri/destinations.php"><i class=""></i> Destinations</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/exploresri/hotels_all.php"><i class="bi bi-building"></i> Hotels</a>
+          <a class="nav-link" href="/exploresri/hotels_all.php"><i class=""></i> Hotels</a>
         </li>
 
         <?php if (isset($_SESSION['user_id'])): ?>
           <li class="nav-item">
-            <a class="nav-link" href="/exploresri/my_bookings.php"><i class="bi bi-bookmark-check"></i> My Bookings</a>
+            <a class="nav-link" href="/exploresri/my_bookings.php"><i class=""></i> My Bookings</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/exploresri/logout.php">
+            <a class="btn btn-outline-light btn-sm" href="/exploresri/logout.php">
               <i class="bi bi-box-arrow-right"></i> Logout (<?= htmlspecialchars($_SESSION['user_name']); ?>)
             </a>
           </li>
         <?php else: ?>
           <li class="nav-item">
-            <a class="nav-link" href="/exploresri/user/login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+            <a class="btn btn-warning btn-sm" href="/exploresri/user/login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/exploresri/user/register.php"><i class="bi bi-person-plus"></i> Register</a>
+            <a class="btn btn-light btn-sm" href="/exploresri/user/register.php"><i class="bi bi-person-plus"></i> Register</a>
           </li>
         <?php endif; ?>
       </ul>

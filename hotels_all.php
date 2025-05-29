@@ -14,79 +14,117 @@ $hotels = $stmt->fetchAll();
   <meta charset="UTF-8">
   <title>Hotels - ExploreSri</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(to right, #003049, #669bbc);
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Rubik', sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
     }
-    .card {
-      background-color: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 15px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-    }
-    .card img {
-      height: 200px;
-      object-fit: cover;
-    }
-    .card-title {
-      color: #fff;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-    .card-text {
-      color: #e0e0e0;
-    }
-    .btn-primary {
-      background-color: #fcbf49;
-      border: none;
-      color: #000;
-      font-weight: 500;
-    }
-    .btn-primary:hover {
-      background-color: #f7b733;
-    }
+
     h1 {
       font-size: 2.5rem;
       font-weight: 600;
-      margin-bottom: 2rem;
+      margin: 40px 0;
+      text-align: center;
+      color: #f1c40f;
+    }
+
+    .hotel-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      animation: fadeInUp 0.7s ease;
+    }
+
+    .hotel-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .hotel-card img {
+      height: 220px;
+      object-fit: cover;
+      border-bottom: 2px solid #f1c40f;
+    }
+
+    .hotel-card .card-body {
+      text-align: center;
+    }
+
+    .card-title {
+      color: #fff;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .card-text {
+      color: #dcdcdc;
+    }
+
+    .btn-custom {
+      background-color: #f1c40f;
+      color: #000;
+      border: none;
+      padding: 8px 20px;
+      font-weight: bold;
+      border-radius: 50px;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-custom:hover {
+      background-color: #ffe57f;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(60px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .no-hotels {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
 
-<div class="container mt-5">
-  <h1 class="text-center">Find Comfortable Hotels</h1>
+<div class="container">
+  <h1 class="fade-up"><i class=""></i> FIND COMFORTABLE HOTELS</h1>
 
-  <div class="row">
+  <div class="row g-4">
     <?php if (count($hotels) > 0): ?>
       <?php foreach ($hotels as $hotel): ?>
-        <div class="col-md-4 mb-4">
-          <div class="card h-100">
+        <div class="col-md-4">
+          <div class="card hotel-card h-100">
             <img src="images/<?php echo htmlspecialchars($hotel['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($hotel['name']); ?>">
-            <div class="card-body text-center">
+            <div class="card-body">
               <h5 class="card-title"><?php echo htmlspecialchars($hotel['name']); ?></h5>
-              <p class="card-text"><?php echo htmlspecialchars($hotel['location']); ?></p>
+              <p class="card-text"><i class="bi bi-geo-alt-fill"></i> <?php echo htmlspecialchars($hotel['location']); ?></p>
               <p class="card-text">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / night</p>
               <p class="card-text text-warning">★ <?php echo htmlspecialchars($hotel['rating']); ?> / 5</p>
-              <?php if ($is_logged_in): ?>
-                <a href="book.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-primary mt-2">Book Now</a>
-              <?php else: ?>
-                <a href="/exploresri/user/login.php" class="btn btn-warning mt-2">Login to Book</a>
-              <?php endif; ?>
 
+              <?php if ($is_logged_in): ?>
+                <a href="book.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-custom">Book Now</a>
+              <?php else: ?>
+                <a href="/exploresri/user/login.php" class="btn btn-custom">Login to Book</a>
+              <?php endif; ?>
             </div>
           </div>
         </div>
       <?php endforeach; ?>
     <?php else: ?>
-      <p class="text-center">No hotels available right now.</p>
+      <p class="no-hotels">No hotels available right now.</p>
     <?php endif; ?>
   </div>
 </div>

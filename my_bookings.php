@@ -33,45 +33,88 @@ $bookings = $stmt->fetchAll();
     <meta charset="UTF-8">
     <title>My Bookings - ExploreSri</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(to right, #003049, #669bbc);
-            color: #fff;
-            font-family: 'Segoe UI', sans-serif;
-        }
+            font-family: 'Rubik', sans-serif;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            }
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 30px;
+            color: #f1c40f;
+            position: relative;
+            z-index: 1;
+            }
         .booking-card {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: #1f2a38;
             border: none;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            animation: fadeInUp 0.5s ease-in-out;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+            animation: fadeInUp 0.6s ease-in-out;
+            transition: transform 0.3s ease;
+        }
+        .booking-card:hover {
+            transform: translateY(-5px);
         }
         .booking-card img {
-            height: 180px;
+            height: 200px;
             object-fit: cover;
-            border-radius: 15px 15px 0 0;
+            border-radius: 16px 16px 0 0;
             width: 100%;
         }
         .card-body {
-            color: #fff;
+            padding: 20px;
+            color: #f1f1f1;
+        }
+        .card-body h4 {
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .card-body p,
+        .card-body small,
+        .card-body strong {
+            color: #dcdcdc;
         }
         .status {
             font-weight: bold;
             text-transform: capitalize;
         }
         .status.pending {
-            color:rgb(255, 176, 18);
+            color: #fbbf24;
         }
         .status.confirmed {
-            color:rgb(20, 255, 75);
+            color: #22c55e;
         }
         .status.cancelled {
-            color:rgb(255, 29, 29);
+            color: #ef4444;
+        }
+        .text-success {
+            color: #10b981 !important;
+        }
+        .text-warning {
+            color: #facc15 !important;
+        }
+        .btn-danger {
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 8px;
         }
         @keyframes fadeInUp {
             from {opacity: 0; transform: translateY(30px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        @keyframes fadeInDown {
+            from {opacity: 0; transform: translateY(-30px);}
             to {opacity: 1; transform: translateY(0);}
         }
     </style>
@@ -79,12 +122,12 @@ $bookings = $stmt->fetchAll();
 <body>
 
 <div class="container py-5">
-    <h1 class="text-center mb-4">My Bookings</h1>
+    <h1 class="text-center mb-4">MY BOOKINGS</h1>
 
     <?php if (count($bookings) > 0): ?>
         <div class="row">
             <?php foreach ($bookings as $booking): ?>
-                <div class="col-md-6">
+                <div class="col-md-6 col-lg-4">
                     <div class="card booking-card">
                         <img src="images/<?= htmlspecialchars($booking['hotel_image']) ?>" alt="Hotel Image">
                         <div class="card-body">
@@ -114,8 +157,9 @@ $bookings = $stmt->fetchAll();
             <?php endforeach; ?>
         </div>
     <?php else: ?>
-        <div class="text-center">
-            <p>You have no bookings yet.</p>
+        <div class="text-center mt-5">
+            <h4>No bookings found</h4>
+            <p>Start exploring and make your first booking today!</p>
         </div>
     <?php endif; ?>
 </div>
