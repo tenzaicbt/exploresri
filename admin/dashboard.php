@@ -16,27 +16,34 @@ try {
 }
 
 
+// Total Hotels
+$total_hotel_stmt = $conn->query("SELECT COUNT(*) as total FROM hotels");
+$total_hotels = $total_hotel_stmt->fetch()['total'];
+
+// Active Hotels
 $active_hotel_stmt = $conn->query("SELECT COUNT(*) as active FROM hotels WHERE status='active'");
 $active_hotels = $active_hotel_stmt->fetch()['active'];
-
 $hotel_percent = $total_hotels > 0 ? round(($active_hotels / $total_hotels) * 100) : 0;
 
+// Total Bookings
 $booking_stmt = $conn->query("SELECT COUNT(*) as total FROM bookings");
 $total_bookings = $booking_stmt->fetch()['total'];
 
+// Confirmed Bookings
 $confirmed_booking_stmt = $conn->query("SELECT COUNT(*) as confirmed FROM bookings WHERE status='confirmed'");
 $confirmed_bookings = $confirmed_booking_stmt->fetch()['confirmed'];
-
 $booking_percent = $total_bookings > 0 ? round(($confirmed_bookings / $total_bookings) * 100) : 0;
 
+// Total Users
 $user_stmt = $conn->query("SELECT COUNT(*) as total FROM users");
 $total_users = $user_stmt->fetch()['total'];
 
+// Verified Users
 $verified_stmt = $conn->query("SELECT COUNT(*) as verified FROM users WHERE is_verified=1");
 $verified_users = $verified_stmt->fetch()['verified'];
-
 $user_percent = $total_users > 0 ? round(($verified_users / $total_users) * 100) : 0;
 
+// Revenue
 $revenue_stmt = $conn->query("SELECT SUM(amount) as total_revenue FROM payments WHERE status='paid'");
 $revenue = $revenue_stmt->fetch()['total_revenue'] ?? 0;
 $monthly_target = 300000;
@@ -197,57 +204,90 @@ $revenue_percent = $monthly_target > 0 ? round(($revenue / $monthly_target) * 10
 
             </div>
           </div>
-          <div class="row mt-4">
-      <div class="col-md-3">
-        <div class="card-metric bg-primary">
-          <div class="metric-icon"><i class="bi bi-building"></i></div>
-          <div class="circle-progress" style="--rotation: <?= $hotel_percent * 3.6 ?>deg;">
-            <div class="circle-value"><?= $hotel_percent ?>%</div>
+          <div class="card mt-4">
+          <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <div><i class="bi bi-bar-chart-fill me-2"></i> Monthly Revenue Overview</div>
           </div>
-          <h5>Total Hotels</h5>
-          <h3><?= $total_hotels ?></h3>
-          <small><?= $hotel_percent ?>% active listings</small>
-        </div>
-      </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Left: Chart -->
+              <div class="col-md-8">
+                <canvas id="revenueChart" height="140"></canvas>
+              </div>
 
-      <div class="col-md-3">
-        <div class="card-metric bg-success">
-          <div class="metric-icon"><i class="bi bi-journal-bookmark"></i></div>
-          <div class="circle-progress" style="--rotation: <?= $booking_percent * 3.6 ?>deg;">
-            <div class="circle-value"><?= $booking_percent ?>%</div>
+              <!-- Right: Summary Panel -->
+              <div class="col-md-4">
+                <div class="p-3 bg-light rounded shadow-sm">
+                  <h6 class="fw-bold">Summary</h6>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Total Users
+                      <span class="badge bg-primary rounded-pill"><?= $total_users ?></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Verified Users
+                      <span class="badge bg-success rounded-pill"><?= $verified_users ?></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Total Bookings
+                      <span class="badge bg-warning text-dark rounded-pill"><?= $total_bookings ?></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Revenue (Rs)
+                      <span class="badge bg-danger rounded-pill">Rs. <?= number_format($revenue) ?></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Target Achieved
+                      <span class="badge bg-info text-dark rounded-pill"><?= $revenue_percent ?>%</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
-          <h5>Bookings</h5>
-          <h3><?= $total_bookings ?></h3>
-          <small><?= $booking_percent ?>% confirmed</small>
         </div>
-      </div>
 
-      <div class="col-md-3">
-        <div class="card-metric bg-warning">
-          <div class="metric-icon"><i class="bi bi-people-fill"></i></div>
-          <div class="circle-progress" style="--rotation: <?= $user_percent * 3.6 ?>deg;">
-            <div class="circle-value"><?= $user_percent ?>%</div>
-          </div>
-          <h5>Users</h5>
-          <h3><?= $total_users ?></h3>
-          <small><?= $user_percent ?>% verified users</small>
-        </div>
-      </div>
+        <!-- Chart.js CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-      <div class="col-md-3">
-        <div class="card-metric bg-danger">
-          <div class="metric-icon"><i class="bi bi-cash-stack"></i></div>
-          <div class="circle-progress" style="--rotation: <?= $revenue_percent * 3.6 ?>deg;">
-            <div class="circle-value"><?= $revenue_percent ?>%</div>
-          </div>
-          <h5>Revenue</h5>
-          <h3>Rs. <?= number_format($revenue) ?></h3>
-          <small><?= $revenue_percent ?>% of monthly target</small>
-        </div>
-      </div>
-    </div>
-    </main>
-  </div>
-</div>
+        <!-- Chart Script -->
+        <script>
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+            datasets: [{
+              label: 'Revenue (Rs)',
+              data: [150000, 200000, 220000, 280000, <?= $revenue ?>],
+              fill: true,
+              borderColor: 'rgb(75, 192, 192)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: { mode: 'index', intersect: false }
+            },
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            },
+            scales: {
+              y: {
+                ticks: {
+                  callback: function(value) {
+                    return 'Rs ' + value.toLocaleString();
+                  }
+                }
+              }
+            }
+          }
+        });
+        </script>
 </body>
 </html>
