@@ -92,6 +92,15 @@ if (session_status() == PHP_SESSION_NONE) {
           <li class="nav-item">
             <a class="nav-link" href="/exploresri/my_bookings.php"><i class=""></i> My Bookings</a>
           </li>
+
+          <!-- Profile Icon -->
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="/exploresri/user/profile.php" title="Profile">
+              <i class="bi bi-person-circle fs-5"></i>
+            </a>
+          </li>
+
+          <!-- Logout Button -->
           <li class="nav-item">
             <a class="btn btn-outline-light btn-sm" href="/exploresri/logout.php">
               <i class="bi bi-box-arrow-right"></i> Logout (<?= htmlspecialchars($_SESSION['user_name']); ?>)
@@ -99,10 +108,14 @@ if (session_status() == PHP_SESSION_NONE) {
           </li>
         <?php else: ?>
           <li class="nav-item">
-            <a class="btn btn-warning btn-sm" href="/exploresri/user/login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+            <a class="btn btn-warning btn-sm" href="/exploresri/user/login.php">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-light btn-sm" href="/exploresri/user/register.php"><i class="bi bi-person-plus"></i> Register</a>
+            <a class="btn btn-light btn-sm" href="/exploresri/user/register.php">
+              <i class="bi bi-person-plus"></i> Register
+            </a>
           </li>
         <?php endif; ?>
       </ul>

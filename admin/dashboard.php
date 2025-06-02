@@ -16,6 +16,7 @@ try {
 }
 
 
+
 $total_hotel_stmt = $conn->query("SELECT COUNT(*) as total FROM hotels");
 $total_hotels = $total_hotel_stmt->fetch()['total'];
 
@@ -64,6 +65,17 @@ $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payme
     $unpaid_percent = $total_bookings > 0 ? round(($unpaid_bookings / $total_bookings) * 100) : 0;
     $hotel_percent = $total_hotels > 0 ? round(($active_hotels / $total_hotels) * 100) : 0;
     $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payment_status) * 100) : 0;
+
+
+// Total Revenue from confirmed bookings + paid payments
+$revenueStmt = $conn->query("
+    SELECT SUM(p.amount) AS total_revenue
+    FROM bookings b
+    JOIN payments p ON b.booking_id = p.booking_id
+    WHERE b.status = 'confirmed' AND LOWER(p.status) = 'paid'
+");
+$row = $revenueStmt->fetch(PDO::FETCH_ASSOC);
+$totalRevenue = $row['total_revenue'] ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -202,6 +214,13 @@ $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payme
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link text-white" href="manage_reviews.php">
+                  <i class="bi bi-chat-dots me-2"></i> Manage Reviews
+                </a>
+              </li>
+
+              <div class="container mt-5">
+              <li class="nav-item">
                 <a class="nav-link text-danger" href="logout.php">
                   <i class="bi bi-box-arrow-right me-2"></i> Logout
                 </a>
@@ -234,7 +253,7 @@ $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payme
                     <h5 class="card-title">Manage Hotels</h5>
                     <p class="card-text">Edit or delete hotels from the list.</p>
                     <a href="manage_hotels.php" class="btn btn-light btn-sm">
-                      <i class="bi bi-pencil-square"></i> Manage Hotels
+                      <i class=""></i> Manage Hotels
                     </a>
                   </div>
                 </div>
@@ -245,7 +264,7 @@ $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payme
                     <h5 class="card-title">Manage Places</h5>
                     <p class="card-text">Edit or delete destination places.</p>
                     <a href="manage_places.php" class="btn btn-light btn-sm">
-                      <i class="bi bi-map"></i> Manage Places
+                      <i class=""></i> Manage Places
                     </a>
                   </div>
                 </div>
@@ -340,12 +359,14 @@ $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payme
                   <div class="col-md-4 mb-3">
                     <div class="card shadow-sm p-2">
                       <div class="card-header bg-warning text-dark py-2 px-3 small">Revenue Status</div>
-                      <div class="card-body text-center p-1">
-                        <canvas id="revenueChart" class="small-donut"></canvas>
-                        <div class="mt-2 small fw-bold" id="revenuePercentage"></div>
+                      <div class="card-body text-center p-3">
+                        <div class="fs-4 fw-bold text-dark">LKR <?= number_format((float)$totalRevenue, 2) ?></div>
+                        <div class="small text-muted">Total Revenue (Paid)</div>
                       </div>
                     </div>
                   </div>
+
+
                 </div>
               </div>
                 </div>
@@ -392,35 +413,27 @@ $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payme
           });
         </script>
         <script>
-
-          const actualRevenue = 65000; // actual revenue
-          const targetRevenue = 100000; // target revenue
-
-          const percentage = ((actualRevenue / targetRevenue) * 100).toFixed(1);
-
-          const ctxRevenue = document.getElementById("revenueChart").getContext("2d");
-
-          new Chart(ctxRevenue, {
-            type: 'doughnut',
-            data: {
-              labels: ['Achieved', 'Remaining'],
-              datasets: [{
-                data: [actualRevenue, targetRevenue - actualRevenue],
-                backgroundColor: ['#f1c40f', '#ecf0f1'],
-                borderWidth: 1
-              }]
-            },
-            options: {
-              cutout: '70%',
-              plugins: {
-                legend: {
-                  display: false
-                }
-              }
-            }
-          });
-
-          document.getElementById("revenuePercentage").innerText = `${percentage}% of Target Achieved`;
-        </script>
+  const ctx = document.getElementById('revenueChart').getContext('2d');
+  const revenueChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Paid', 'Unpaid'],
+      datasets: [{
+        data: [<?= $totalRevenue ?>, 0], // Replace 0 with unpaid amount if available
+        backgroundColor: ['#198754', '#ffc107'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom'
+        }
+      },
+      cutout: '70%'
+    }
+  });
+</script>
 </body>
 </html>

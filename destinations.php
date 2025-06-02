@@ -55,123 +55,88 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
       color: #ffffff;
       min-height: 100vh;
       overflow-x: hidden;
-      position: relative;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: url('https://www.transparenttextures.com/patterns/stardust.png');
-      opacity: 0.08;
-      z-index: 0;
-      pointer-events: none;
     }
 
     h1 {
-      font-size: 2.8rem;
+      font-size: 2.5rem;
       font-weight: 700;
       text-align: center;
       margin-top: 50px;
       margin-bottom: 30px;
       color: #f1c40f;
-      position: relative;
-      z-index: 1;
     }
 
     .search-form {
-      animation: fadeUp 0.8s ease-in-out;
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
       padding: 20px;
       border-radius: 15px;
       margin-bottom: 40px;
-      position: relative;
-      z-index: 1;
-      transition: all 0.3s ease;
-    }
-
-    .search-form:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
     }
 
     .search-form input,
     .search-form select {
       border-radius: 10px;
-      box-shadow: none;
-      transition: box-shadow 0.2s ease;
-    }
-
-    .search-form input:focus,
-    .search-form select:focus {
-      box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
     }
 
     .search-btn {
       border-radius: 10px;
       font-weight: 600;
-      transition: all 0.2s ease-in-out;
     }
 
-    .search-btn:hover {
-      transform: scale(1.03);
-      background-color: #ffca2c;
-    }
-
+    /* Smaller & Modern Card Styling */
     .card {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.05);
       border: none;
-      border-radius: 18px;
+      border-radius: 16px;
       overflow: hidden;
       backdrop-filter: blur(6px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+      transition: transform 0.3s ease;
+      height: 100%;
     }
 
     .card:hover {
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
     }
 
     .card img {
-      height: 200px;
+      height: 140px;
       object-fit: cover;
-      border-top-left-radius: 18px;
-      border-top-right-radius: 18px;
+      width: 100%;
     }
 
     .card-body {
-      padding: 20px;
+      padding: 15px;
     }
 
     .card-title {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 600;
       color: #ffe57f;
     }
 
     .card-subtext {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #ccc;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
     .card-desc {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: #ddd;
-      height: 60px;
+      height: 50px;
       overflow: hidden;
     }
 
     .btn-custom {
-      background-color:#f1c40f;
+      background-color: #f1c40f;
       color: #000;
-      border-radius: 30px;
-      padding: 8px 22px;
+      border-radius: 25px;
+      padding: 6px 18px;
       font-weight: 500;
-      margin-top: 12px;
-      transition: background-color 0.3s ease;
+      margin-top: 10px;
+      font-size: 0.9rem;
     }
 
     .btn-custom:hover {
@@ -182,7 +147,7 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
       background-color: #fff;
       color: #003049;
       border-radius: 10px;
-      margin: 0 5px;
+      margin: 0 4px;
     }
 
     .pagination .active .page-link {
@@ -190,33 +155,16 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
       color: #000;
       border: none;
     }
-
-    .fade-up {
-      animation: fadeUp 0.6s ease forwards;
-      opacity: 0;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
   </style>
 </head>
 
 <body>
 <div class="container">
-  <h1 class="fade-up">EXPLORE SRI LANKAN DESTINATIONS</h1>
+  <h1>Explore Sri Lankan Destinations</h1>
 
-  <!-- Creative Animated Filter UI -->
-  <form method="GET" class="search-form row g-3 fade-up">
+  <form method="GET" class="search-form row g-3">
     <div class="col-md-5">
-      <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" class="form-control" placeholder=" Search destinations...">
+      <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" class="form-control" placeholder="Search destinations...">
     </div>
     <div class="col-md-4">
       <select name="province" class="form-select">
@@ -227,12 +175,11 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
       </select>
     </div>
     <div class="col-md-3 d-grid">
-      <button class="btn btn-warning search-btn"><i class=""></i> Search</button>
+      <button class="btn btn-warning search-btn">Search</button>
     </div>
   </form>
 
-  <!-- Cards -->
-  <div class="row mt-4 fade-up">
+  <div class="row">
     <?php if ($destinations): ?>
       <?php foreach ($destinations as $dest): ?>
         <div class="col-md-4 col-sm-6 mb-4">
@@ -241,7 +188,7 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
             <div class="card-body">
               <h5 class="card-title"><?= htmlspecialchars($dest['name']) ?></h5>
               <div class="card-subtext"><i class="bi bi-geo-alt-fill"></i> <?= htmlspecialchars($dest['province']) ?> | <?= htmlspecialchars($dest['category']) ?></div>
-              <div class="card-desc"><?= htmlspecialchars(mb_strimwidth($dest['description'], 0, 100, "...")) ?></div>
+              <div class="card-desc"><?= htmlspecialchars(mb_strimwidth($dest['description'], 0, 90, "...")) ?></div>
               <a href="destination.php?id=<?= $dest['destination_id'] ?>" class="btn btn-custom">View More</a>
             </div>
           </div>
@@ -252,9 +199,8 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
     <?php endif; ?>
   </div>
 
-  <!-- Pagination -->
   <?php if ($totalPages > 1): ?>
-    <nav class="mt-4 d-flex justify-content-center fade-up">
+    <nav class="mt-4 d-flex justify-content-center">
       <ul class="pagination">
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
           <li class="page-item <?= $i == $page ? 'active' : '' ?>">

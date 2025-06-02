@@ -156,7 +156,7 @@
     </a>
   </div>
 
-    <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+    <!-- <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
     </a>
     <a href="/exploresri/user/login.php" class="btn btn-outline-light btn-custom">
       <i class="bi bi-box-arrow-in-right"></i> Login
@@ -164,7 +164,7 @@
     <a href="/exploresri/user/register.php" class="btn btn-outline-warning btn-custom">
       <i class="bi bi-person-plus"></i> Register
     </a>
-  </div>
+  </div> -->
 
   <?php if (!isset($_SESSION['user_id'])): ?>
   <div class="auth-buttons d-flex justify-content-center flex-wrap mt-4">

@@ -23,7 +23,6 @@ $hotels = $stmt->fetchAll();
       color: #ffffff;
       min-height: 100vh;
       overflow-x: hidden;
-      position: relative;
     }
 
     h1 {
@@ -34,60 +33,52 @@ $hotels = $stmt->fetchAll();
       color: #f1c40f;
     }
 
-    .hotel-card {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
+    .hotel-card-dark {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
       overflow: hidden;
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      animation: fadeInUp 0.7s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+      padding: 0;
     }
 
-    .hotel-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    .hotel-card-dark:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
     }
 
-    .hotel-card img {
-      height: 220px;
+    .hotel-card-dark img {
+      height: 150px;
       object-fit: cover;
-      border-bottom: 2px solid #f1c40f;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .hotel-card .card-body {
-      text-align: center;
+    .hotel-card-dark .card-body {
+      padding: 1rem;
     }
 
     .card-title {
       color: #fff;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 600;
+      margin-bottom: 0.3rem;
     }
 
     .card-text {
-      color: #dcdcdc;
+      font-size: 0.85rem;
+      color: #bbbbbb;
     }
 
-    .btn-custom {
-      background-color: #f1c40f;
-      color: #000;
-      border: none;
-      padding: 8px 20px;
-      font-weight: bold;
-      border-radius: 50px;
-      margin-top: 10px;
-      transition: all 0.3s ease;
+    .btn-outline-light {
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border-radius: 30px;
     }
 
-    .btn-custom:hover {
-      background-color: #ffe57f;
-      transform: scale(1.05);
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(60px); }
-      to { opacity: 1; transform: translateY(0); }
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.3em 0.6em;
     }
 
     .no-hotels {
@@ -95,29 +86,49 @@ $hotels = $stmt->fetchAll();
       font-size: 1.2rem;
       color: #ccc;
     }
+
+    .rating-stars i {
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1 class="fade-up"><i class=""></i> FIND COMFORTABLE HOTELS</h1>
+  <h1>FIND COMFORTABLE HOTELS</h1>
 
   <div class="row g-4">
     <?php if (count($hotels) > 0): ?>
       <?php foreach ($hotels as $hotel): ?>
-        <div class="col-md-4">
-          <div class="card hotel-card h-100">
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card hotel-card-dark position-relative h-100">
             <img src="images/<?php echo htmlspecialchars($hotel['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($hotel['name']); ?>">
-            <div class="card-body">
+
+            <!-- <div class="position-absolute top-0 end-0 p-2">
+              <button class="btn btn-dark btn-sm rounded-circle shadow-sm" disabled>
+                <i class="bi bi-heart text-danger"></i>
+              </button>
+            </div> -->
+
+            <div class="card-body text-start">
               <h5 class="card-title"><?php echo htmlspecialchars($hotel['name']); ?></h5>
               <p class="card-text"><i class="bi bi-geo-alt-fill"></i> <?php echo htmlspecialchars($hotel['location']); ?></p>
-              <p class="card-text">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / night</p>
-              <p class="card-text text-warning">★ <?php echo htmlspecialchars($hotel['rating']); ?> / 5</p>
+
+              <div class="d-flex align-items-center mb-2">
+                <span class="badge bg-warning text-dark me-2"><?php echo number_format($hotel['rating'], 1); ?></span>
+                <div class="text-warning rating-stars">
+                  <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <i class="bi <?= $i <= round($hotel['rating']) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
+                  <?php endfor; ?>
+                </div>
+              </div>
+
+              <p class="text-light fw-semibold mb-2">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / night</p>
 
               <?php if ($is_logged_in): ?>
-                <a href="book.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-custom">Book Now</a>
+                <a href="book.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-outline-light w-100">Book Now</a>
               <?php else: ?>
-                <a href="/exploresri/user/login.php" class="btn btn-custom">Login to Book</a>
+                <a href="/exploresri/user/login.php" class="btn btn-outline-light w-100">Login to Book</a>
               <?php endif; ?>
             </div>
           </div>

@@ -8,6 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $booking_id = $_GET['booking_id'] ?? null;
+var_dump($booking_id, $_SESSION['user_id']);
+
 
 if (!$booking_id || !is_numeric($booking_id)) {
     echo "Invalid booking ID.";
@@ -32,16 +34,23 @@ if (!$booking) {
     exit;
 }
 
+// Calculate number of nights and total amount
+$checkInDate = new DateTime($booking['check_in_date']);
+$checkOutDate = new DateTime($booking['check_out_date']);
+$interval = $checkInDate->diff($checkOutDate);
+$nights = $interval->days;
+$totalAmount = $booking['price'] * $nights;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $method = $_POST['payment_method'] ?? '';
 
+    // Validate payment method and inputs
     if ($method === 'paypal') {
         $paypal_email = $_POST['paypal_email'] ?? '';
         if (!filter_var($paypal_email, FILTER_VALIDATE_EMAIL)) {
             echo "Invalid PayPal email.";
             exit;
         }
-
     } else {
         $card_number = $_POST['card_number'] ?? '';
         $card_name = $_POST['card_name'] ?? '';
@@ -52,12 +61,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "Please fill in all card details.";
             exit;
         }
-
     }
 
-    $update = $conn->prepare("UPDATE bookings SET payment_status = 'paid' WHERE booking_id = ?");
-    $update->execute([$booking_id]);
+    // Insert into payments table
+    $insertPayment = $conn->prepare("INSERT INTO payments 
+        (booking_id, user_id, amount, payment_method, payment_date, status) 
+        VALUES (?, ?, ?, ?, NOW(), 'Paid')");
+    $insertPayment->execute([
+        $booking_id,
+        $_SESSION['user_id'],
+        $totalAmount,
+        $method
+    ]);
 
+    // Update booking status and payment status
+    $updateBooking = $conn->prepare("UPDATE bookings 
+        SET status = 'Paid', payment_status = 'Paid' 
+        WHERE booking_id = ? AND user_id = ?");
+    $updateBooking->execute([$booking_id, $_SESSION['user_id']]);
+
+
+
+    // Redirect to confirmation
     header("Location: my_bookings.php?paid=1");
     exit;
 }
@@ -159,9 +184,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="payment-card">
   <h3>Payment for <?= htmlspecialchars($booking['hotel_name']) ?></h3>
-  <p><strong>Travel Date:</strong> <?= htmlspecialchars($booking['travel_date']) ?></p>
+  <p><strong>Check-in:</strong> <?= htmlspecialchars($booking['check_in_date']) ?></p>
+  <p><strong>Check-out:</strong> <?= htmlspecialchars($booking['check_out_date']) ?></p>
   <p><strong>Status:</strong> <?= htmlspecialchars($booking['status']) ?></p>
-  <p><strong>Total:</strong> Rs. <?= htmlspecialchars($booking['price']) ?></p>
+  <p><strong>Price Per Night:</strong> Rs. <?= htmlspecialchars($booking['price']) ?></p>
+  <p><strong>Duration:</strong> <?= $nights ?> night(s)</p>
+  <p><strong>Total Amount:</strong> <span class="text-success fw-bold">Rs. <?= number_format($totalAmount, 2) ?></span></p>
 
   <form id="paymentForm" method="post">
     <div class="mb-3">
