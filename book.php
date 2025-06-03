@@ -106,19 +106,14 @@ for ($i = 5; $i >= 1; $i--) {
     $percentages[$i] = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
 }
 
-// Fetch top 5 popular hotels based on number of bookings in last 30 days
-$popularHotelsStmt = $conn->prepare("
-    SELECT h.hotel_id, h.name, h.price_per_night, h.image_gallery, h.rating, COUNT(b.booking_id) as bookings_count
-    FROM hotels h
-    LEFT JOIN bookings b ON h.hotel_id = b.hotel_id AND b.booking_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-    GROUP BY h.hotel_id
-    ORDER BY bookings_count DESC
-    LIMIT 5
-");
-$popularHotelsStmt->execute();
-$popularHotels = $popularHotelsStmt->fetchAll();
+// Fetch 3 random other hotels
+$otherHotelsStmt = $conn->prepare("SELECT * FROM hotels WHERE hotel_id != ? ORDER BY RAND() LIMIT 3");
+$otherHotelsStmt->execute([$hotel_id]);
+$otherHotels = $otherHotelsStmt->fetchAll();
 ?>
 
+<!-- Your HTML content for the booking page goes here -->
+<!-- Make sure no echo/HTML comes before the ob_start() section to preserve header() usage -->
 
 <?php ob_end_flush(); ?>
 
@@ -461,46 +456,29 @@ $popularHotels = $popularHotelsStmt->fetchAll();
 </div>
 
 
-<!-- Recently Popular Hotels Slider -->
-<div class="info-card mt-5">
-  <h3 class="text-light fw-bold mb-4"><i class=""></i>Recently Popular Hotels</h3>
-
-  <div id="popularHotelsCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-inner">
-
-      <?php foreach ($popularHotels as $index => $ph): 
-        $images = array_filter(array_map('trim', explode(',', $ph['image_gallery'])));
-        $firstImage = $images[0] ?? 'default-hotel.jpg';
-      ?>
-        <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-          <div class="position-relative" style="height: 280px; border-radius: 20px; overflow: hidden;">
-            <img src="images/<?= htmlspecialchars($firstImage) ?>" class="w-100 h-100" style="object-fit: cover; filter: brightness(70%); transition: transform 0.4s ease;" alt="<?= htmlspecialchars($ph['name']) ?>">
-            
-            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); color: #fff; border-radius: 0 0 20px 20px;">
-              <div class="d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0"><?= htmlspecialchars($ph['name']) ?></h5>
-                <span class="badge bg-warning text-dark"><?= htmlspecialchars($ph['rating']) ?> ⭐</span>
-              </div>
-              <div class="d-flex justify-content-between mt-2 align-items-center">
-                <small>Rs. <?= htmlspecialchars($ph['price_per_night']) ?>/night</small>
-                <a href="book.php?hotel_id=<?= $ph['hotel_id'] ?>" class="btn btn-sm btn-outline-light">Book Now</a>
-              </div>
-            </div>
+<!-- Other Hotels Section -->
+<?php if ($otherHotels): ?>
+<div class="container container-main">
+  <div class="info-card">
+    <h4>Other Hotels You May Like</h4>
+    <div class="row">
+      <?php foreach ($otherHotels as $oth): ?>
+      <div class="col-md-4 mb-4">
+        <div class="card bg-dark text-white h-100 shadow">
+          <img src="images/<?= htmlspecialchars(explode(',', $oth['image_gallery'])[0]) ?>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Hotel Image">
+          <div class="card-body">
+            <h5 class="card-title"><?= htmlspecialchars($oth['name']) ?></h5>
+            <p class="card-text"><?= htmlspecialchars($oth['location']) ?></p>
+            <p class="card-text"><small>Rs. <?= htmlspecialchars($oth['price_per_night']) ?> / night</small></p>
+            <a href="book.php?hotel_id=<?= $oth['hotel_id'] ?>" class="btn btn-sm btn-outline-warning mt-2">View Hotel</a>
           </div>
         </div>
+      </div>
       <?php endforeach; ?>
-
     </div>
-
-    <!-- Carousel Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#popularHotelsCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" style="filter: invert(1);"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#popularHotelsCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon" style="filter: invert(1);"></span>
-      <span class="v
-
+  </div>
+</div>
+<?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

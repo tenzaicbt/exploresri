@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 01, 2025 at 06:51 PM
+-- Generation Time: Jun 03, 2025 at 07:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,6 +43,20 @@ INSERT INTO `admins` (`admin_id`, `username`, `password`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `attendance`
+--
+
+CREATE TABLE `attendance` (
+  `attendance_id` int(11) NOT NULL,
+  `guide_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `status` enum('Present','Absent','Late') NOT NULL DEFAULT 'Present',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `bookings`
 --
 
@@ -58,18 +72,17 @@ CREATE TABLE `bookings` (
   `nights` int(11) DEFAULT 1,
   `total_price` decimal(10,2) DEFAULT NULL,
   `check_in_date` date DEFAULT NULL,
-  `check_out_date` date DEFAULT NULL
+  `check_out_date` date DEFAULT NULL,
+  `guide_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `bookings`
 --
 
-INSERT INTO `bookings` (`booking_id`, `user_id`, `destination_id`, `hotel_id`, `booking_date`, `travel_date`, `status`, `payment_status`, `nights`, `total_price`, `check_in_date`, `check_out_date`) VALUES
-(50, 1, 2, 10, '2025-06-01 17:12:28', '0000-00-00', 'confirmed', 'Paid', 4, NULL, '2025-06-09', '2025-06-13'),
-(51, 1, 3, 9, '2025-06-01 17:27:50', '0000-00-00', 'confirmed', 'Paid', 6, NULL, '2025-06-16', '2025-06-22'),
-(52, 1, 2, 10, '2025-06-01 17:35:17', '0000-00-00', 'cancelled', 'unpaid', 7, NULL, '2025-06-02', '2025-06-09'),
-(54, 2, 3, 9, '2025-06-01 22:20:49', '0000-00-00', 'confirmed', 'Paid', 3, NULL, '2025-06-09', '2025-06-12');
+INSERT INTO `bookings` (`booking_id`, `user_id`, `destination_id`, `hotel_id`, `booking_date`, `travel_date`, `status`, `payment_status`, `nights`, `total_price`, `check_in_date`, `check_out_date`, `guide_id`) VALUES
+(54, 2, 3, 9, '2025-06-01 22:20:49', '0000-00-00', 'confirmed', 'Paid', 3, NULL, '2025-06-09', '2025-06-12', NULL),
+(55, 1, 1, 11, '2025-06-02 22:47:15', '0000-00-00', 'cancelled', 'Paid', 3, NULL, '2025-06-03', '2025-06-06', NULL);
 
 -- --------------------------------------------------------
 
@@ -106,6 +119,127 @@ INSERT INTO `destinations` (`destination_id`, `name`, `description`, `location`,
 (8, 'Polonnaruwa', 'A well-preserved medieval capital with impressive archaeological ruins.', 'Polonnaruwa', 'Historical', 'polonnaruwa.jpg', 'North Central', 'Gal Vihara, Royal Palace, Parakrama Samudraya', '7.9403', '81.0188', 'active'),
 (9, 'Trincomalee', 'A port city with beautiful beaches and cultural landmarks.', 'Trincomalee', 'Beach', 'trincomalee.jpg', 'Eastern', 'Nilaveli Beach, Fort Frederick, Koneswaram Temple', '8.5874', '81.2152', 'active'),
 (10, 'Mirissa', 'A laid-back beach town known for whale watching and surfing.', 'Mirissa', 'Beach', 'mirissa.jpg', 'Southern', 'Whale Watching, Mirissa Beach, Coconut Tree Hill', '5.9476', '80.4591', 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `guide`
+--
+
+CREATE TABLE `guide` (
+  `guide_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `languages` varchar(255) DEFAULT NULL,
+  `experience_years` int(11) DEFAULT 0,
+  `bio` text DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL,
+  `contact_info` varchar(100) DEFAULT NULL,
+  `price_per_day` decimal(10,2) DEFAULT 0.00,
+  `rating` float DEFAULT 0,
+  `is_verified` tinyint(1) DEFAULT 0,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `status` varchar(50) DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `guide`
+--
+
+INSERT INTO `guide` (`guide_id`, `name`, `email`, `country`, `password`, `languages`, `experience_years`, `bio`, `photo`, `contact_info`, `price_per_day`, `rating`, `is_verified`, `created_at`, `status`) VALUES
+(1, 'yohan koshala', 'ethozhub@gmail.com', 'India', '$2y$10$QzKBIovJek6rMXMP8f1d9.8g/C4vQsO0o3Du2ToZ9xDhezqUUMGmK', 'English,Sinhala,Tamil', 6, 'Tourist guides provides the visitor with in depth knowledge in their mother tongue, smoothing creases and wrinkles that is bound to occur while touring a foreign country for the first time.', 'uploads/1748945504_caption.jpg', '0766446354', 40.00, 0, 1, '2025-06-03 14:08:07', 'active'),
+(4, 'yohan', 'ethoz@gmail.com', NULL, '$2y$10$alOzdlymcMkDFEV1Ivavdesn2ucjRolkzXNmB00x8TdkLhSUSp5EO', 'English,Sinhala,Tamil', 3, 'e', '1748945620_caption.jpg', '+94 57 222 8888', 10.00, 0, 1, '2025-06-03 15:43:40', 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `guide_bookings`
+--
+
+CREATE TABLE `guide_bookings` (
+  `booking_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `guide_id` int(11) NOT NULL,
+  `travel_date` date NOT NULL,
+  `duration_days` int(11) NOT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `payment_status` varchar(20) NOT NULL DEFAULT 'Pending',
+  `payment_method` varchar(50) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `check_in_date` date DEFAULT NULL,
+  `check_out_date` date DEFAULT NULL,
+  `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `guide_bookings`
+--
+
+INSERT INTO `guide_bookings` (`booking_id`, `user_id`, `guide_id`, `travel_date`, `duration_days`, `status`, `created_at`, `payment_status`, `payment_method`, `amount`, `check_in_date`, `check_out_date`, `notes`) VALUES
+(1, 1, 4, '2025-06-12', 5, 'confirmed', '2025-06-03 10:26:16', 'paid', 'PayPal', 50.00, NULL, NULL, 'good'),
+(2, 1, 4, '2025-06-04', 4, 'confirmed', '2025-06-03 11:36:24', 'paid', 'PayPal', 40.00, NULL, NULL, 'r'),
+(3, 1, 4, '2025-06-13', 7, 'cancelled', '2025-06-03 15:31:33', 'paid', 'PayPal', 70.00, NULL, NULL, ''),
+(4, 2, 4, '2025-06-15', 4, 'pending', '2025-06-03 15:39:07', 'paid', 'PayPal', 40.00, NULL, NULL, ''),
+(5, 2, 1, '2025-06-20', 5, 'cancelled', '2025-06-03 15:40:05', 'paid', 'Card', 200.00, NULL, NULL, ''),
+(6, 2, 1, '2025-06-21', 10, 'cancelled', '2025-06-03 15:42:24', 'paid', 'PayPal', 400.00, NULL, NULL, ''),
+(7, 1, 1, '2025-06-14', 7, 'cancelled', '2025-06-03 16:06:06', 'paid', 'Card', 280.00, NULL, NULL, ''),
+(8, 1, 1, '2025-06-06', 5, 'cancelled', '2025-06-03 16:48:58', 'paid', 'PayPal', 200.00, NULL, NULL, ''),
+(9, 1, 1, '2025-06-12', 5, 'cancelled', '2025-06-03 16:50:45', 'paid', 'Card', 200.00, NULL, NULL, ''),
+(10, 1, 1, '2025-06-05', 3, 'cancelled', '2025-06-03 16:52:50', 'paid', 'PayPal', 120.00, NULL, NULL, ''),
+(11, 1, 1, '2025-06-05', 2, 'cancelled', '2025-06-03 16:57:01', 'paid', 'PayPal', 80.00, NULL, NULL, ''),
+(12, 1, 1, '2025-06-14', 1, 'cancelled', '2025-06-03 16:57:30', 'paid', 'PayPal', 40.00, NULL, NULL, ''),
+(13, 1, 1, '2025-06-14', 6, 'cancelled', '2025-06-03 16:59:40', 'paid', 'PayPal', 240.00, NULL, NULL, ''),
+(14, 1, 1, '2025-06-05', 6, 'confirmed', '2025-06-03 17:02:54', 'paid', 'Card', 240.00, NULL, NULL, ''),
+(15, 1, 1, '2025-06-05', 5, 'Paid', '2025-06-03 17:06:55', 'Paid', NULL, NULL, NULL, NULL, ''),
+(16, 1, 1, '2025-06-05', 5, 'confirmed', '2025-06-03 17:12:08', 'paid', 'PayPal', 200.00, NULL, NULL, ''),
+(17, 1, 1, '2025-06-05', 5, 'Paid', '2025-06-03 17:21:58', 'Paid', NULL, NULL, NULL, NULL, ''),
+(18, 1, 1, '2025-06-05', 5, 'pending', '2025-06-03 17:46:36', 'unpaid', NULL, NULL, NULL, NULL, ''),
+(19, 1, 1, '2025-06-06', 5, 'Paid', '2025-06-03 17:50:39', 'Paid', NULL, NULL, NULL, NULL, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `guide_payments`
+--
+
+CREATE TABLE `guide_payments` (
+  `payment_id` int(11) NOT NULL,
+  `booking_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `payment_date` datetime DEFAULT current_timestamp(),
+  `status` varchar(20) DEFAULT 'paid'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `guide_payments`
+--
+
+INSERT INTO `guide_payments` (`payment_id`, `booking_id`, `user_id`, `amount`, `payment_method`, `payment_date`, `status`) VALUES
+(1, 15, 1, 200.00, 'paypal', '2025-06-03 22:41:51', 'Paid'),
+(2, 16, 1, 200.00, 'paypal', '2025-06-03 22:43:21', 'Paid'),
+(3, 16, 1, 200.00, 'paypal', '2025-06-03 22:45:02', 'Paid'),
+(4, 17, 1, 200.00, 'paypal', '2025-06-03 22:57:16', 'Paid'),
+(5, 19, 1, 200.00, 'paypal', '2025-06-03 23:20:50', 'Paid');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `guide_reviews`
+--
+
+CREATE TABLE `guide_reviews` (
+  `review_id` int(11) NOT NULL,
+  `guide_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `rating` int(11) NOT NULL CHECK (`rating` between 1 and 5),
+  `comment` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -195,9 +329,8 @@ CREATE TABLE `payments` (
 --
 
 INSERT INTO `payments` (`payment_id`, `booking_id`, `user_id`, `amount`, `payment_method`, `payment_date`, `status`) VALUES
-(9, 50, 1, 160000.00, 'paypal', '2025-06-01 17:12:43', 'Paid'),
-(10, 51, 1, 192000.00, 'paypal', '2025-06-01 17:27:55', 'Paid'),
-(11, 54, 2, 96000.00, 'paypal', '2025-06-01 22:20:55', 'Paid');
+(11, 54, 2, 96000.00, 'paypal', '2025-06-01 22:20:55', 'Paid'),
+(12, 55, 1, 60000.00, 'paypal', '2025-06-02 22:47:34', 'Paid');
 
 -- --------------------------------------------------------
 
@@ -248,9 +381,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `contact`, `password`, `is_verified`, `created_at`, `status`, `role`, `profile_pic`, `contact_number`, `country`) VALUES
 (1, 'yohan', 'ethozhub@gmail.com', NULL, '$2y$10$0sC5j.4UeUgaLz4k09Jrr.qVLRDGyA7aCRsknRm14yz1PyHmLNsN2', 0, '2025-05-28 12:18:20', 'active', 'user', NULL, NULL, NULL),
-(2, 'koshala', 'ethoz@gmail.com', NULL, '$2y$10$Wo4IIWl9zGXwfFVDi6ZrROeyB.MpLF/.xQr5QOUFtIEbf7rn3v62K', 0, '2025-05-31 17:30:38', 'active', 'user', 'uploads/1748795507_Screenshot 2025-04-20 001949.png', '0766446354', 'Sri Lanka'),
-(3, 'koshala', 'st20288946@outlook.cardiffmet.ac.uk', NULL, '$2y$10$Wn2/Jqc2hlxKOP0shn5tFeOsbWuskB4pgnDOU8TrWaQjGTru5ikCS', 0, '2025-06-01 15:34:49', 'active', 'user', 'default.png', '', 'sri lanka'),
-(4, 'yohan koshala', 'st20288946.ac.uk', NULL, '$2y$10$Pt0L/TUx2gzJPiC01A5aYe7Emv6irrYtw2BO.ixzer.qg2WI23YoK', 0, '2025-06-01 15:36:20', 'active', 'user', 'uploads/1748794781_Screenshot 2025-05-31 201949.png', '0766446354', 'sri lanka');
+(2, 'koshala', 'ethoz@gmail.com', NULL, '$2y$10$Wo4IIWl9zGXwfFVDi6ZrROeyB.MpLF/.xQr5QOUFtIEbf7rn3v62K', 0, '2025-05-31 17:30:38', 'active', 'user', 'uploads/1748795507_Screenshot 2025-04-20 001949.png', '0766446354', 'Sri Lanka');
 
 --
 -- Indexes for dumped tables
@@ -261,6 +392,13 @@ INSERT INTO `users` (`user_id`, `name`, `email`, `contact`, `password`, `is_veri
 --
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`admin_id`);
+
+--
+-- Indexes for table `attendance`
+--
+ALTER TABLE `attendance`
+  ADD PRIMARY KEY (`attendance_id`),
+  ADD KEY `fk_guide` (`guide_id`);
 
 --
 -- Indexes for table `bookings`
@@ -276,6 +414,35 @@ ALTER TABLE `bookings`
 --
 ALTER TABLE `destinations`
   ADD PRIMARY KEY (`destination_id`);
+
+--
+-- Indexes for table `guide`
+--
+ALTER TABLE `guide`
+  ADD PRIMARY KEY (`guide_id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `guide_bookings`
+--
+ALTER TABLE `guide_bookings`
+  ADD PRIMARY KEY (`booking_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `guide_id` (`guide_id`);
+
+--
+-- Indexes for table `guide_payments`
+--
+ALTER TABLE `guide_payments`
+  ADD PRIMARY KEY (`payment_id`);
+
+--
+-- Indexes for table `guide_reviews`
+--
+ALTER TABLE `guide_reviews`
+  ADD PRIMARY KEY (`review_id`),
+  ADD KEY `guide_id` (`guide_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `hotels`
@@ -318,16 +485,46 @@ ALTER TABLE `admins`
   MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `attendance`
+--
+ALTER TABLE `attendance`
+  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `destinations`
 --
 ALTER TABLE `destinations`
   MODIFY `destination_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `guide`
+--
+ALTER TABLE `guide`
+  MODIFY `guide_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `guide_bookings`
+--
+ALTER TABLE `guide_bookings`
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `guide_payments`
+--
+ALTER TABLE `guide_payments`
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `guide_reviews`
+--
+ALTER TABLE `guide_reviews`
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `hotels`
@@ -339,7 +536,7 @@ ALTER TABLE `hotels`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `reviews`
@@ -351,11 +548,17 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `attendance`
+--
+ALTER TABLE `attendance`
+  ADD CONSTRAINT `fk_guide` FOREIGN KEY (`guide_id`) REFERENCES `guide` (`guide_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `bookings`
@@ -364,6 +567,20 @@ ALTER TABLE `bookings`
   ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`destination_id`) REFERENCES `destinations` (`destination_id`),
   ADD CONSTRAINT `bookings_ibfk_3` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`hotel_id`);
+
+--
+-- Constraints for table `guide_bookings`
+--
+ALTER TABLE `guide_bookings`
+  ADD CONSTRAINT `guide_bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `guide_bookings_ibfk_2` FOREIGN KEY (`guide_id`) REFERENCES `guide` (`guide_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `guide_reviews`
+--
+ALTER TABLE `guide_reviews`
+  ADD CONSTRAINT `guide_reviews_ibfk_1` FOREIGN KEY (`guide_id`) REFERENCES `guide` (`guide_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `guide_reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `hotels`

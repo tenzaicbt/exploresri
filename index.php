@@ -138,10 +138,10 @@
       width: <?= rand(10, 35) ?>px;
       height: <?= rand(10, 35) ?>px;
       animation-delay: <?= rand(0, 20) ?>s;
-      animation-duration: <?= rand(12, 25) ?>s;
-    "></div>
-  <?php endfor; ?>
-</div>
+      animation-duration: <?= rand(12, 25) ?>s;">
+    </div>
+ </div>
+<?php endfor; ?>
 
 <!-- Hero Section -->
 <div class="hero">
@@ -149,22 +149,12 @@
   <p>Your gateway to travel and explore the beauty of Sri Lanka</p>
   <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
     <a href="destinations.php" class="btn btn-warning btn-custom">
-      <i class="bi bi-geo-alt-fill"></i> Explore Destinations
+      <i class=""></i> Explore Destinations
     </a>
     <a href="hotels_all.php" class="btn btn-light btn-custom">
-      <i class="bi bi-building"></i> Find Hotels
+      <i class=""></i> Find Hotels
     </a>
   </div>
-
-    <!-- <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
-    </a>
-    <a href="/exploresri/user/login.php" class="btn btn-outline-light btn-custom">
-      <i class="bi bi-box-arrow-in-right"></i> Login
-    </a>
-    <a href="/exploresri/user/register.php" class="btn btn-outline-warning btn-custom">
-      <i class="bi bi-person-plus"></i> Register
-    </a>
-  </div> -->
 
   <?php if (!isset($_SESSION['user_id'])): ?>
   <div class="auth-buttons d-flex justify-content-center flex-wrap mt-4">
@@ -182,15 +172,9 @@
 <!-- Footer -->
 <footer class="footer">
   <div class="container">
-    <p>&copy; <?= date("Y") ?> ExploreSri. Crafted with 💙 to promote Sri Lankan tourism.</p>
-    <p>Follow us on 
-      <a href="#"><i class="bi bi-facebook"></i></a> 
-      <a href="#"><i class="bi bi-instagram"></i></a> 
-      <a href="#"><i class="bi bi-twitter-x"></i></a>
-    </p>
+    <p><?= date("Y") ?> ExploreSri. Crafted with to promote Sri Lankan tourism.</p>
   </div>
 </footer>
 
 </body>
 </html>
-<?php include 'includes/footer.php'; ?>

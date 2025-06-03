@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'config/db.php';
 include 'includes/header.php';
 
@@ -11,11 +12,14 @@ $hotels = $stmt->fetchAll();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Hotels - ExploreSri</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
+
   <style>
     body {
       font-family: 'Rubik', sans-serif;
@@ -41,6 +45,9 @@ $hotels = $stmt->fetchAll();
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
       transition: transform 0.3s ease;
       padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .hotel-card-dark:hover {
@@ -52,10 +59,16 @@ $hotels = $stmt->fetchAll();
       height: 150px;
       object-fit: cover;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      width: 100%;
+      flex-shrink: 0;
     }
 
     .hotel-card-dark .card-body {
       padding: 1rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .card-title {
@@ -68,12 +81,14 @@ $hotels = $stmt->fetchAll();
     .card-text {
       font-size: 0.85rem;
       color: #bbbbbb;
+      margin-bottom: 0.75rem;
     }
 
     .btn-outline-light {
       font-size: 0.85rem;
       padding: 6px 14px;
       border-radius: 30px;
+      margin-top: auto;
     }
 
     .badge {
@@ -85,6 +100,7 @@ $hotels = $stmt->fetchAll();
       text-align: center;
       font-size: 1.2rem;
       color: #ccc;
+      margin-top: 50px;
     }
 
     .rating-stars i {
@@ -102,15 +118,9 @@ $hotels = $stmt->fetchAll();
       <?php foreach ($hotels as $hotel): ?>
         <div class="col-sm-6 col-md-4 col-lg-3">
           <div class="card hotel-card-dark position-relative h-100">
-            <img src="images/<?php echo htmlspecialchars($hotel['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($hotel['name']); ?>">
+            <img src="images/<?php echo htmlspecialchars($hotel['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($hotel['name']); ?>" />
 
-            <!-- <div class="position-absolute top-0 end-0 p-2">
-              <button class="btn btn-dark btn-sm rounded-circle shadow-sm" disabled>
-                <i class="bi bi-heart text-danger"></i>
-              </button>
-            </div> -->
-
-            <div class="card-body text-start">
+            <div class="card-body text-start d-flex flex-column">
               <h5 class="card-title"><?php echo htmlspecialchars($hotel['name']); ?></h5>
               <p class="card-text"><i class="bi bi-geo-alt-fill"></i> <?php echo htmlspecialchars($hotel['location']); ?></p>
 

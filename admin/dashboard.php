@@ -76,6 +76,38 @@ $revenueStmt = $conn->query("
 ");
 $row = $revenueStmt->fetch(PDO::FETCH_ASSOC);
 $totalRevenue = $row['total_revenue'] ?? 0;
+
+function getGuideStats(PDO $conn) {
+    try {
+        $totalGuideStmt = $conn->query("SELECT COUNT(*) as total FROM guides");
+        $totalGuides = $totalGuideStmt->fetch()['total'] ?? 0;
+
+        $activeGuideStmt = $conn->query("SELECT COUNT(*) as active FROM guides WHERE status = 'active'");
+        $activeGuides = $activeGuideStmt->fetch()['active'] ?? 0;
+
+        $activePercent = $totalGuides > 0 ? round(($activeGuides / $totalGuides) * 100) : 0;
+
+        return [
+            'total' => $totalGuides,
+            'active' => $activeGuides,
+            'percent' => $activePercent,
+        ];
+    } catch (PDOException $e) {
+        // Table not found or other DB error - return zero stats to avoid fatal error
+        return [
+            'total' => 0,
+            'active' => 0,
+            'percent' => 0,
+        ];
+    }
+}
+
+$guideStats = getGuideStats($conn);
+
+$total_guides = $guideStats['total'];
+$active_guides = $guideStats['active'];
+$guide_percent = $guideStats['percent'];
+
 ?>
 
 <!DOCTYPE html>
@@ -98,88 +130,88 @@ $totalRevenue = $row['total_revenue'] ?? 0;
     .btn-light { font-weight: bold; }
   </style>
   
-<style>
-  .card-metric {
-    position: relative;
-    border-radius: 15px;
-    text-align: center;
-    color: white;
-    padding: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-  }
+  <style>
+      .card-metric {
+        position: relative;
+        border-radius: 15px;
+        text-align: center;
+        color: white;
+        padding: 20px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+      }
 
-  .card-metric:hover {
-    transform: translateY(-5px);
-  }
+      .card-metric:hover {
+        transform: translateY(-5px);
+      }
 
-  .circle-progress {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 6px solid rgba(255, 255, 255, 0.2);
-    position: relative;
-    margin: 0 auto 10px;
-  }
+      .circle-progress {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        margin: 0 auto 10px;
+      }
 
-  .circle-progress::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 6px solid white;
-    top: 0;
-    left: 0;
-    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
-    transform: rotate(var(--rotation));
-    transform-origin: center;
-  }
-  .circle-value {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 16px;
-    font-weight: bold;
-  }
-  .small-donut {
-    width: 120px !important;
-    height: 120px !important;
-    margin: auto;
-  }
+      .circle-progress::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 6px solid white;
+        top: 0;
+        left: 0;
+        clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+        transform: rotate(var(--rotation));
+        transform-origin: center;
+      }
+      .circle-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .small-donut {
+        width: 120px !important;
+        height: 120px !important;
+        margin: auto;
+      }
 
-.sidebar {
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  min-height: 100vh;
-  transition: all 0.3s ease-in-out;
-  border-right: 2px solid #444;
-}
+    .sidebar {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      transition: all 0.3s ease-in-out;
+      border-right: 2px solid #444;
+    }
 
-.sidebar .nav-link {
-  padding: 10px 20px;
-  margin: 6px 10px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  transition: background 0.3s, transform 0.2s;
-}
+    .sidebar .nav-link {
+      padding: 10px 20px;
+      margin: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: background 0.3s, transform 0.2s;
+    }
 
-.sidebar .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: translateX(5px);
-}
+    .sidebar .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
 
-.sidebar .nav-link.active,
-.sidebar .nav-link:focus {
-  background-color: rgba(255, 255, 255, 0.2);
-  font-weight: bold;
-}
+    .sidebar .nav-link.active,
+    .sidebar .nav-link:focus {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+    }
 
-.sidebar .text-white h4 {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.4rem;
-  letter-spacing: 1px;
-}
+    .sidebar .text-white h4 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+    }
 
 </style>
 
@@ -211,6 +243,11 @@ $totalRevenue = $row['total_revenue'] ?? 0;
               <li class="nav-item">
                 <a class="nav-link text-white" href="manage_users.php">
                   <i class="bi bi-people me-2"></i> User Profiles
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="guide_manage.php">
+                  <i class="bi bi-people me-2"></i> Manage Guide
                 </a>
               </li>
               <li class="nav-item">
@@ -332,7 +369,7 @@ $totalRevenue = $row['total_revenue'] ?? 0;
                     </ul>
                   </div>
                 </div>
-                
+
                 <div class="row mt-4">
                 <div class="row">
                   <!-- Hotel Status -->

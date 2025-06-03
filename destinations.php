@@ -5,7 +5,7 @@ include 'includes/header.php';
 $search = $_GET['search'] ?? '';
 $province = $_GET['province'] ?? '';
 $page = max(1, (int)($_GET['page'] ?? 1));
-$limit = 6;
+$limit = 8;  // changed to 8 cards per page
 $offset = ($page - 1) * $limit;
 
 $filters = [];
@@ -40,13 +40,13 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Destinations - ExploreSri</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
 
   <style>
     body {
@@ -87,56 +87,59 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
     .card {
       background: rgba(255, 255, 255, 0.05);
       border: none;
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
       backdrop-filter: blur(6px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
       transition: transform 0.3s ease;
       height: 100%;
+      font-size: 0.9rem;
     }
 
     .card:hover {
-      transform: translateY(-4px) scale(1.02);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     }
 
     .card img {
-      height: 140px;
+      height: 120px;
       object-fit: cover;
       width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .card-body {
-      padding: 15px;
+      padding: 12px;
     }
 
     .card-title {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: #ffe57f;
+      margin-bottom: 6px;
     }
 
     .card-subtext {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: #ccc;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .card-desc {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #ddd;
-      height: 50px;
+      height: 45px;
       overflow: hidden;
     }
 
     .btn-custom {
       background-color: #f1c40f;
       color: #000;
-      border-radius: 25px;
-      padding: 6px 18px;
+      border-radius: 20px;
+      padding: 5px 14px;
       font-weight: 500;
-      margin-top: 10px;
-      font-size: 0.9rem;
+      margin-top: 8px;
+      font-size: 0.85rem;
     }
 
     .btn-custom:hover {
@@ -159,58 +162,74 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
 </head>
 
 <body>
-<div class="container">
-  <h1>Explore Sri Lankan Destinations</h1>
+  <div class="container">
+    <h1>Explore Sri Lankan Destinations</h1>
 
-  <form method="GET" class="search-form row g-3">
-    <div class="col-md-5">
-      <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" class="form-control" placeholder="Search destinations...">
-    </div>
-    <div class="col-md-4">
-      <select name="province" class="form-select">
-        <option value="">All Provinces</option>
-        <?php foreach ($provinces as $prov): ?>
-          <option value="<?= htmlspecialchars($prov) ?>" <?= $province === $prov ? 'selected' : '' ?>><?= htmlspecialchars($prov) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div class="col-md-3 d-grid">
-      <button class="btn btn-warning search-btn">Search</button>
-    </div>
-  </form>
+    <form method="GET" class="search-form row g-3">
+      <div class="col-md-5">
+        <input
+          type="text"
+          name="search"
+          value="<?= htmlspecialchars($search) ?>"
+          class="form-control"
+          placeholder="Search destinations..."
+        />
+      </div>
+      <div class="col-md-4">
+        <select name="province" class="form-select">
+          <option value="">All Provinces</option>
+          <?php foreach ($provinces as $prov): ?>
+            <option value="<?= htmlspecialchars($prov) ?>" <?= $province === $prov ? 'selected' : '' ?>>
+              <?= htmlspecialchars($prov) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="col-md-3 d-grid">
+        <button class="btn btn-warning search-btn">Search</button>
+      </div>
+    </form>
 
-  <div class="row">
-    <?php if ($destinations): ?>
-      <?php foreach ($destinations as $dest): ?>
-        <div class="col-md-4 col-sm-6 mb-4">
-          <div class="card h-100">
-            <img src="images/<?= htmlspecialchars($dest['image']) ?>" alt="<?= htmlspecialchars($dest['name']) ?>">
-            <div class="card-body">
-              <h5 class="card-title"><?= htmlspecialchars($dest['name']) ?></h5>
-              <div class="card-subtext"><i class="bi bi-geo-alt-fill"></i> <?= htmlspecialchars($dest['province']) ?> | <?= htmlspecialchars($dest['category']) ?></div>
-              <div class="card-desc"><?= htmlspecialchars(mb_strimwidth($dest['description'], 0, 90, "...")) ?></div>
-              <a href="destination.php?id=<?= $dest['destination_id'] ?>" class="btn btn-custom">View More</a>
+    <div class="row">
+      <?php if ($destinations): ?>
+        <?php foreach ($destinations as $dest): ?>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card h-100">
+              <img src="images/<?= htmlspecialchars($dest['image']) ?>" alt="<?= htmlspecialchars($dest['name']) ?>" />
+              <div class="card-body">
+                <h5 class="card-title"><?= htmlspecialchars($dest['name']) ?></h5>
+                <div class="card-subtext">
+                  <i class="bi bi-geo-alt-fill"></i> <?= htmlspecialchars($dest['province']) ?> |
+                  <?= htmlspecialchars($dest['category']) ?>
+                </div>
+                <div class="card-desc"><?= htmlspecialchars(mb_strimwidth($dest['description'], 0, 90, "...")) ?></div>
+                <a href="destination.php?id=<?= $dest['destination_id'] ?>" class="btn btn-custom">View More</a>
+              </div>
             </div>
           </div>
-        </div>
-      <?php endforeach; ?>
-    <?php else: ?>
-      <p class="text-center mt-5">No destinations found.</p>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p class="text-center mt-5">No destinations found.</p>
+      <?php endif; ?>
+    </div>
+
+    <?php if ($totalPages > 1): ?>
+      <nav class="mt-4 d-flex justify-content-center">
+        <ul class="pagination">
+          <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+              <a
+                class="page-link"
+                href="?search=<?= urlencode($search) ?>&province=<?= urlencode($province) ?>&page=<?= $i ?>"
+              >
+                <?= $i ?>
+              </a>
+            </li>
+          <?php endfor; ?>
+        </ul>
+      </nav>
     <?php endif; ?>
   </div>
-
-  <?php if ($totalPages > 1): ?>
-    <nav class="mt-4 d-flex justify-content-center">
-      <ul class="pagination">
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-          <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-            <a class="page-link" href="?search=<?= urlencode($search) ?>&province=<?= urlencode($province) ?>&page=<?= $i ?>"><?= $i ?></a>
-          </li>
-        <?php endfor; ?>
-      </ul>
-    </nav>
-  <?php endif; ?>
-</div>
 </body>
 </html>
 
