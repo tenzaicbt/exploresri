@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 03, 2025 at 07:55 PM
+-- Generation Time: Jun 05, 2025 at 06:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -82,7 +82,7 @@ CREATE TABLE `bookings` (
 
 INSERT INTO `bookings` (`booking_id`, `user_id`, `destination_id`, `hotel_id`, `booking_date`, `travel_date`, `status`, `payment_status`, `nights`, `total_price`, `check_in_date`, `check_out_date`, `guide_id`) VALUES
 (54, 2, 3, 9, '2025-06-01 22:20:49', '0000-00-00', 'confirmed', 'Paid', 3, NULL, '2025-06-09', '2025-06-12', NULL),
-(55, 1, 1, 11, '2025-06-02 22:47:15', '0000-00-00', 'cancelled', 'Paid', 3, NULL, '2025-06-03', '2025-06-06', NULL);
+(60, 1, 1, 11, '2025-06-04 21:15:21', '0000-00-00', 'confirmed', 'Paid', 4, NULL, '2025-06-09', '2025-06-13', NULL);
 
 -- --------------------------------------------------------
 
@@ -141,16 +141,17 @@ CREATE TABLE `guide` (
   `rating` float DEFAULT 0,
   `is_verified` tinyint(1) DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp(),
-  `status` varchar(50) DEFAULT 'active'
+  `status` varchar(50) DEFAULT 'active',
+  `is_available` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `guide`
 --
 
-INSERT INTO `guide` (`guide_id`, `name`, `email`, `country`, `password`, `languages`, `experience_years`, `bio`, `photo`, `contact_info`, `price_per_day`, `rating`, `is_verified`, `created_at`, `status`) VALUES
-(1, 'yohan koshala', 'ethozhub@gmail.com', 'India', '$2y$10$QzKBIovJek6rMXMP8f1d9.8g/C4vQsO0o3Du2ToZ9xDhezqUUMGmK', 'English,Sinhala,Tamil', 6, 'Tourist guides provides the visitor with in depth knowledge in their mother tongue, smoothing creases and wrinkles that is bound to occur while touring a foreign country for the first time.', 'uploads/1748945504_caption.jpg', '0766446354', 40.00, 0, 1, '2025-06-03 14:08:07', 'active'),
-(4, 'yohan', 'ethoz@gmail.com', NULL, '$2y$10$alOzdlymcMkDFEV1Ivavdesn2ucjRolkzXNmB00x8TdkLhSUSp5EO', 'English,Sinhala,Tamil', 3, 'e', '1748945620_caption.jpg', '+94 57 222 8888', 10.00, 0, 1, '2025-06-03 15:43:40', 'active');
+INSERT INTO `guide` (`guide_id`, `name`, `email`, `country`, `password`, `languages`, `experience_years`, `bio`, `photo`, `contact_info`, `price_per_day`, `rating`, `is_verified`, `created_at`, `status`, `is_available`) VALUES
+(1, 'Yohan Koshala Hetti Archchi', 'ethozhub@gmail.com', NULL, '$2y$10$FTW7XAgzCIjgr.apPuvZROlO0XbfU6DUubBjNk8rKTBEHsydD9idi', 'English,Sinhala,Tamil', 5, 'Experienced guide specializing in city tours.', '1749025744_istockphoto-1309315007-612x612.jpg', '+94 57 222 8888', 150.00, 0, 1, '2025-06-04 13:59:04', 'active', 1),
+(2, 'Tharindu Darshana', 'ethoz@gmail.com', NULL, '$2y$10$k3cfqrJKtXReO6HbnA/9n.y9tdfci.YjA2XUnSva8zxGyZypn.9Ve', 'English,Sinhala', 10, 'Friendly and knowledgeable guide in Southeast Asia.', '1749026775_istockphoto-1409155424-612x612.jpg', '+94 91 222 3744', 210.00, 0, 1, '2025-06-04 14:16:15', 'active', 1);
 
 -- --------------------------------------------------------
 
@@ -164,9 +165,9 @@ CREATE TABLE `guide_bookings` (
   `guide_id` int(11) NOT NULL,
   `travel_date` date NOT NULL,
   `duration_days` int(11) NOT NULL,
-  `status` varchar(50) NOT NULL DEFAULT 'Pending',
+  `status` varchar(50) DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `payment_status` varchar(20) NOT NULL DEFAULT 'Pending',
+  `payment_status` varchar(50) DEFAULT 'unpaid',
   `payment_method` varchar(50) DEFAULT NULL,
   `amount` decimal(10,2) DEFAULT NULL,
   `check_in_date` date DEFAULT NULL,
@@ -179,25 +180,7 @@ CREATE TABLE `guide_bookings` (
 --
 
 INSERT INTO `guide_bookings` (`booking_id`, `user_id`, `guide_id`, `travel_date`, `duration_days`, `status`, `created_at`, `payment_status`, `payment_method`, `amount`, `check_in_date`, `check_out_date`, `notes`) VALUES
-(1, 1, 4, '2025-06-12', 5, 'confirmed', '2025-06-03 10:26:16', 'paid', 'PayPal', 50.00, NULL, NULL, 'good'),
-(2, 1, 4, '2025-06-04', 4, 'confirmed', '2025-06-03 11:36:24', 'paid', 'PayPal', 40.00, NULL, NULL, 'r'),
-(3, 1, 4, '2025-06-13', 7, 'cancelled', '2025-06-03 15:31:33', 'paid', 'PayPal', 70.00, NULL, NULL, ''),
-(4, 2, 4, '2025-06-15', 4, 'pending', '2025-06-03 15:39:07', 'paid', 'PayPal', 40.00, NULL, NULL, ''),
-(5, 2, 1, '2025-06-20', 5, 'cancelled', '2025-06-03 15:40:05', 'paid', 'Card', 200.00, NULL, NULL, ''),
-(6, 2, 1, '2025-06-21', 10, 'cancelled', '2025-06-03 15:42:24', 'paid', 'PayPal', 400.00, NULL, NULL, ''),
-(7, 1, 1, '2025-06-14', 7, 'cancelled', '2025-06-03 16:06:06', 'paid', 'Card', 280.00, NULL, NULL, ''),
-(8, 1, 1, '2025-06-06', 5, 'cancelled', '2025-06-03 16:48:58', 'paid', 'PayPal', 200.00, NULL, NULL, ''),
-(9, 1, 1, '2025-06-12', 5, 'cancelled', '2025-06-03 16:50:45', 'paid', 'Card', 200.00, NULL, NULL, ''),
-(10, 1, 1, '2025-06-05', 3, 'cancelled', '2025-06-03 16:52:50', 'paid', 'PayPal', 120.00, NULL, NULL, ''),
-(11, 1, 1, '2025-06-05', 2, 'cancelled', '2025-06-03 16:57:01', 'paid', 'PayPal', 80.00, NULL, NULL, ''),
-(12, 1, 1, '2025-06-14', 1, 'cancelled', '2025-06-03 16:57:30', 'paid', 'PayPal', 40.00, NULL, NULL, ''),
-(13, 1, 1, '2025-06-14', 6, 'cancelled', '2025-06-03 16:59:40', 'paid', 'PayPal', 240.00, NULL, NULL, ''),
-(14, 1, 1, '2025-06-05', 6, 'confirmed', '2025-06-03 17:02:54', 'paid', 'Card', 240.00, NULL, NULL, ''),
-(15, 1, 1, '2025-06-05', 5, 'Paid', '2025-06-03 17:06:55', 'Paid', NULL, NULL, NULL, NULL, ''),
-(16, 1, 1, '2025-06-05', 5, 'confirmed', '2025-06-03 17:12:08', 'paid', 'PayPal', 200.00, NULL, NULL, ''),
-(17, 1, 1, '2025-06-05', 5, 'Paid', '2025-06-03 17:21:58', 'Paid', NULL, NULL, NULL, NULL, ''),
-(18, 1, 1, '2025-06-05', 5, 'pending', '2025-06-03 17:46:36', 'unpaid', NULL, NULL, NULL, NULL, ''),
-(19, 1, 1, '2025-06-06', 5, 'Paid', '2025-06-03 17:50:39', 'Paid', NULL, NULL, NULL, NULL, '');
+(9, 1, 2, '2025-06-06', 1, 'pending', '2025-06-04 15:51:18', 'Paid', NULL, NULL, NULL, NULL, '');
 
 -- --------------------------------------------------------
 
@@ -220,11 +203,16 @@ CREATE TABLE `guide_payments` (
 --
 
 INSERT INTO `guide_payments` (`payment_id`, `booking_id`, `user_id`, `amount`, `payment_method`, `payment_date`, `status`) VALUES
-(1, 15, 1, 200.00, 'paypal', '2025-06-03 22:41:51', 'Paid'),
-(2, 16, 1, 200.00, 'paypal', '2025-06-03 22:43:21', 'Paid'),
-(3, 16, 1, 200.00, 'paypal', '2025-06-03 22:45:02', 'Paid'),
-(4, 17, 1, 200.00, 'paypal', '2025-06-03 22:57:16', 'Paid'),
-(5, 19, 1, 200.00, 'paypal', '2025-06-03 23:20:50', 'Paid');
+(1, 7, 2, 160.00, 'paypal', '2025-06-04 12:04:09', 'Paid'),
+(2, 1, 1, 600.00, 'paypal', '2025-06-04 14:02:53', 'Paid'),
+(3, 1, 1, 600.00, 'paypal', '2025-06-04 14:05:46', 'Paid'),
+(4, 2, 1, 900.00, 'paypal', '2025-06-04 14:06:28', 'Paid'),
+(5, 3, 1, 1200.00, 'paypal', '2025-06-04 16:38:12', 'Paid'),
+(6, 5, 1, 840.00, 'paypal', '2025-06-04 17:01:40', 'Paid'),
+(7, 6, 1, 1050.00, 'paypal', '2025-06-04 20:03:06', 'Paid'),
+(8, 7, 1, 420.00, 'paypal', '2025-06-04 20:37:29', 'Paid'),
+(9, 8, 1, 1260.00, 'paypal', '2025-06-04 21:03:46', 'Paid'),
+(10, 9, 1, 210.00, 'paypal', '2025-06-04 21:21:22', 'Paid');
 
 -- --------------------------------------------------------
 
@@ -330,7 +318,7 @@ CREATE TABLE `payments` (
 
 INSERT INTO `payments` (`payment_id`, `booking_id`, `user_id`, `amount`, `payment_method`, `payment_date`, `status`) VALUES
 (11, 54, 2, 96000.00, 'paypal', '2025-06-01 22:20:55', 'Paid'),
-(12, 55, 1, 60000.00, 'paypal', '2025-06-02 22:47:34', 'Paid');
+(16, 60, 1, 80000.00, 'paypal', '2025-06-04 21:15:25', 'Paid');
 
 -- --------------------------------------------------------
 
@@ -380,7 +368,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `contact`, `password`, `is_verified`, `created_at`, `status`, `role`, `profile_pic`, `contact_number`, `country`) VALUES
-(1, 'yohan', 'ethozhub@gmail.com', NULL, '$2y$10$0sC5j.4UeUgaLz4k09Jrr.qVLRDGyA7aCRsknRm14yz1PyHmLNsN2', 0, '2025-05-28 12:18:20', 'active', 'user', NULL, NULL, NULL),
+(1, 'yohan', 'ethozhub@gmail.com', NULL, '$2y$10$0sC5j.4UeUgaLz4k09Jrr.qVLRDGyA7aCRsknRm14yz1PyHmLNsN2', 0, '2025-05-28 12:18:20', 'active', 'user', 'uploads/1749035324_6840293cd24c9.jpg', '+946553163', 'Sri Lanka'),
 (2, 'koshala', 'ethoz@gmail.com', NULL, '$2y$10$Wo4IIWl9zGXwfFVDi6ZrROeyB.MpLF/.xQr5QOUFtIEbf7rn3v62K', 0, '2025-05-31 17:30:38', 'active', 'user', 'uploads/1748795507_Screenshot 2025-04-20 001949.png', '0766446354', 'Sri Lanka');
 
 --
@@ -494,31 +482,31 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `destinations`
 --
 ALTER TABLE `destinations`
-  MODIFY `destination_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `destination_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `guide`
 --
 ALTER TABLE `guide`
-  MODIFY `guide_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `guide_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `guide_bookings`
 --
 ALTER TABLE `guide_bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `guide_payments`
 --
 ALTER TABLE `guide_payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `guide_reviews`
@@ -536,13 +524,13 @@ ALTER TABLE `hotels`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `users`

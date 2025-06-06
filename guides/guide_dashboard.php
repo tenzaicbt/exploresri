@@ -75,6 +75,15 @@ $revenue_percent = $revenue_target > 0 ? round(($total_revenue / $revenue_target
 $guide_stmt = $conn->prepare("SELECT * FROM guide WHERE guide_id = ?");
 $guide_stmt->execute([$guide_id]);
 $guide = $guide_stmt->fetch(PDO::FETCH_ASSOC);
+
+if (isset($_POST['toggle_availability'])) {
+    $new_status = ($_POST['current_status'] == 1) ? 0 : 1;
+    $update_stmt = $conn->prepare("UPDATE guide SET is_available = ? WHERE guide_id = ?");
+    $update_stmt->execute([$new_status, $guide_id]);
+    header("Location: guide_dashboard.php");
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -264,82 +273,72 @@ $guide = $guide_stmt->fetch(PDO::FETCH_ASSOC);
 
           <div class="card p-4 mt-4 shadow-sm">
             <h6>Bookings List (Filtered by: <?= ucfirst($status_filter) ?>)</h6>
-            <div class="table-responsive">
-              <table class="table table-dark table-striped align-middle">
-                <thead>
-                  <tr>
-                    <th>Booking ID</th>
-                    <th>User ID</th>
-                    <th>Travel Date</th>
-                    <th>Duration (Days)</th>
-                    <th>Status</th>
-                    <th>Payment Status</th>
-                    <th>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php if ($bookings): ?>
-                    <?php foreach ($bookings as $booking): ?>
-                      <tr>
-                        <td><?= htmlspecialchars($booking['booking_id']) ?></td>
-                        <td><?= htmlspecialchars($booking['user_id']) ?></td>
-                        <td><?= htmlspecialchars($booking['travel_date']) ?></td>
-                        <td><?= htmlspecialchars($booking['duration_days']) ?></td>
-                        <td>
-                          <?php
-                          $statusClass = 'badge bg-secondary';
-                          if ($booking['status'] === 'confirmed') $statusClass = 'badge bg-success';
-                          elseif ($booking['status'] === 'pending') $statusClass = 'badge bg-warning text-dark';
-                          elseif ($booking['status'] === 'cancelled') $statusClass = 'badge bg-danger';
-                          ?>
-                          <span class="<?= $statusClass ?>"><?= ucfirst($booking['status']) ?></span>
-                        </td>
-                        <td>
-                          <?php
-                          $paymentClass = ($booking['payment_status'] === 'paid') ? 'badge bg-success' : 'badge bg-warning text-dark';
-                          ?>
-                          <span class="<?= $paymentClass ?>"><?= ucfirst($booking['payment_status']) ?></span>
-                        </td>
-                        <td>₹<?= number_format($booking['amount'], 2) ?></td>
-                      </tr>
-                    <?php endforeach; ?>
-                  <?php else: ?>
-                    <tr>
-                      <td colspan="7" class="text-center">No bookings found.</td>
-                    </tr>
+            <?php if ($bookings): ?>
+              <?php foreach ($bookings as $booking): ?>
+                <div class="mb-4 p-3 border rounded bg-dark text-light shadow-sm">
+                  <h6 class="mb-2">Booking ID: <?= htmlspecialchars($booking['booking_id']) ?></h6>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p>User ID: <?= htmlspecialchars($booking['user_id']) ?></p>
+                      <p>Travel Date: <?= htmlspecialchars($booking['travel_date']) ?></p>
+                      <p>Duration: <?= htmlspecialchars($booking['duration_days']) ?> day(s)</p>
+                    </div>
+                    <div class="col-md-6">
+                      <p>Status: 
+                        <span class="badge 
+                          <?= $booking['status'] === 'confirmed' ? 'bg-success' : ($booking['status'] === 'pending' ? 'bg-warning text-dark' : 'bg-danger') ?>">
+                          <?= ucfirst($booking['status']) ?>
+                        </span>
+                      </p>
+                      <p>Payment Status: 
+                        <span class="badge <?= $booking['payment_status'] === 'paid' ? 'bg-success' : 'bg-warning text-dark' ?>">
+                          <?= ucfirst($booking['payment_status']) ?>
+                        </span>
+                      </p>
+                      <p>Amount: USD<?= number_format($booking['amount'], 2) ?></p> 
+                      <?php if (!empty($booking['payment_method'])): ?>
+                        <p>Payment Method: <?= htmlspecialchars($booking['payment_method']) ?></p>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                  <?php if (!empty($booking['notes'])): ?>
+                    <p class="mt-2"><strong>Notes:</strong> <?= nl2br(htmlspecialchars($booking['notes'])) ?></p>
                   <?php endif; ?>
-                </tbody>
-              </table>
-            </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <p class="text-center text-muted">No bookings found.</p>
+            <?php endif; ?>
           </div>
         </div>
-
+      
         <div class="col-lg-4">
           <div class="card p-4 shadow-sm">
             <h6>Revenue Summary</h6>
             <p>Total Revenue: <strong>₹<?= number_format($total_revenue, 2) ?></strong></p>
             <div class="progress mb-3" style="height: 24px;">
-              <div class="progress-bar bg-warning" role="progressbar" style="width: <?= $revenue_percent ?>%;" aria-valuenow="<?= $revenue_percent ?>" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar bg-warning text-dark fw-bold" role="progressbar" style="width: <?= $revenue_percent ?>%;" aria-valuenow="<?= $revenue_percent ?>" aria-valuemin="0" aria-valuemax="100">
                 <?= $revenue_percent ?>%
               </div>
             </div>
-            <p>Revenue Target: ₹<?= number_format($revenue_target, 2) ?></p>
+            <p>Revenue Target: USD<?= number_format($revenue_target, 2) ?></p>
           </div>
 
           <div class="card p-4 mt-4 shadow-sm text-center">
-            <h6>Guide Info</h6>
-            <img 
-              src="<?= !empty($guide['profile_pic']) ? htmlspecialchars($guide['profile_pic']) : 'default-profile.png' ?>" 
-              alt="<?= !empty($guide['name']) ? htmlspecialchars($guide['name']) : 'Guide Image' ?>" 
-              class="rounded-circle mb-3" 
-              style="width: 120px; height: 120px; object-fit: cover;" 
-            />
-            <h5><?= htmlspecialchars($guide['name']) ?></h5>
-            <p>Email: <?= htmlspecialchars($guide['email']) ?></p>
-            <p>Mobile: <?= isset($guide['mobile']) ? htmlspecialchars($guide['mobile']) : 'N/A' ?></p>
-            <p>Location: <?= isset($guide['location']) ? htmlspecialchars($guide['location']) : 'N/A' ?></p>
+            <h6>Availability</h6>
+            <form method="POST" action="">
+              <input type="hidden" name="current_status" value="<?= htmlspecialchars($guide['is_available']) ?>">
+              <button type="submit" name="toggle_availability" class="btn <?= $guide['is_available'] ? 'btn-success' : 'btn-secondary' ?>">
+                <?= $guide['is_available'] ? 'Available (Click to go Offline)' : 'Not Available (Click to go Online)' ?>
+              </button>
+            </form>
+            <p class="mt-3 mb-0">
+              <?= htmlspecialchars($guide['name']) ?>
+              <span class="badge <?= $guide['is_available'] ? 'bg-success' : 'bg-secondary' ?>">
+                <?= $guide['is_available'] ? 'Online' : 'Offline' ?>
+              </span>
+            </p>
           </div>
-        </div>
       </div>
     </div>
   </main>

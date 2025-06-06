@@ -236,9 +236,9 @@ $booking = $stmt->fetch();
                 </div>
 
                 <div class="cancel-btn">
-                    <form action="delete_booking_user.php" method="POST" onsubmit="return confirm('Cancel this booking?')">
+                    <form action="guide_delete.php" method="POST" onsubmit="return confirm('Cancel this booking?')">
                         <input type="hidden" name="booking_id" value="<?= $booking['booking_id'] ?>">
-                        <button type="submit" class="btn-cancel">Cancel</button>
+                        <button type="guide_delete" class="btn-cancel">Cancel</button>
                     </form>
                 </div>
             </div>

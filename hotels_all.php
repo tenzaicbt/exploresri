@@ -3,6 +3,13 @@ session_start();
 include 'config/db.php';
 include 'includes/header.php';
 
+$search = $_GET['search'] ?? '';
+$province = $_GET['province'] ?? '';
+$page = max(1, (int)($_GET['page'] ?? 1));
+$limit = 8;  // changed to 8 cards per page
+$offset = ($page - 1) * $limit;
+
+
 $is_logged_in = isset($_SESSION['user_id']);
 
 $stmt = $conn->query("SELECT * FROM hotels ORDER BY hotel_id DESC");

@@ -1,24 +1,22 @@
 <?php
 session_start();
-include '../config/db.php';
+include '../config/db.php';  // <-- fix path here
 
-if (!isset($_SESSION['guide_id'])) {
-    header("Location: guide_login.php");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
     exit;
 }
 
-$guide_id = $_SESSION['guide_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
+    $booking_id = $_POST['booking_id'];
 
-// Delete guide bookings first (if needed)
-$stmt1 = $conn->prepare("DELETE FROM guide_bookings WHERE guide_id = ?");
-$stmt1->execute([$guide_id]);
+    $stmt = $conn->prepare("DELETE FROM guide_bookings WHERE booking_id = ?");
+    $stmt->execute([$booking_id]);
 
-// Delete guide profile
-$stmt2 = $conn->prepare("DELETE FROM guide WHERE guide_id = ?");
-$stmt2->execute([$guide_id]);
-
-// Clear session and redirect
-session_destroy();
-header("Location: ../index.php?deleted=1");
-exit;
+    header("Location: ../my_bookings.php?msg=guide_booking_cancelled");
+    exit;
+} else {
+    header("Location: ../my_bookings.php");
+    exit;
+}
 ?>

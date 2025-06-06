@@ -36,72 +36,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <style>
     body {
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      font-family: 'Segoe UI', sans-serif;
-      color: #fff;
+      font-family: 'Rubik', sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: #ffffff;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .card {
-      background-color: rgba(255, 255, 255, 0.05);
-      border: none;
-      border-radius: 15px;
-      padding: 30px;
+
+    .login-card {
+      background-color: #1b2735;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      padding: 40px 30px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
       animation: fadeIn 0.6s ease-in-out;
-      color: #fff;
     }
-    .form-control {
-      background-color: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: #fff;
+
+    .login-card h3 {
+      text-align: center;
+      color: #f1c40f;
+      margin-bottom: 1.5rem;
     }
-    .form-control::placeholder {
-      color: #bbb;
-    }
-    .form-control:focus {
-      background-color: rgba(255, 255, 255, 0.15);
-      color: #fff;
-      border-color: #28a745;
-      box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
-    }
+
     .form-label {
-      color: #ddd;
+      color: #ccc;
+      font-weight: 500;
     }
-    .btn-success {
-      background-color: #28a745;
+
+    .form-control {
+      background: rgba(255, 255, 255, 0.05);
       border: none;
-      font-weight: bold;
+      color: #fff;
+      border-radius: 10px;
     }
-    .btn-success:hover {
-      background-color: #218838;
+
+    .form-control::placeholder {
+      color: #aaa;
     }
+
+    .form-control:focus {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: #f1c40f;
+      box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
+      color: #fff;
+    }
+
+    .btn-login {
+      background-color: #f1c40f;
+      border: none;
+      color: #1e1e2f;
+      font-weight: 600;
+      border-radius: 30px;
+    }
+
+    .btn-login:hover {
+      background-color: #d4ac0d;
+      color: #fff;
+    }
+
+    .input-group-text {
+      background: transparent;
+      border: none;
+      color: #ccc;
+    }
+
     .alert-danger {
-      background-color: #dc3545;
+      background-color: #c0392b;
+      color: #fff;
       border: none;
-      color: white;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .input-group-text {
-      background: transparent;
-      border: none;
-      color: #aaa;
-    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h3 class="text-center mb-4"><i class="bi bi-shield-lock-fill"></i> Admin Login</h3>
+  <div class="login-card">
+    <h3><i class="bi bi-shield-lock-fill me-2"></i>Admin Login</h3>
 
     <?php if (!empty($error)): ?>
-      <div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> <?= htmlspecialchars($error) ?></div>
+      <div class="alert alert-danger mb-3"><i class="bi bi-exclamation-triangle me-2"></i><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
     <form method="post" novalidate>
@@ -112,18 +131,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required>
         </div>
       </div>
-      <div class="mb-3">
+      <div class="mb-4">
         <label for="password" class="form-label">Password</label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-lock"></i></span>
           <input type="password" class="form-control" name="password" id="password" placeholder="Enter password" required>
-          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()" tabindex="-1">
+          <button type="button" class="btn btn-outline-light" onclick="togglePassword()" tabindex="-1">
             <i class="bi bi-eye" id="toggleIcon"></i>
           </button>
         </div>
       </div>
       <div class="d-grid">
-        <button type="submit" class="btn btn-success">Login</button>
+        <button type="submit" class="btn btn-login">Login</button>
       </div>
     </form>
   </div>

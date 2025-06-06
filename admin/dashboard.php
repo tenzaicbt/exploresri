@@ -142,7 +142,7 @@ $guide_percent = $guideStats['percent'];
       }
 
       .card-metric:hover {
-        transform: translateY(-5px);
+        transform: translateY(-px);
       }
 
       .circle-progress {
@@ -309,9 +309,18 @@ $guide_percent = $guideStats['percent'];
               <div class="col-md-4">
                 <div class="card text-white bg-info shadow">
                   <div class="card-body">
-                    <h5 class="card-title">Bookings</h5>
+                     <h5 class="card-title">Hotel Bookings</h5>
                     <p class="card-text">Review and control bookings.</p>
                     <a href="manage_bookings.php" class="btn btn-light btn-sm">Manage Bookings</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card text-white bg-info shadow">
+                  <div class="card-body">
+                    <h5 class="card-title">Guide Bookings</h5>
+                    <p class="card-text">Manage all guide bookings</p>
+                    <a href="manage_guide_bookings.php" class="btn btn-light btn-sm">Manage Guide Bookings</a>
                   </div>
                 </div>
               </div>

@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         WHERE booking_id = ? AND user_id = ?");
     $update->execute([$booking_id, $_SESSION['user_id']]);
 
-    header("Location: guide_booking_details.php?booking_id=" . $booking_id);
+    header("Location: my_bookings.php");
     exit;
 }
 ?>

@@ -2,9 +2,15 @@
 include 'config/db.php';
 include 'includes/header.php';
 
-
 $stmt = $conn->query("SELECT * FROM guide WHERE status = 'active' AND is_verified = 1");
 $guides = $stmt->fetchAll();
+
+$search = $_GET['search'] ?? '';
+$province = $_GET['province'] ?? '';
+$page = max(1, (int)($_GET['page'] ?? 1));
+$limit = 8;  // changed to 8 cards per page
+$offset = ($page - 1) * $limit;
+
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +45,7 @@ $guides = $stmt->fetchAll();
     position: relative;
     border-radius: 18px;
     overflow: hidden;
-    background: #1e1e2f;
+    background: #1b2735;
     box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
@@ -116,40 +122,46 @@ $guides = $stmt->fetchAll();
 
 </head>
 
+<body>
   <div class="container">
-  <h1>FIND YOUR GUIDES</h1>
+    <h1>FIND YOUR GUIDES</h1>
 
-  <div class="row g-4">
-    <?php foreach ($guides as $guide): ?>
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="card hotel-card-modern h-100 position-relative">
-          <img src="uploads/guides/<?php echo htmlspecialchars($guide['photo']); ?>" alt="<?php echo htmlspecialchars($guide['name']); ?>">
-          <div class="image-overlay"></div>
+    <div class="row g-4">
+      <?php foreach ($guides as $guide): ?>
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card hotel-card-modern h-100 position-relative">
+            <img src="uploads/guides/<?php echo htmlspecialchars($guide['photo']); ?>" alt="<?php echo htmlspecialchars($guide['name']); ?>">
+            <div class="image-overlay"></div>
 
-          <div class="card-body text-start d-flex flex-column">
-            <h5 class="card-title text-warning"><?php echo htmlspecialchars($guide['name']); ?></h5>
+            <div class="card-body text-start d-flex flex-column">
+              <h5 class="card-title text-warning"><?php echo htmlspecialchars($guide['name']); ?></h5>
 
-            <p class="card-text mb-1"><strong>Languages:</strong> <?php echo htmlspecialchars($guide['languages']); ?></p>
-            <p class="card-text mb-1"><strong>Experience:</strong> <?php echo $guide['experience_years']; ?> years</p>
-            <p class="price mb-1">$<?php echo number_format($guide['price_per_day'], 2); ?> / day</p>
+              <p class="card-text mb-1"><strong>Languages:</strong> <?php echo htmlspecialchars($guide['languages']); ?></p>
+              <p class="card-text mb-1"><strong>Experience:</strong> <?php echo $guide['experience_years']; ?> years</p>
+              <p class="price mb-1">$<?php echo number_format($guide['price_per_day'], 2); ?> / day</p>
 
-            <div class="d-flex align-items-center mb-3">
-              <span class="badge bg-warning text-dark me-2"><?php echo number_format($guide['rating'], 1); ?></span>
-              <div class="text-warning rating-stars">
-                <?php for ($i = 1; $i <= 5; $i++): ?>
-                  <i class="bi <?= $i <= round($guide['rating']) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
-                <?php endfor; ?>
+              <div class="d-flex align-items-center mb-3">
+                <span class="badge bg-warning text-dark me-2"><?php echo number_format($guide['rating'], 1); ?></span>
+                <div class="text-warning rating-stars">
+                  <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <i class="bi <?= $i <= round($guide['rating']) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
+                  <?php endfor; ?>
+                </div>
               </div>
+
+              <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="/exploresri/guide_bookings.php?guide_id=<?= $guide['guide_id']; ?>" class="btn btn-book w-100 mt-auto">Book Guide</a>
+              <?php else: ?>
+                <a href="http://localhost/exploresri/user/login.php" class="btn btn-book w-100 mt-auto">Login to Book</a>
+              <?php endif; ?>
+
             </div>
-
-            <a href="/exploresri/guide_bookings.php?guide_id=<?= $guide['guide_id']; ?>" class="btn btn-book w-100 mt-auto">Book Guide</a>
-
-
           </div>
         </div>
-      </div>
-    <?php endforeach; ?>
+      <?php endforeach; ?>
+    </div>
   </div>
-</div>
 
 <?php include 'includes/footer.php'; ?>
+</body>
+</html>

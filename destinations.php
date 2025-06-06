@@ -59,10 +59,9 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
 
     h1 {
       font-size: 2.5rem;
-      font-weight: 700;
+      font-weight: 600;
+      margin: 40px 0;
       text-align: center;
-      margin-top: 50px;
-      margin-bottom: 30px;
       color: #f1c40f;
     }
 
@@ -165,7 +164,7 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
   <div class="container">
     <h1>Explore Sri Lankan Destinations</h1>
 
-    <form method="GET" class="search-form row g-3">
+    <form method="GET" class="search-form row g-2">
       <div class="col-md-5">
         <input
           type="text"
