@@ -164,7 +164,7 @@ $otherHotels = $otherHotelsStmt->fetchAll();
   }
 
   .features span {
-    background-color: rgba(241, 196, 15, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
     color: #f1c40f;
     padding: 6px 14px;
     margin: 5px;
@@ -175,7 +175,7 @@ $otherHotels = $otherHotelsStmt->fetchAll();
   }
 
   .sidebar-card {
-    background: rgba(33, 33, 33, 0.5);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .btn-book {
@@ -244,7 +244,7 @@ $otherHotels = $otherHotelsStmt->fetchAll();
         max-width: 500px;
         margin: 40px auto;
         padding: 30px;
-        background: linear-gradient(145deg, #1f1f1f, #2a2a2a);
+        background: linear-gradient(145deg, #1f1f1f, 255, 255, 255, 0.05);
         border-radius: 15px;
         color: #fff;
         font-family: 'Poppins', sans-serif;
@@ -348,7 +348,7 @@ $otherHotels = $otherHotelsStmt->fetchAll();
       <div class="info-card">
         <h2><?= htmlspecialchars($hotel['name']) ?></h2>
         <p><strong>Location:</strong> <?= htmlspecialchars($hotel['location']) ?></p>
-        <p><strong>Price:</strong> Rs. <?= htmlspecialchars($hotel['price_per_night']) ?> / night</p>
+        <p><strong>Price:</strong> Rs. <?= htmlspecialchars($hotel['price_per_night']) ?> / per night</p>
         <p><strong>Rating:</strong> <?= htmlspecialchars($hotel['rating']) ?> / 5</p>
         <p><?= nl2br(htmlspecialchars($hotel['description'])) ?></p>
 
@@ -454,31 +454,6 @@ $otherHotels = $otherHotelsStmt->fetchAll();
     </iframe>
   </div>
 </div>
-
-
-<!-- Other Hotels Section -->
-<?php if ($otherHotels): ?>
-<div class="container container-main">
-  <div class="info-card">
-    <h4>Other Hotels You May Like</h4>
-    <div class="row">
-      <?php foreach ($otherHotels as $oth): ?>
-      <div class="col-md-4 mb-4">
-        <div class="card bg-dark text-white h-100 shadow">
-          <img src="images/<?= htmlspecialchars(explode(',', $oth['image_gallery'])[0]) ?>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Hotel Image">
-          <div class="card-body">
-            <h5 class="card-title"><?= htmlspecialchars($oth['name']) ?></h5>
-            <p class="card-text"><?= htmlspecialchars($oth['location']) ?></p>
-            <p class="card-text"><small>Rs. <?= htmlspecialchars($oth['price_per_night']) ?> / night</small></p>
-            <a href="book.php?hotel_id=<?= $oth['hotel_id'] ?>" class="btn btn-sm btn-outline-warning mt-2">View Hotel</a>
-          </div>
-        </div>
-      </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</div>
-<?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

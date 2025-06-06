@@ -140,7 +140,7 @@ $hotels = $stmt->fetchAll();
                 </div>
               </div>
 
-              <p class="text-light fw-semibold mb-2">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / night</p>
+              <p class="text-light fw-semibold mb-2">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / per night</p>
 
               <?php if ($is_logged_in): ?>
                 <a href="book.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-outline-light w-100">Book Now</a>

@@ -20,15 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $destination_id = $_POST['destination_id'];
     $latitude = $_POST['latitude'];
     $longitude = $_POST['longitude'];
+    $facilities = $_POST['facilities'];
+    $popular_features = $_POST['popular_features'];
+    $map_embed_link = $_POST['map_embed_link'];
 
-    // Single main image
     $image_name = $_FILES['image']['name'];
     $image_tmp = $_FILES['image']['tmp_name'];
     $target_path = '../images/' . basename($image_name);
 
     $gallery_images = [];
 
-    // Multiple images
     if (!empty($_FILES['images']['name'][0])) {
         foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
             $file_name = time() . '_' . basename($_FILES['images']['name'][$key]);
@@ -42,11 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $image_gallery = implode(',', $gallery_images);
 
     if (move_uploaded_file($image_tmp, $target_path)) {
-        $stmt = $conn->prepare("INSERT INTO hotels (name, location, description, price_per_night, contact_info, rating, address, destination_id, latitude, longitude, image, image_gallery)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO hotels 
+            (name, location, description, price_per_night, contact_info, rating, address, destination_id, latitude, longitude, facilities, popular_features, map_embed_link, image, image_gallery) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $name, $location, $description, $price_per_night, $contact_info,
             $rating, $address, $destination_id, $latitude, $longitude,
+            $facilities, $popular_features, $map_embed_link,
             $image_name, $image_gallery
         ]);
         $message = "Hotel added successfully!";
@@ -104,6 +107,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="mb-3">
       <label class="form-label">Destination ID</label>
       <input type="number" name="destination_id" required class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Facilities</label>
+      <input type="text" name="facilities" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Popular Features</label>
+      <input type="text" name="popular_features" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Google Map Embed Link</label>
+      <input type="text" name="map_embed_link" class="form-control">
     </div>
     <div class="mb-3">
       <label class="form-label">Hotel Location on Map</label>

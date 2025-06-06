@@ -2,36 +2,43 @@
 session_start();
 include '../config/db.php';
 
-// Export to CSV
-if (isset($_GET['export']) && $_GET['export'] === 'csv') {
-    header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename="guide_bookings.csv"');
-    $output = fopen("php://output", "w");
-    fputcsv($output, ['Booking ID', 'Guide Name', 'User Name', 'Travel Date', 'Duration', 'Amount', 'Payment Method', 'Status', 'Created At']);
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+require '../vendor/autoload.php'; // Make sure PhpSpreadsheet is installed via Composer
+
+// Export to Excel
+if (isset($_GET['export']) && $_GET['export'] === 'excel') {
+    header('Content-Type: application/vnd.ms-excel');
+    header('Content-Disposition: attachment; filename="guide_bookings.xls"');
+    header('Cache-Control: max-age=0');
+
+    echo "Booking ID\tGuide Name\tUser Name\tTravel Date\tDuration\tAmount\tPayment Method\tStatus\tCreated At\n";
 
     $stmt = $conn->query("
-        SELECT gb.*, g.name AS guide_name, u.name AS user_name
+        SELECT gb.booking_id, g.name AS guide_name, u.name AS user_name, gb.travel_date, gb.duration_days, 
+               gp.amount, gp.payment_method, gb.status, gb.created_at
         FROM guide_bookings gb
         JOIN guide g ON gb.guide_id = g.guide_id
         JOIN users u ON gb.user_id = u.user_id
+        LEFT JOIN guide_payments gp ON gb.booking_id = gp.booking_id
         ORDER BY gb.created_at DESC
     ");
+
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        fputcsv($output, [
-            $row['booking_id'],
-            $row['guide_name'],
-            $row['user_name'],
-            $row['travel_date'],
-            $row['duration_days'],
-            $row['amount'],
-            $row['payment_method'],
-            $row['status'],
-            $row['created_at']
-        ]);
+        echo $row['booking_id'] . "\t" .
+             $row['guide_name'] . "\t" .
+             $row['user_name'] . "\t" .
+             $row['travel_date'] . "\t" .
+             $row['duration_days'] . " day(s)\t" .
+             ($row['amount'] ?? '') . "\t" .
+             ($row['payment_method'] ?? '') . "\t" .
+             ucfirst($row['status']) . "\t" .
+             $row['created_at'] . "\n";
     }
-    fclose($output);
     exit;
 }
+
 
 // Update booking status inline
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'], $_POST['status'])) {
@@ -61,10 +68,11 @@ if (!empty($_GET['date'])) {
 $whereClause = $filters ? 'WHERE ' . implode(' AND ', $filters) : '';
 
 $stmt = $conn->prepare("
-    SELECT gb.*, g.name AS guide_name, u.name AS user_name
+    SELECT gb.*, g.name AS guide_name, u.name AS user_name, gp.amount, gp.payment_method
     FROM guide_bookings gb
     JOIN guide g ON gb.guide_id = g.guide_id
     JOIN users u ON gb.user_id = u.user_id
+    LEFT JOIN guide_payments gp ON gb.booking_id = gp.booking_id
     $whereClause
     ORDER BY gb.created_at DESC
 ");
@@ -106,7 +114,7 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit" class="btn btn-primary">Apply Filters</button>
         </div>
         <div class="col-md-3 text-end">
-            <a href="?export=csv" class="btn btn-success">Export to CSV</a>
+            <a href="?export=excel" class="btn btn-success">Export to Excel</a>
         </div>
     </form>
 
@@ -122,7 +130,6 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <th>Method</th>
                 <th>Status</th>
                 <th>Change</th>
-                <th>View</th>
             </tr>
         </thead>
         <tbody>
@@ -134,8 +141,8 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($b['guide_name']) ?></td>
                     <td><?= $b['travel_date'] ?></td>
                     <td><?= $b['duration_days'] ?> day(s)</td>
-                    <td>$<?= number_format($b['amount'], 2) ?></td>
-                    <td><?= $b['payment_method'] ?></td>
+                    <td>$<?= number_format($b['amount'] ?? 0, 2) ?></td>
+                    <td><?= htmlspecialchars($b['payment_method'] ?? '') ?></td>
                     <td>
                         <?php
                         $status = strtolower($b['status']);
@@ -158,16 +165,15 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </select>
                         </form>
                     </td>
-                    <td><a href="view_booking.php?booking_id=<?= $b['booking_id'] ?>" class="btn btn-sm btn-outline-info">View</a></td>
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>
-            <tr><td colspan="10" class="text-center">No bookings found.</td></tr>
+            <tr><td colspan="9" class="text-center">No bookings found.</td></tr>
         <?php endif; ?>
         </tbody>
     </table>
 
-      <a href="dashboard.php" class="btn btn-secondary mt-3"><i class=""></i> Back to Dashboard</a>
+    <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
 </div>
 </body>
 </html>

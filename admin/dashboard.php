@@ -1,7 +1,7 @@
-
 <?php
 include '../config/db.php';
 session_start();
+
 if (!isset($_SESSION['admin'])) {
     header("Location: login.php");
     exit;
@@ -10,105 +10,69 @@ if (!isset($_SESSION['admin'])) {
 try {
     $hotel_stmt = $conn->query("SELECT COUNT(*) as total FROM hotels");
     $total_hotels = $hotel_stmt->fetch()['total'];
+
+    $active_hotel_stmt = $conn->query("SELECT COUNT(*) as active FROM hotels WHERE status='active'");
+    $active_hotels = $active_hotel_stmt->fetch()['active'];
+    $hotel_percent = $total_hotels > 0 ? round(($active_hotels / $total_hotels) * 100) : 0;
+
+    $booking_stmt = $conn->query("SELECT COUNT(*) as total FROM bookings");
+    $total_bookings = $booking_stmt->fetch()['total'];
+
+    $confirmed_booking_stmt = $conn->query("SELECT COUNT(*) as confirmed FROM bookings WHERE status='confirmed'");
+    $confirmed_bookings = $confirmed_booking_stmt->fetch()['confirmed'];
+    $booking_percent = $total_bookings > 0 ? round(($confirmed_bookings / $total_bookings) * 100) : 0;
+
+    $user_stmt = $conn->query("SELECT COUNT(*) as total FROM users");
+    $total_users = $user_stmt->fetch()['total'];
+
+    $verified_stmt = $conn->query("SELECT COUNT(*) as verified FROM users WHERE is_verified = 1");
+    $verified_users = $verified_stmt->fetch()['verified'];
+    $user_percent = $total_users > 0 ? round(($verified_users / $total_users) * 100) : 0;
+
+    $pending_stmt = $conn->query("SELECT COUNT(*) as pending FROM bookings WHERE status='pending'");
+    $pending_bookings = $pending_stmt->fetch()['pending'];
+
+    $cancelled_stmt = $conn->query("SELECT COUNT(*) as cancelled FROM bookings WHERE status='cancelled'");
+    $cancelled_bookings = $cancelled_stmt->fetch()['cancelled'];
+
+    $revenue_stmt = $conn->query("SELECT SUM(amount) as total_revenue FROM payments WHERE status='paid'");
+    $revenue = $revenue_stmt->fetch()['total_revenue'] ?? 0;
+    $monthly_target = 300000;
+    $revenue_percent = $monthly_target > 0 ? round(($revenue / $monthly_target) * 100) : 0;
+
+    $paid_stmt = $conn->query("SELECT COUNT(*) as paid FROM bookings WHERE payment_status = 'paid'");
+    $paid_bookings = $paid_stmt->fetch()['paid'] ?? 0;
+
+    $unpaid_stmt = $conn->query("SELECT COUNT(*) as unpaid FROM bookings WHERE payment_status = 'unpaid'");
+    $unpaid_bookings = $unpaid_stmt->fetch()['unpaid'] ?? 0;
+
+    $total_payment_status = $paid_bookings + $unpaid_bookings;
+    $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payment_status) * 100) : 0;
+    $unpaid_percent = $total_payment_status > 0 ? round(($unpaid_bookings / $total_payment_status) * 100) : 0;
+
+    $revenueStmt = $conn->query("
+        SELECT SUM(p.amount) AS total_revenue
+        FROM bookings b
+        JOIN payments p ON b.booking_id = p.booking_id
+        WHERE b.status = 'confirmed' AND LOWER(p.status) = 'paid'
+    ");
+    $row = $revenueStmt->fetch(PDO::FETCH_ASSOC);
+    $totalRevenue = $row['total_revenue'] ?? 0;
+
+    // Guide Stats: Using is_available
+    $total_guide_stmt = $conn->query("SELECT COUNT(*) as total FROM guide");
+    $total_guides = $total_guide_stmt->fetch()['total'] ?? 0;
+
+    $active_guide_stmt = $conn->query("SELECT COUNT(*) as active FROM guide WHERE is_available = 1");
+    $active_guides = $active_guide_stmt->fetch()['active'] ?? 0;
+
+    $guide_percent = $total_guides > 0 ? round(($active_guides / $total_guides) * 100) : 0;
+
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
-    $total_hotels = 0;
 }
-
-
-
-$total_hotel_stmt = $conn->query("SELECT COUNT(*) as total FROM hotels");
-$total_hotels = $total_hotel_stmt->fetch()['total'];
-
-$active_hotel_stmt = $conn->query("SELECT COUNT(*) as active FROM hotels WHERE status='active'");
-$active_hotels = $active_hotel_stmt->fetch()['active'];
-$hotel_percent = $total_hotels > 0 ? round(($active_hotels / $total_hotels) * 100) : 0;
-
-$booking_stmt = $conn->query("SELECT COUNT(*) as total FROM bookings");
-$total_bookings = $booking_stmt->fetch()['total'];
-
-$confirmed_booking_stmt = $conn->query("SELECT COUNT(*) as confirmed FROM bookings WHERE status='confirmed'");
-$confirmed_bookings = $confirmed_booking_stmt->fetch()['confirmed'];
-$booking_percent = $total_bookings > 0 ? round(($confirmed_bookings / $total_bookings) * 100) : 0;
-
-$user_stmt = $conn->query("SELECT COUNT(*) as total FROM users");
-$total_users = $user_stmt->fetch()['total'];
-
-$verified_stmt = $conn->query("SELECT COUNT(*) as verified FROM users WHERE is_verified = 1");
-$verified_users = $verified_stmt->fetch()['verified'];
-
-$pending_stmt = $conn->query("SELECT COUNT(*) as pending FROM bookings WHERE status='pending'");
-$pending_bookings = $pending_stmt->fetch()['pending'];
-
-$cancelled_stmt = $conn->query("SELECT COUNT(*) as cancelled FROM bookings WHERE status='cancelled'");
-$cancelled_bookings = $cancelled_stmt->fetch()['cancelled'];
-
-$revenue_stmt = $conn->query("SELECT SUM(amount) as total_revenue FROM payments WHERE status='paid'");
-$revenue = $revenue_stmt->fetch()['total_revenue'] ?? 0;
-$monthly_target = 300000;
-$revenue_percent = $monthly_target > 0 ? round(($revenue / $monthly_target) * 100) : 0;
-
-$paid_stmt = $conn->query("SELECT COUNT(*) as paid FROM bookings WHERE payment_status = 'paid'");
-$paid_bookings = $paid_stmt->fetch()['paid'] ?? 0;
-
-$unpaid_stmt = $conn->query("SELECT COUNT(*) as unpaid FROM bookings WHERE payment_status = 'unpaid'");
-$unpaid_bookings = $unpaid_stmt->fetch()['unpaid'] ?? 0;
-
-$total_payment_status = $paid_bookings + $unpaid_bookings;
-$paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payment_status) * 100) : 0;
-
-    $revenue_percent = round(($revenue / 300000) * 100);
-    $booking_percent = $total_bookings > 0 ? round(($confirmed_bookings / $total_bookings) * 100) : 0;
-    $hotel_percent = $total_hotels > 0 ? round(($active_hotels / $total_hotels) * 100) : 0;
-    $user_percent = $total_users > 0 ? round(($verified_users / $total_users) * 100) : 0;
-    $paid_percent = $total_bookings > 0 ? round(($paid_bookings / $total_bookings) * 100) : 0;
-    $unpaid_percent = $total_bookings > 0 ? round(($unpaid_bookings / $total_bookings) * 100) : 0;
-    $hotel_percent = $total_hotels > 0 ? round(($active_hotels / $total_hotels) * 100) : 0;
-    $paid_percent = $total_payment_status > 0 ? round(($paid_bookings / $total_payment_status) * 100) : 0;
-
-
-// Total Revenue from confirmed bookings + paid payments
-$revenueStmt = $conn->query("
-    SELECT SUM(p.amount) AS total_revenue
-    FROM bookings b
-    JOIN payments p ON b.booking_id = p.booking_id
-    WHERE b.status = 'confirmed' AND LOWER(p.status) = 'paid'
-");
-$row = $revenueStmt->fetch(PDO::FETCH_ASSOC);
-$totalRevenue = $row['total_revenue'] ?? 0;
-
-function getGuideStats(PDO $conn) {
-    try {
-        $totalGuideStmt = $conn->query("SELECT COUNT(*) as total FROM guides");
-        $totalGuides = $totalGuideStmt->fetch()['total'] ?? 0;
-
-        $activeGuideStmt = $conn->query("SELECT COUNT(*) as active FROM guides WHERE status = 'active'");
-        $activeGuides = $activeGuideStmt->fetch()['active'] ?? 0;
-
-        $activePercent = $totalGuides > 0 ? round(($activeGuides / $totalGuides) * 100) : 0;
-
-        return [
-            'total' => $totalGuides,
-            'active' => $activeGuides,
-            'percent' => $activePercent,
-        ];
-    } catch (PDOException $e) {
-        // Table not found or other DB error - return zero stats to avoid fatal error
-        return [
-            'total' => 0,
-            'active' => 0,
-            'percent' => 0,
-        ];
-    }
-}
-
-$guideStats = getGuideStats($conn);
-
-$total_guides = $guideStats['total'];
-$active_guides = $guideStats['active'];
-$guide_percent = $guideStats['percent'];
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -282,51 +246,51 @@ $guide_percent = $guideStats['percent'];
 
 
           <div class="mt-4">
-            <div class="row g-4">
+  <div class="row g-4">
 
-              <div class="col-md-4">
-                <div class="card text-white bg-primary shadow">
-                  <div class="card-body">
-                    <h5 class="card-title">Manage Hotels</h5>
-                    <p class="card-text">Edit or delete hotels from the list.</p>
-                    <a href="manage_hotels.php" class="btn btn-light btn-sm">
-                      <i class=""></i> Manage Hotels
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card text-white bg-success shadow">
-                  <div class="card-body">
-                    <h5 class="card-title">Manage Places</h5>
-                    <p class="card-text">Edit or delete destination places.</p>
-                    <a href="manage_places.php" class="btn btn-light btn-sm">
-                      <i class=""></i> Manage Places
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card text-white bg-info shadow">
-                  <div class="card-body">
-                     <h5 class="card-title">Hotel Bookings</h5>
-                    <p class="card-text">Review and control bookings.</p>
-                    <a href="manage_bookings.php" class="btn btn-light btn-sm">Manage Bookings</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card text-white bg-info shadow">
-                  <div class="card-body">
-                    <h5 class="card-title">Guide Bookings</h5>
-                    <p class="card-text">Manage all guide bookings</p>
-                    <a href="manage_guide_bookings.php" class="btn btn-light btn-sm">Manage Guide Bookings</a>
-                  </div>
-                </div>
-              </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-primary shadow">
+        <div class="card-body">
+          <h5 class="card-title">Manage Hotels</h5>
+          <p class="card-text">Manage hotels from the list.</p>
+          <a href="manage_hotels.php" class="btn btn-light btn-sm">Manage Hotels</a>
+        </div>
+      </div>
+    </div>
 
-            </div>
-          </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-success shadow">
+        <div class="card-body">
+          <h5 class="card-title">Manage Places</h5>
+          <p class="card-text">Manage all destination places.</p>
+          <a href="manage_places.php" class="btn btn-light btn-sm">Manage Places</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-warning shadow">
+        <div class="card-body">
+          <h5 class="card-title">Hotel Bookings</h5>
+          <p class="card-text">Control bookings.</p>
+          <a href="manage_bookings.php" class="btn btn-light btn-sm">Manage Bookings</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-danger shadow">
+        <div class="card-body">
+          <h5 class="card-title">Guide Bookings</h5>
+          <p class="card-text">Manage all guide bookings</p>
+          <a href="manage_guide_bookings.php" class="btn btn-light btn-sm">Manage Guide Bookings</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
           <div class="card mt-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
               <div><i class="bi bi-calendar-check-fill me-2"></i> Booking Overview</div>
@@ -365,8 +329,8 @@ $guide_percent = $guideStats['percent'];
               
                 <div class="col-md-4">
                   <div class="p-3 bg-light rounded shadow-sm">
-                    <h6 class="fw-bold">User Stats</h6>
-                    <ul class="list-group list-group-flush">
+                    <h6 class="fw-bold">User Status</h6>
+                    <ul class="list-group list-group-flush mb-3">
                       <li class="list-group-item d-flex justify-content-between align-items-center">
                         Total Users
                         <span class="badge bg-primary rounded-pill"><?= $total_users ?></span>
@@ -374,6 +338,18 @@ $guide_percent = $guideStats['percent'];
                       <li class="list-group-item d-flex justify-content-between align-items-center">
                         Verified Users
                         <span class="badge bg-success rounded-pill"><?= $verified_users ?></span>
+                      </li>
+                    </ul>
+
+                    <h6 class="fw-bold">Guide Status</h6>
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Guides
+                        <span class="badge bg-primary rounded-pill"><?= $total_guides ?></span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Active Guides
+                        <span class="badge bg-success rounded-pill"><?= $active_guides ?></span>
                       </li>
                     </ul>
                   </div>
@@ -404,7 +380,7 @@ $guide_percent = $guideStats['percent'];
                   <!-- Revenue Status -->
                   <div class="col-md-4 mb-3">
                     <div class="card shadow-sm p-2">
-                      <div class="card-header bg-warning text-dark py-2 px-3 small">Revenue Status</div>
+                      <div class="card-header bg-warning text-dark py-2 px-3 small">Hotel Revenue Status</div>
                       <div class="card-body text-center p-3">
                         <div class="fs-4 fw-bold text-dark">LKR <?= number_format((float)$totalRevenue, 2) ?></div>
                         <div class="small text-muted">Total Revenue (Paid)</div>

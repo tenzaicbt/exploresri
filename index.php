@@ -18,8 +18,23 @@
       z-index: 1;
     }
 
+    .highlighted-word {
+      color: #ffd60a;
+      font-weight: bold;
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        text-shadow: 0 0 5px #ffd60a, 0 0 10px #ffd60a;
+      }
+      50% {
+        text-shadow: 0 0 15px #ffd60a, 0 0 25px #ffd60a;
+      }
+    }
+
     .hero {
-      padding: 130px 20px 80px;
+      padding: 0px 20px 80px;
       text-align: center;
       position: relative;
       z-index: 2;
@@ -143,10 +158,14 @@
  </div>
 <?php endfor; ?>
 
+
+
 <!-- Hero Section -->
 <div class="hero">
-  <h1>Welcome to ExploreSri</h1>
-  <p>Your gateway to travel and explore the beauty of Sri Lanka</p>
+    <!-- h1 moved to bottom with animation -->
+  <h1 class="mt-5">Welcome to ExploreSri</h1>
+  <p>Your gateway to travel and explore the beauty of <span class="highlighted-word">Sri Lanka</span></p>
+
   <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
     <a href="destinations.php" class="btn btn-warning btn-custom">
       <i class=""></i> Explore Destinations
@@ -166,7 +185,29 @@
     </a>
   </div>
   <?php endif; ?>
+
+  <!-- 2 Column Animated Description -->
+  <div class="container mt-5">
+    <div class="row text-start" style="animation: fadeInBody 1.5s ease-in;">
+      <div class="col-md-6 mb-4">
+        <p><span class="highlighted-word">Sri Lanka</span>, officially the Democratic Socialist Republic of Sri Lanka, also known historically as Ceylon, is an island country in South Asia. It lies in the Indian Ocean, southwest of the Bay of Bengal, separated from the Indian peninsula by the Gulf of Mannar and the Palk Strait...</p>
+        <p>...It shares a maritime border with the Maldives in the southwest and India in the northwest. Sri Jayawardenepura Kotte is the legislative capital of <span class="highlighted-word">Sri Lanka</span>...</p>
+      </div>
+      <div class="col-md-6 mb-4">
+        <p>...Sri Lanka has a population of approximately 22 million and is home to several cultures, languages and ethnicities. The Sinhalese people form the majority...</p>
+        <p>...Sri Lanka’s documented history goes back 3,000 years... it was already known to both East Asians and Europeans during the Anuradhapura period. <span class="highlighted-word">Sri Lanka</span> is also called the Pearl of the Indian Ocean...</p>
+      </div>
+          <div class="text-center mt-4">
+      <img src="https://cdn.britannica.com/13/4413-050-98188B5C/Flag-Sri-Lanka.jpg" 
+           alt="Sri Lanka Flag" 
+           style="width:120px; height:auto;">
+    </div>
+    </div>
+  </div>
+
+
 </div>
+
 
 
 <!-- Footer -->
