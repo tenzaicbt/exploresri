@@ -5,29 +5,30 @@ include '../config/db.php';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
+  $username = $_POST['username'] ?? '';
+  $password = $_POST['password'] ?? '';
 
-    $stmt = $conn->prepare("SELECT * FROM admins WHERE username = ?");
-    $stmt->execute([$username]);
-    $admin = $stmt->fetch();
+  $stmt = $conn->prepare("SELECT * FROM admins WHERE username = ?");
+  $stmt->execute([$username]);
+  $admin = $stmt->fetch();
 
-    if ($admin) {
-        if (password_verify($password, $admin['password'])) {
-            $_SESSION['admin'] = $admin['username'];
-            header('Location: dashboard.php');
-            exit;
-        } else {
-            $error = "Password incorrect.";
-        }
+  if ($admin) {
+    if (password_verify($password, $admin['password'])) {
+      $_SESSION['admin'] = $admin['username'];
+      header('Location: dashboard.php');
+      exit;
     } else {
-        $error = "Username not found.";
+      $error = "Password incorrect.";
     }
+  } else {
+    $error = "Username not found.";
+  }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .login-card {
       background-color: #1b2735;
       border-radius: 18px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
       padding: 40px 30px;
       width: 100%;
       max-width: 420px;
@@ -110,11 +111,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="login-card">
     <h3><i class="bi bi-shield-lock-fill me-2"></i>Admin Login</h3>
@@ -163,4 +172,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
   </script>
 </body>
+
 </html>

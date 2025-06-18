@@ -39,6 +39,7 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Destinations - ExploreSri</title>
@@ -171,8 +172,7 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
           name="search"
           value="<?= htmlspecialchars($search) ?>"
           class="form-control"
-          placeholder="Search destinations..."
-        />
+          placeholder="Search destinations..." />
       </div>
       <div class="col-md-4">
         <select name="province" class="form-select">
@@ -219,8 +219,7 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
             <li class="page-item <?= $i == $page ? 'active' : '' ?>">
               <a
                 class="page-link"
-                href="?search=<?= urlencode($search) ?>&province=<?= urlencode($province) ?>&page=<?= $i ?>"
-              >
+                href="?search=<?= urlencode($search) ?>&province=<?= urlencode($province) ?>&page=<?= $i ?>">
                 <?= $i ?>
               </a>
             </li>
@@ -230,6 +229,7 @@ $provinces = $provStmt->fetchAll(PDO::FETCH_COLUMN);
     <?php endif; ?>
   </div>
 </body>
+
 </html>
 
 <?php include 'includes/footer.php'; ?>

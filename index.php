@@ -1,6 +1,7 @@
 <?php include 'includes/header.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>ExploreSri - Home</title>
@@ -25,9 +26,12 @@
     }
 
     @keyframes pulseGlow {
-      0%, 100% {
+
+      0%,
+      100% {
         text-shadow: 0 0 5px #ffd60a, 0 0 10px #ffd60a;
       }
+
       50% {
         text-shadow: 0 0 15px #ffd60a, 0 0 25px #ffd60a;
       }
@@ -67,7 +71,6 @@
       box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
     }
 
-    /* Background Animation */
     .background-animation {
       position: fixed;
       top: 0;
@@ -95,9 +98,11 @@
         transform: translateY(0) scale(1);
         opacity: 0.2;
       }
+
       50% {
         opacity: 0.4;
       }
+
       100% {
         transform: translateY(-120vh) scale(1.2);
         opacity: 0;
@@ -105,16 +110,27 @@
     }
 
     @keyframes fadeInBody {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
     @keyframes slideInDown {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
-    /* Footer */
     .footer {
       background-color: #0a0f1c;
       padding: 30px 0;
@@ -141,28 +157,35 @@
     .auth-buttons a {
       margin: 5px;
     }
+
+    html,
+    body {
+      overflow: hidden;
+      height: 100%;
+    }
   </style>
 </head>
+
 <body>
 
-<!-- Background bubbles -->
-<div class="background-animation">
-  <?php for ($i = 0; $i < 40; $i++): ?>
-    <div class="bubble" style="
+  <!-- Background bubbles -->
+  <div class="background-animation">
+    <?php for ($i = 0; $i < 40; $i++): ?>
+      <div class="bubble" style="
       left: <?= rand(0, 100) ?>%;
       width: <?= rand(10, 35) ?>px;
       height: <?= rand(10, 35) ?>px;
       animation-delay: <?= rand(0, 20) ?>s;
       animation-duration: <?= rand(12, 25) ?>s;">
-    </div>
- </div>
+      </div>
+  </div>
 <?php endfor; ?>
 
 
 
 <!-- Hero Section -->
 <div class="hero">
-    <!-- h1 moved to bottom with animation -->
+  <!-- h1 moved to bottom with animation -->
   <h1 class="mt-5">Welcome to ExploreSri</h1>
   <p>Your gateway to travel and explore the beauty of <span class="highlighted-word">Sri Lanka</span></p>
 
@@ -176,14 +199,14 @@
   </div>
 
   <?php if (!isset($_SESSION['user_id'])): ?>
-  <div class="auth-buttons d-flex justify-content-center flex-wrap mt-4">
-    <a href="/exploresri/user/login.php" class="btn btn-outline-light btn-custom">
-      <i class="bi bi-box-arrow-in-right"></i> Login
-    </a>
-    <a href="/exploresri/user/register.php" class="btn btn-outline-warning btn-custom">
-      <i class="bi bi-person-plus"></i> Register
-    </a>
-  </div>
+    <div class="auth-buttons d-flex justify-content-center flex-wrap mt-4">
+      <a href="/exploresri/user/login.php" class="btn btn-outline-light btn-custom">
+        <i class="bi bi-box-arrow-in-right"></i> Login
+      </a>
+      <a href="/exploresri/user/register.php" class="btn btn-outline-warning btn-custom">
+        <i class="bi bi-person-plus"></i> Register
+      </a>
+    </div>
   <?php endif; ?>
 
   <!-- 2 Column Animated Description -->
@@ -197,25 +220,14 @@
         <p>...Sri Lanka has a population of approximately 22 million and is home to several cultures, languages and ethnicities. The Sinhalese people form the majority...</p>
         <p>...Sri Lanka’s documented history goes back 3,000 years... it was already known to both East Asians and Europeans during the Anuradhapura period. <span class="highlighted-word">Sri Lanka</span> is also called the Pearl of the Indian Ocean...</p>
       </div>
-          <div class="text-center mt-4">
-      <img src="https://cdn.britannica.com/13/4413-050-98188B5C/Flag-Sri-Lanka.jpg" 
-           alt="Sri Lanka Flag" 
-           style="width:120px; height:auto;">
-    </div>
+      <div class="text-center mt-4">
+        <img src="https://cdn.britannica.com/13/4413-050-98188B5C/Flag-Sri-Lanka.jpg"
+          alt="Sri Lanka Flag"
+          style="width:120px; height:auto;">
+      </div>
     </div>
   </div>
-
-
 </div>
-
-
-
-<!-- Footer -->
-<footer class="footer">
-  <div class="container">
-    <p><?= date("Y") ?> ExploreSri. Crafted with to promote Sri Lankan tourism.</p>
-  </div>
-</footer>
-
 </body>
+
 </html>

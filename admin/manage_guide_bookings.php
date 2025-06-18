@@ -2,11 +2,6 @@
 session_start();
 include '../config/db.php';
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-require '../vendor/autoload.php'; // Make sure PhpSpreadsheet is installed via Composer
-
 // Export to Excel
 if (isset($_GET['export']) && $_GET['export'] === 'excel') {
     header('Content-Type: application/vnd.ms-excel');
@@ -27,14 +22,14 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
 
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo $row['booking_id'] . "\t" .
-             $row['guide_name'] . "\t" .
-             $row['user_name'] . "\t" .
-             $row['travel_date'] . "\t" .
-             $row['duration_days'] . " day(s)\t" .
-             ($row['amount'] ?? '') . "\t" .
-             ($row['payment_method'] ?? '') . "\t" .
-             ucfirst($row['status']) . "\t" .
-             $row['created_at'] . "\n";
+            $row['guide_name'] . "\t" .
+            $row['user_name'] . "\t" .
+            $row['travel_date'] . "\t" .
+            $row['duration_days'] . " day(s)\t" .
+            ($row['amount'] ?? '') . "\t" .
+            ($row['payment_method'] ?? '') . "\t" .
+            ucfirst($row['status']) . "\t" .
+            $row['created_at'] . "\n";
     }
     exit;
 }
@@ -82,98 +77,112 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Manage Guide Bookings</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .filter-group { margin-bottom: 20px; }
-        .form-control, .form-select { min-width: 150px; }
-        .status-badge { text-transform: capitalize; }
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control,
+        .form-select {
+            min-width: 150px;
+        }
+
+        .status-badge {
+            text-transform: capitalize;
+        }
     </style>
 </head>
+
 <body>
-<div class="container mt-5">
-    <h2 class="mb-4">Manage Guide Bookings</h2>
+    <div class="container mt-5">
+        <h2 class="mb-4">Manage Guide Bookings</h2>
 
-    <form method="GET" class="row g-3 filter-group">
-        <div class="col-md-3">
-            <input type="text" name="user" class="form-control" placeholder="Search by User Name" value="<?= htmlspecialchars($_GET['user'] ?? '') ?>">
-        </div>
-        <div class="col-md-2">
-            <input type="date" name="date" class="form-control" value="<?= htmlspecialchars($_GET['date'] ?? '') ?>">
-        </div>
-        <div class="col-md-2">
-            <select name="status" class="form-select">
-                <option value="">All Status</option>
-                <?php foreach (['pending', 'confirmed', 'cancelled'] as $s): ?>
-                    <option value="<?= $s ?>" <?= (($_GET['status'] ?? '') === $s) ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary">Apply Filters</button>
-        </div>
-        <div class="col-md-3 text-end">
-            <a href="?export=excel" class="btn btn-success">Export to Excel</a>
-        </div>
-    </form>
+        <form method="GET" class="row g-3 filter-group">
+            <div class="col-md-3">
+                <input type="text" name="user" class="form-control" placeholder="Search by User Name" value="<?= htmlspecialchars($_GET['user'] ?? '') ?>">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="date" class="form-control" value="<?= htmlspecialchars($_GET['date'] ?? '') ?>">
+            </div>
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <?php foreach (['pending', 'confirmed', 'cancelled'] as $s): ?>
+                        <option value="<?= $s ?>" <?= (($_GET['status'] ?? '') === $s) ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </div>
+            <div class="col-md-3 text-end">
+                <a href="?export=excel" class="btn btn-success">Export to Excel</a>
+            </div>
+        </form>
 
-    <table class="table table-bordered table-hover align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>User Name</th>
-                <th>Guide Name</th>
-                <th>Travel Date</th>
-                <th>Duration</th>
-                <th>Amount</th>
-                <th>Method</th>
-                <th>Status</th>
-                <th>Change</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php if ($bookings): ?>
-            <?php foreach ($bookings as $b): ?>
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
                 <tr>
-                    <td><?= $b['booking_id'] ?></td>
-                    <td><?= htmlspecialchars($b['user_name']) ?></td>
-                    <td><?= htmlspecialchars($b['guide_name']) ?></td>
-                    <td><?= $b['travel_date'] ?></td>
-                    <td><?= $b['duration_days'] ?> day(s)</td>
-                    <td>$<?= number_format($b['amount'] ?? 0, 2) ?></td>
-                    <td><?= htmlspecialchars($b['payment_method'] ?? '') ?></td>
-                    <td>
-                        <?php
-                        $status = strtolower($b['status']);
-                        $badge = match ($status) {
-                            'confirmed' => 'success',
-                            'pending' => 'warning',
-                            'cancelled' => 'danger',
-                            default => 'secondary'
-                        };
-                        ?>
-                        <span class="badge bg-<?= $badge ?> status-badge"><?= $status ?></span>
-                    </td>
-                    <td>
-                        <form method="POST" onchange="this.submit()" class="m-0">
-                            <input type="hidden" name="booking_id" value="<?= $b['booking_id'] ?>">
-                            <select name="status" class="form-select form-select-sm">
-                                <?php foreach (['pending', 'confirmed', 'cancelled'] as $s): ?>
-                                    <option value="<?= $s ?>" <?= $status === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </form>
-                    </td>
+                    <th>ID</th>
+                    <th>User Name</th>
+                    <th>Guide Name</th>
+                    <th>Travel Date</th>
+                    <th>Duration</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Change</th>
                 </tr>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <tr><td colspan="9" class="text-center">No bookings found.</td></tr>
-        <?php endif; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php if ($bookings): ?>
+                    <?php foreach ($bookings as $b): ?>
+                        <tr>
+                            <td><?= $b['booking_id'] ?></td>
+                            <td><?= htmlspecialchars($b['user_name']) ?></td>
+                            <td><?= htmlspecialchars($b['guide_name']) ?></td>
+                            <td><?= $b['travel_date'] ?></td>
+                            <td><?= $b['duration_days'] ?> day(s)</td>
+                            <td>$<?= number_format($b['amount'] ?? 0, 2) ?></td>
+                            <td><?= htmlspecialchars($b['payment_method'] ?? '') ?></td>
+                            <td>
+                                <?php
+                                $status = strtolower($b['status']);
+                                $badge = match ($status) {
+                                    'confirmed' => 'success',
+                                    'pending' => 'warning',
+                                    'cancelled' => 'danger',
+                                    default => 'secondary'
+                                };
+                                ?>
+                                <span class="badge bg-<?= $badge ?> status-badge"><?= $status ?></span>
+                            </td>
+                            <td>
+                                <form method="POST" onchange="this.submit()" class="m-0">
+                                    <input type="hidden" name="booking_id" value="<?= $b['booking_id'] ?>">
+                                    <select name="status" class="form-select form-select-sm">
+                                        <?php foreach (['pending', 'confirmed', 'cancelled'] as $s): ?>
+                                            <option value="<?= $s ?>" <?= $status === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="9" class="text-center">No bookings found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
 
-    <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
-</div>
+        <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
+    </div>
 </body>
+
 </html>

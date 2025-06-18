@@ -3,8 +3,8 @@ session_start();
 include '../config/db.php';
 
 if (!isset($_SESSION['guide_id'])) {
-    header("Location: guide_login.php");
-    exit;
+  header("Location: guide_login.php");
+  exit;
 }
 
 $guide_id = $_SESSION['guide_id'];
@@ -26,14 +26,14 @@ $sql = "SELECT
           p.payment_date,
           p.amount as paid_amount
         FROM guide_bookings b
-        LEFT JOIN payments p ON b.booking_id = p.booking_id
+        LEFT JOIN guide_payments p ON b.booking_id = p.booking_id
         WHERE b.guide_id = ?";
 
 $params = [$guide_id];
 
 if (in_array($status_filter, ['confirmed', 'pending', 'cancelled'])) {
-    $sql .= " AND b.status = ?";
-    $params[] = $status_filter;
+  $sql .= " AND b.status = ?";
+  $params[] = $status_filter;
 }
 
 $sql .= " ORDER BY b.created_at DESC";
@@ -63,7 +63,7 @@ $booking_percent = $total_bookings > 0 ? round(($confirmed_bookings / $total_boo
 $revenue_stmt = $conn->prepare("
     SELECT SUM(p.amount) as total
     FROM guide_bookings b
-    JOIN payments p ON b.booking_id = p.booking_id
+    JOIN guide_payments p ON b.booking_id = p.booking_id
     WHERE b.guide_id = ? AND b.status = 'confirmed' AND p.status = 'paid'
 ");
 $revenue_stmt->execute([$guide_id]);
@@ -77,140 +77,170 @@ $guide_stmt->execute([$guide_id]);
 $guide = $guide_stmt->fetch(PDO::FETCH_ASSOC);
 
 if (isset($_POST['toggle_availability'])) {
-    $new_status = ($_POST['current_status'] == 1) ? 0 : 1;
-    $update_stmt = $conn->prepare("UPDATE guide SET is_available = ? WHERE guide_id = ?");
-    $update_stmt->execute([$new_status, $guide_id]);
-    header("Location: guide_dashboard.php");
-    exit;
+  $new_status = ($_POST['current_status'] == 1) ? 0 : 1;
+  $update_stmt = $conn->prepare("UPDATE guide SET is_available = ? WHERE guide_id = ?");
+  $update_stmt->execute([$new_status, $guide_id]);
+  header("Location: guide_dashboard.php");
+  exit;
+}
+
+$total_price = 0;
+foreach ($bookings as $booking) {
+  $total_price += (float)$booking['amount'];
 }
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Guide Dashboard - ExploreSri</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-  
+
   <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-    color: #fff;
-    margin: 0;
-    overflow-x: hidden;
-  }
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 260px;
-    background: #121620;
-    padding-top: 1.5rem;
-    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-  }
-  .sidebar .text-center {
-    padding: 0 1rem;
-    margin-bottom: 2rem;
-  }
-  .sidebar .nav-link {
-    padding: 12px 24px;
-    margin: 6px 12px;
-    border-radius: 10px;
-    font-size: 1rem;
-    color: white;
-    transition: background 0.3s ease, transform 0.2s ease;
-    display: flex;
-    align-items: center;
-  }
-  .sidebar .nav-link i {
-    font-size: 1.3rem;
-    margin-right: 12px;
-  }
-  .sidebar .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    transform: translateX(6px);
-  }
-  .sidebar .nav-link.active,
-  .sidebar .nav-link:focus {
-    background-color: rgba(255, 255, 255, 0.25);
-    font-weight: 700;
-  }
-  .content {
-    margin-left: 260px;
-    padding: 3rem;
-    background: transparent;
-    min-height: 100vh;
-  }
-  .card {
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-    color: #f1f1f1;
-    transition: all 0.3s ease;
-  }
-  .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 48px rgba(241, 196, 15, 0.7);
-  }
-  .badge {
-    font-size: 1.1rem;
-  }
-  h6 {
-    color: #f1c40f;
-    font-weight: 700;
-    margin-bottom: 1.4rem;
-  }
-  .list-group-item {
-    background: transparent;
-    border: none;
-    color: #ddd;
-  }
-  .list-group-item.d-flex {
-    border-bottom: 1px solid rgba(241, 196, 15, 0.15);
-  }
-  .row.g-4 {
-    gap: 0rem;
-  }
-  .col-lg-8 {
-    max-width: 66.66%;
-    flex: 0 0 66.66%;
-  }
-  .col-lg-4 {
-    max-width: 33.33%;
-    flex: 0 0 33.33%;
-  }
-  @media (min-width: 992px) {
-    .col-lg-4 {
-      max-width: 40%;
-      flex: 0 0 40%;
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: #fff;
+      margin: 0;
+      overflow-x: hidden;
     }
-    .col-lg-8 {
-      max-width: 55%;
-      flex: 0 0 55%;
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 260px;
+      background: #121620;
+      padding-top: 1.5rem;
+      box-shadow: 3px 0 10px rgba(0, 0, 0, 0.7);
+      z-index: 1000;
     }
-  }
-  @media (max-width: 991px) {
+
+    .sidebar .text-center {
+      padding: 0 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sidebar .nav-link {
+      padding: 12px 24px;
+      margin: 6px 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: white;
+      transition: background 0.3s ease, transform 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar .nav-link i {
+      font-size: 1.3rem;
+      margin-right: 12px;
+    }
+
+    .sidebar .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(6px);
+    }
+
+    .sidebar .nav-link.active,
+    .sidebar .nav-link:focus {
+      background-color: rgba(255, 255, 255, 0.25);
+      font-weight: 700;
+    }
+
     .content {
-      margin-left: 0;
-      padding: 2rem 1rem;
+      margin-left: 260px;
+      padding: 3rem;
+      background: transparent;
+      min-height: 100vh;
     }
-    .col-lg-8, .col-lg-4, .col-12 {
-      max-width: 100% !important;
-      flex: 0 0 100% !important;
+
+    .card {
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      color: #f1f1f1;
+      transition: all 0.3s ease;
     }
-  }
-  a.badge {
-    cursor: pointer;
-    text-decoration: none;
-  }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(241, 196, 15, 0.7);
+    }
+
+    .badge {
+      font-size: 1.1rem;
+    }
+
+    h6 {
+      color: #f1c40f;
+      font-weight: 700;
+      margin-bottom: 1.4rem;
+    }
+
+    .list-group-item {
+      background: transparent;
+      border: none;
+      color: #ddd;
+    }
+
+    .list-group-item.d-flex {
+      border-bottom: 1px solid rgba(241, 196, 15, 0.15);
+    }
+
+    .row.g-4 {
+      gap: 0rem;
+    }
+
+    .col-lg-8 {
+      max-width: 66.66%;
+      flex: 0 0 66.66%;
+    }
+
+    .col-lg-4 {
+      max-width: 33.33%;
+      flex: 0 0 33.33%;
+    }
+
+    @media (min-width: 992px) {
+      .col-lg-4 {
+        max-width: 40%;
+        flex: 0 0 40%;
+      }
+
+      .col-lg-8 {
+        max-width: 55%;
+        flex: 0 0 55%;
+      }
+    }
+
+    @media (max-width: 991px) {
+      .content {
+        margin-left: 0;
+        padding: 2rem 1rem;
+      }
+
+      .col-lg-8,
+      .col-lg-4,
+      .col-12 {
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+      }
+    }
+
+    a.badge {
+      cursor: pointer;
+      text-decoration: none;
+    }
   </style>
 </head>
+
 <body>
   <nav class="sidebar">
     <div class="text-center mb-4">
@@ -284,20 +314,19 @@ if (isset($_POST['toggle_availability'])) {
                       <p>Duration: <?= htmlspecialchars($booking['duration_days']) ?> day(s)</p>
                     </div>
                     <div class="col-md-6">
-                      <p>Status: 
+                      <p>Status:
                         <span class="badge 
                           <?= $booking['status'] === 'confirmed' ? 'bg-success' : ($booking['status'] === 'pending' ? 'bg-warning text-dark' : 'bg-danger') ?>">
                           <?= ucfirst($booking['status']) ?>
                         </span>
                       </p>
-                      <p>Payment Status: 
+                      <p>Payment Status:
                         <span class="badge <?= $booking['payment_status'] === 'paid' ? 'bg-success' : 'bg-warning text-dark' ?>">
                           <?= ucfirst($booking['payment_status']) ?>
                         </span>
                       </p>
-                      <p>Amount: USD<?= number_format($booking['amount'], 2) ?></p> 
-                      <?php if (!empty($booking['payment_method'])): ?>
-                        <p>Payment Method: <?= htmlspecialchars($booking['payment_method']) ?></p>
+                      <?php if (!empty($booking['paid_amount'])): ?>
+                        <p><strong>Paid:</strong> USD<?= number_format($booking['paid_amount'], 2) ?></p>
                       <?php endif; ?>
                     </div>
                   </div>
@@ -310,18 +339,13 @@ if (isset($_POST['toggle_availability'])) {
               <p class="text-center text-muted">No bookings found.</p>
             <?php endif; ?>
           </div>
+
         </div>
-      
+
         <div class="col-lg-4">
           <div class="card p-4 shadow-sm">
             <h6>Revenue Summary</h6>
-            <p>Total Revenue: <strong>₹<?= number_format($total_revenue, 2) ?></strong></p>
-            <div class="progress mb-3" style="height: 24px;">
-              <div class="progress-bar bg-warning text-dark fw-bold" role="progressbar" style="width: <?= $revenue_percent ?>%;" aria-valuenow="<?= $revenue_percent ?>" aria-valuemin="0" aria-valuemax="100">
-                <?= $revenue_percent ?>%
-              </div>
-            </div>
-            <p>Revenue Target: USD<?= number_format($revenue_target, 2) ?></p>
+            <p>Total Revenue: <strong>USD <?= number_format($total_revenue, 2) ?></strong></p>
           </div>
 
           <div class="card p-4 mt-4 shadow-sm text-center">
@@ -339,10 +363,11 @@ if (isset($_POST['toggle_availability'])) {
               </span>
             </p>
           </div>
+        </div>
       </div>
-    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

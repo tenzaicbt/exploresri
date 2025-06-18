@@ -6,43 +6,44 @@ $email = $password = "";
 $email_err = $password_err = $login_err = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (empty(trim($_POST["email"]))) {
-        $email_err = "Please enter your email.";
+  if (empty(trim($_POST["email"]))) {
+    $email_err = "Please enter your email.";
+  } else {
+    $email = trim($_POST["email"]);
+  }
+
+  if (empty(trim($_POST["password"]))) {
+    $password_err = "Please enter your password.";
+  } else {
+    $password = trim($_POST["password"]);
+  }
+
+  if (empty($email_err) && empty($password_err)) {
+    $stmt = $conn->prepare("SELECT * FROM guide WHERE email = ?");
+    $stmt->execute([$email]);
+    $guide = $stmt->fetch();
+
+    if ($guide && password_verify($password, $guide["password"])) {
+      if ($guide["is_verified"] && $guide["status"] == 'active') {
+        $_SESSION["guide_id"] = $guide["guide_id"];
+        $_SESSION["guide_name"] = $guide["name"];
+        $_SESSION["guide_email"] = $guide["email"];
+        $_SESSION["guide_role"] = "guide";
+        header("Location: ../guides/guide_dashboard.php");
+        exit;
+      } else {
+        $login_err = "Your account is not verified or inactive. Please contact support.";
+      }
     } else {
-        $email = trim($_POST["email"]);
+      $login_err = "Invalid email or password.";
     }
-
-    if (empty(trim($_POST["password"]))) {
-        $password_err = "Please enter your password.";
-    } else {
-        $password = trim($_POST["password"]);
-    }
-
-    if (empty($email_err) && empty($password_err)) {
-        $stmt = $conn->prepare("SELECT * FROM guide WHERE email = ?");
-        $stmt->execute([$email]);
-        $guide = $stmt->fetch();
-
-        if ($guide && password_verify($password, $guide["password"])) {
-            if ($guide["is_verified"] && $guide["status"] == 'active') {
-                $_SESSION["guide_id"] = $guide["guide_id"];
-                $_SESSION["guide_name"] = $guide["name"];
-                $_SESSION["guide_email"] = $guide["email"];
-                $_SESSION["guide_role"] = "guide";
-                header("Location: ../guides/guide_dashboard.php");
-                exit;
-            } else {
-                $login_err = "Your account is not verified or inactive. Please contact support.";
-            }
-        } else {
-            $login_err = "Invalid email or password.";
-        }
-    }
+  }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -63,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .login-card {
       background-color: #1b2735;
       border-radius: 18px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
       padding: 40px 30px;
       width: 100%;
       max-width: 420px;
@@ -150,11 +151,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="login-card">
     <h3><i class="bi bi-person-circle me-2"></i>Guide Login</h3>
@@ -168,10 +177,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <label class="form-label">Email</label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-          <input type="email" name="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" 
-              class="form-control <?php echo ($email_err) ? 'is-invalid' : ''; ?>" 
-              value="<?php echo htmlspecialchars($email); ?>" 
-              placeholder="Enter email" required />
+          <input type="email" name="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+            class="form-control <?php echo ($email_err) ? 'is-invalid' : ''; ?>"
+            value="<?php echo htmlspecialchars($email); ?>"
+            placeholder="Enter email" required />
         </div>
         <div class="invalid-feedback"><?php echo $email_err; ?></div>
       </div>
@@ -180,11 +189,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <label class="form-label">Password</label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-lock"></i></span>
-          <input type="password" name="password" id="password" 
-              class="form-control <?php echo ($password_err) ? 'is-invalid' : ''; ?>" 
-              placeholder="Enter password" required />
+          <input type="password" name="password" id="password"
+            class="form-control <?php echo ($password_err) ? 'is-invalid' : ''; ?>"
+            placeholder="Enter password" required />
           <button class="btn btn-outline-light" type="button" onclick="togglePassword()" tabindex="-1">
-              <i class="bi bi-eye" id="toggleIcon"></i>
+            <i class="bi bi-eye" id="toggleIcon"></i>
           </button>
         </div>
         <div class="invalid-feedback"><?php echo $password_err; ?></div>
@@ -217,4 +226,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
   </script>
 </body>
+
 </html>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 include '../config/db.php';
 session_start();
 
@@ -51,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>Register - ExploreSri</title>
@@ -72,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .register-card {
             background-color: #1b2735;
             border-radius: 18px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
             padding: 40px 30px;
             width: 100%;
             max-width: 500px;
@@ -91,7 +92,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-weight: 500;
         }
 
-        input.form-control, select.form-select {
+        input.form-control,
+        select.form-select {
             background: rgba(255, 255, 255, 0.05);
             border: none;
             color: #fff;
@@ -102,7 +104,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #aaa;
         }
 
-        input.form-control:focus, select.form-select:focus {
+        input.form-control:focus,
+        select.form-select:focus {
             background-color: rgba(255, 255, 255, 0.1);
             border-color: #f1c40f;
             box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
@@ -144,11 +147,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="register-card">
         <h3><i class="bi bi-person-plus-fill me-2"></i>Create Your Account</h3>
@@ -212,4 +223,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 </body>
+
 </html>

@@ -42,26 +42,27 @@ $bookings = [];
 
 try {
     $stmt = $conn->prepare("
-    SELECT 
-        gb.booking_id,
-        gb.travel_date,
-        gb.duration_days,
-        gb.status AS booking_status,
-        gb.created_at,
-        gb.payment_method,
-        gb.amount,
-        gb.check_in_date,
-        gb.check_out_date,
-        gb.notes,
-        gb.guide_id,
-        u.name AS user_name,
-        u.email AS user_email,
-        u.contact_number AS user_contact_number
-    FROM guide_bookings gb
-    LEFT JOIN users u ON gb.user_id = u.user_id
-    WHERE gb.guide_id = ?
-    ORDER BY gb.created_at DESC
-");
+            SELECT 
+                gb.booking_id,
+                gb.travel_date,
+                gb.duration_days,
+                gb.status AS booking_status,
+                gb.created_at,
+                gp.payment_method,
+                gp.amount,
+                gb.check_in_date,
+                gb.check_out_date,
+                gb.notes,
+                gb.guide_id,
+                u.name AS user_name,
+                u.email AS user_email,
+                u.contact_number AS user_contact_number
+            FROM guide_bookings gb
+            LEFT JOIN guide_payments gp ON gb.booking_id = gp.booking_id
+            LEFT JOIN users u ON gb.user_id = u.user_id
+            WHERE gb.guide_id = ?
+            ORDER BY gb.created_at DESC
+        ");
     $stmt->execute([$guide_id]);
     $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -71,6 +72,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>Assigned Bookings</title>
@@ -83,46 +85,48 @@ try {
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .status-badge {
             text-transform: capitalize;
         }
     </style>
 </head>
-<body>
-<div class="container mt-5">
-    <h2 class="mb-4">Assigned Guide Bookings</h2>
 
-    <table class="table table-bordered table-hover align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Booking ID</th>
-                <th>Guide ID</th>
-                <th>User Name</th>
-                <th>User Email</th>
-                <th>User Contact</th>
-                <th>Travel Date</th>
-                <th>Duration</th>
-                <th>Booking Amount</th>
-                <th>Payment Method</th>
-                <th>Booking Status</th>
-                <th>Change Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($bookings)): ?>
-                <?php foreach ($bookings as $b): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($b['booking_id']) ?></td>
-                        <td><?= htmlspecialchars($b['guide_id']) ?></td>
-                        <td class="truncate" title="<?= htmlspecialchars($b['user_name']) ?>"><?= htmlspecialchars($b['user_name']) ?></td>
-                        <td><?= htmlspecialchars($b['user_email']) ?></td>
-                        <td><?= htmlspecialchars($b['user_contact_number'] ?? 'N/A') ?></td>
-                        <td><?= htmlspecialchars($b['travel_date']) ?></td>
-                        <td><?= htmlspecialchars($b['duration_days']) ?> days</td>
-                        <td>$<?= number_format($b['amount'], 2) ?></td>
-                        <td><?= htmlspecialchars($b['payment_method'] ?? 'N/A') ?></td>
-                        <td>
-                            <?php 
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Assigned Guide Bookings</h2>
+
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <!-- <th>Booking ID</th>
+                <th>Guide ID</th> -->
+                    <th>User Name</th>
+                    <th>User Email</th>
+                    <th>User Contact</th>
+                    <th>Travel Date</th>
+                    <th>Duration</th>
+                    <th>Booking Amount</th>
+                    <th>Payment Method</th>
+                    <th>Booking Status</th>
+                    <th>Change Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($bookings)): ?>
+                    <?php foreach ($bookings as $b): ?>
+                        <tr>
+                            <!-- <td><?= htmlspecialchars($b['booking_id']) ?></td>
+                        <td><?= htmlspecialchars($b['guide_id']) ?></td> -->
+                            <td class="truncate" title="<?= htmlspecialchars($b['user_name']) ?>"><?= htmlspecialchars($b['user_name']) ?></td>
+                            <td><?= htmlspecialchars($b['user_email']) ?></td>
+                            <td><?= htmlspecialchars($b['user_contact_number'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($b['travel_date']) ?></td>
+                            <td><?= htmlspecialchars($b['duration_days']) ?> days</td>
+                            <td>$<?= number_format($b['amount'], 2) ?></td>
+                            <td><?= htmlspecialchars($b['payment_method'] ?? 'N/A') ?></td>
+                            <td>
+                                <?php
                                 $bstatus = strtolower($b['booking_status'] ?? 'pending');
                                 $badgeColor = match ($bstatus) {
                                     'confirmed' => 'success',
@@ -130,28 +134,31 @@ try {
                                     'cancelled' => 'danger',
                                     default => 'secondary'
                                 };
-                            ?>
-                            <span class="badge bg-<?= $badgeColor ?> status-badge"><?= htmlspecialchars($bstatus) ?></span>
-                        </td>
-                        <td>
-                            <form method="POST" onchange="this.submit()" class="m-0 p-0">
-                                <input type="hidden" name="booking_id" value="<?= $b['booking_id'] ?>">
-                                <select name="status" class="form-select form-select-sm">
-                                    <option value="pending" <?= $bstatus === 'pending' ? 'selected' : '' ?>>Pending</option>
-                                    <option value="confirmed" <?= $bstatus === 'confirmed' ? 'selected' : '' ?>>Confirm</option>
-                                    <option value="cancelled" <?= $bstatus === 'cancelled' ? 'selected' : '' ?>>Cancel</option>
-                                </select>
-                            </form>
-                        </td>
+                                ?>
+                                <span class="badge bg-<?= $badgeColor ?> status-badge"><?= htmlspecialchars($bstatus) ?></span>
+                            </td>
+                            <td>
+                                <form method="POST" onchange="this.submit()" class="m-0 p-0">
+                                    <input type="hidden" name="booking_id" value="<?= $b['booking_id'] ?>">
+                                    <select name="status" class="form-select form-select-sm">
+                                        <option value="pending" <?= $bstatus === 'pending' ? 'selected' : '' ?>>Pending</option>
+                                        <option value="confirmed" <?= $bstatus === 'confirmed' ? 'selected' : '' ?>>Confirm</option>
+                                        <option value="cancelled" <?= $bstatus === 'cancelled' ? 'selected' : '' ?>>Cancel</option>
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="11" class="text-center">No bookings found.</td>
                     </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr><td colspan="11" class="text-center">No bookings found.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                <?php endif; ?>
+            </tbody>
+        </table>
 
-    <a href="guide_dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
-</div>
+        <a href="guide_dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
+    </div>
 </body>
+
 </html>

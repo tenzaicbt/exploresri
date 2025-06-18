@@ -71,6 +71,7 @@ $booking = $stmt->fetch();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>My Guide Bookings</title>
@@ -105,9 +106,10 @@ $booking = $stmt->fetch();
             width: 100%;
             transition: transform 0.3s ease;
         }
+
         .booking-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 12px 28px rgba(0,0,0,0.8);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.8);
         }
 
         .booking-content {
@@ -182,34 +184,36 @@ $booking = $stmt->fetch();
             border-radius: 10px;
             color: #cbd5e1;
         }
+
         .guide-photo {
             width: 160px;
             height: 160px;
             object-fit: cover;
             border-radius: 16px;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            border: 2px solid #facc15; /* golden border to match your theme */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            border: 2px solid #facc15;
+            /* golden border to match your theme */
         }
-
     </style>
 </head>
+
 <body>
 
-<div class="container mt-5">
-    <h1>My Guide Bookings</h1>
+    <div class="container mt-5">
+        <h1>My Guide Bookings</h1>
 
-    <?php if (!empty($booking)): ?>
-        <div class="booking-card">
-            <div class="booking-content">
-                <div class="text-info">
-                    <h4><?= htmlspecialchars($booking['guide_name']) ?></h4>
-                    <p><strong>Travel Date:</strong> <?= htmlspecialchars($booking['travel_date']) ?></p>
-                    <p><strong>Duration:</strong> <?= (int)$booking['duration_days'] ?> day(s)</p>
+        <?php if (!empty($booking)): ?>
+            <div class="booking-card">
+                <div class="booking-content">
+                    <div class="text-info">
+                        <h4><?= htmlspecialchars($booking['guide_name']) ?></h4>
+                        <p><strong>Travel Date:</strong> <?= htmlspecialchars($booking['travel_date']) ?></p>
+                        <p><strong>Duration:</strong> <?= (int)$booking['duration_days'] ?> day(s)</p>
 
-                    <div class="status-line">
-                        <strong>Status:</strong>
-                        <?php
+                        <div class="status-line">
+                            <strong>Status:</strong>
+                            <?php
                             $status = strtolower($booking['status'] ?? 'pending');
                             $status_class = match ($status) {
                                 'confirmed' => 'badge bg-success',
@@ -217,39 +221,40 @@ $booking = $stmt->fetch();
                                 'cancelled' => 'badge bg-danger',
                                 default => 'badge bg-secondary',
                             };
-                        ?>
-                        <span class="<?= $status_class ?>"><?= ucfirst($status) ?></span>
-                    </div>
+                            ?>
+                            <span class="<?= $status_class ?>"><?= ucfirst($status) ?></span>
+                        </div>
 
-                    <div class="status-line">
-                        <strong>Payment Status:</strong>
-                        <?php
+                        <div class="status-line">
+                            <strong>Payment Status:</strong>
+                            <?php
                             $payment = strtolower($booking['payment_status'] ?? 'pending');
                             $payment_class = $payment === 'paid' ? 'badge bg-success' : 'badge bg-danger';
-                        ?>
-                        <span class="<?= $payment_class ?>"><?= ucfirst($payment) ?></span>
+                            ?>
+                            <span class="<?= $payment_class ?>"><?= ucfirst($payment) ?></span>
+                        </div>
+
+                        <p><strong>Payment Method:</strong> <?= htmlspecialchars($booking['payment_method'] ?? 'N/A') ?></p>
+                        <p><strong>Amount Paid:</strong> $<?= number_format((float)$booking['amount'], 2) ?></p>
+                        <p><strong>Notes:</strong> <br><small><?= nl2br(htmlspecialchars($booking['notes'] ?? 'No notes')) ?></small></p>
                     </div>
 
-                    <p><strong>Payment Method:</strong> <?= htmlspecialchars($booking['payment_method'] ?? 'N/A') ?></p>
-                    <p><strong>Amount Paid:</strong> $<?= number_format((float)$booking['amount'], 2) ?></p>
-                    <p><strong>Notes:</strong> <br><small><?= nl2br(htmlspecialchars($booking['notes'] ?? 'No notes')) ?></small></p>
-                </div>
-
-                <div class="cancel-btn">
-                    <form action="guide_delete.php" method="POST" onsubmit="return confirm('Cancel this booking?')">
-                        <input type="hidden" name="booking_id" value="<?= $booking['booking_id'] ?>">
-                        <button type="guide_delete" class="btn-cancel">Cancel</button>
-                    </form>
+                    <div class="cancel-btn">
+                        <form action="guide_delete.php" method="POST" onsubmit="return confirm('Cancel this booking?')">
+                            <input type="hidden" name="booking_id" value="<?= $booking['booking_id'] ?>">
+                            <button type="guide_delete" class="btn-cancel">Cancel</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    <?php else: ?>
-        <div class="text-center mt-5">
-            <h4>No bookings found</h4>
-        </div>
-    <?php endif; ?>
-</div>
+        <?php else: ?>
+            <div class="text-center mt-5">
+                <h4>No bookings found</h4>
+            </div>
+        <?php endif; ?>
+    </div>
 
-<?php include 'includes/footer.php'; ?>
+    <?php include 'includes/footer.php'; ?>
 </body>
+
 </html>

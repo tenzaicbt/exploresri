@@ -4,9 +4,9 @@ include 'config/db.php';
 include 'includes/header.php';
 
 if (!isset($_GET['guide_id'])) {
-    echo "<p class='text-danger text-center mt-5'>Invalid guide selection.</p>";
-    include 'includes/footer.php';
-    exit;
+  echo "<p class='text-danger text-center mt-5'>Invalid guide selection.</p>";
+  include 'includes/footer.php';
+  exit;
 }
 
 $guide_id = (int)$_GET['guide_id'];
@@ -16,14 +16,15 @@ $stmt->execute([$guide_id]);
 $guide = $stmt->fetch();
 
 if (!$guide) {
-    echo "<p class='text-danger text-center mt-5'>Guide not found.</p>";
-    include 'includes/footer.php';
-    exit;
+  echo "<p class='text-danger text-center mt-5'>Guide not found.</p>";
+  include 'includes/footer.php';
+  exit;
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title><?= htmlspecialchars($guide['name']) ?> - Guide Profile</title>
@@ -42,11 +43,13 @@ if (!$guide) {
       padding-top: 0px;
     }
 
-    header, nav {
+    header,
+    nav {
       margin-bottom: 0 !important;
     }
 
-    .guide-card, .booking-card {
+    .guide-card,
+    .booking-card {
       background: rgba(255, 255, 255, 0.05);
       padding: 30px;
       border-radius: 20px;
@@ -54,7 +57,8 @@ if (!$guide) {
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
 
-    h2, h4 {
+    h2,
+    h4 {
       color: #f1c40f;
       font-weight: 700;
     }
@@ -72,14 +76,18 @@ if (!$guide) {
       font-weight: 500;
     }
 
-    .form-control, textarea, input[type="date"], input[type="number"] {
+    .form-control,
+    textarea,
+    input[type="date"],
+    input[type="number"] {
       background-color: rgba(255, 255, 255, 0.1);
       color: #fff;
       border: none;
       border-radius: 12px;
     }
 
-    .form-control::placeholder, textarea::placeholder {
+    .form-control::placeholder,
+    textarea::placeholder {
       color: #bbb;
     }
 
@@ -128,14 +136,16 @@ if (!$guide) {
 
           <hr class="text-secondary" />
 
-          <h3><p><span class="info-label">Price Per Day:</span> <?= number_format($guide['price_per_day'], 2) ?> USD</p></h3>
+          <h3>
+            <p><span class="info-label">Price Per Day:</span> <?= number_format($guide['price_per_day'], 2) ?> USD</p>
+          </h3>
           <p>
             <span class="info-label">Rating:</span>
             <?php
-              $rating = round($guide['rating']);
-              for ($i = 1; $i <= 5; $i++) {
-                  echo $i <= $rating ? '<i class="bi bi-star-fill text-warning"></i> ' : '<i class="bi bi-star text-secondary"></i> ';
-              }
+            $rating = round($guide['rating']);
+            for ($i = 1; $i <= 5; $i++) {
+              echo $i <= $rating ? '<i class="bi bi-star-fill text-warning"></i> ' : '<i class="bi bi-star text-secondary"></i> ';
+            }
             ?>
           </p>
 
@@ -151,7 +161,7 @@ if (!$guide) {
 
       <div class="col-md-6">
         <div class="booking-card">
-          <h4>  BOOK NOW </h4>
+          <h4> BOOK NOW </h4>
 
           <?php if ((int)$guide['is_available'] === 1): ?>
             <?php if (isset($_SESSION['user_id'])): ?>
@@ -197,6 +207,7 @@ if (!$guide) {
     </div>
   </div>
 </body>
+
 </html>
 
 <?php include 'includes/footer.php'; ?>

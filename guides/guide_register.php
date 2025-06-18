@@ -6,66 +6,67 @@ $name = $email = $password = $re_password = $languages = $experience_years = $bi
 $name_err = $email_err = $password_err = $re_password_err = $languages_err = $experience_err = $bio_err = $contact_err = $price_err = $register_err = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = trim($_POST["name"] ?? "");
-    $email = trim($_POST["email"] ?? "");
-    $password = $_POST["password"] ?? "";
-    $re_password = $_POST["re_password"] ?? "";
-    $languages = trim($_POST["languages"] ?? "");
-    $experience_years = trim($_POST["experience_years"] ?? "");
-    $bio = trim($_POST["bio"] ?? "");
-    $contact_info = trim($_POST["contact_info"] ?? "");
-    $price_per_day = trim($_POST["price_per_day"] ?? "");
+  $name = trim($_POST["name"] ?? "");
+  $email = trim($_POST["email"] ?? "");
+  $password = $_POST["password"] ?? "";
+  $re_password = $_POST["re_password"] ?? "";
+  $languages = trim($_POST["languages"] ?? "");
+  $experience_years = trim($_POST["experience_years"] ?? "");
+  $bio = trim($_POST["bio"] ?? "");
+  $contact_info = trim($_POST["contact_info"] ?? "");
+  $price_per_day = trim($_POST["price_per_day"] ?? "");
 
-    // Validations
-    if (empty($name)) $name_err = "Name is required.";
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $email_err = "Invalid email.";
-    if (empty($password)) $password_err = "Password is required.";
-    if ($password !== $re_password) $re_password_err = "Passwords do not match.";
-    if (empty($languages)) $languages_err = "Languages field is required.";
-    if (!is_numeric($experience_years) || $experience_years < 0) $experience_err = "Experience must be a positive number.";
-    if (empty($bio)) $bio_err = "Bio is required.";
-    if (empty($contact_info)) $contact_err = "Contact info is required.";
-    if (!is_numeric($price_per_day) || $price_per_day < 0) $price_err = "Price per day must be a positive number.";
+  // Validations
+  if (empty($name)) $name_err = "Name is required.";
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $email_err = "Invalid email.";
+  if (empty($password)) $password_err = "Password is required.";
+  if ($password !== $re_password) $re_password_err = "Passwords do not match.";
+  if (empty($languages)) $languages_err = "Languages field is required.";
+  if (!is_numeric($experience_years) || $experience_years < 0) $experience_err = "Experience must be a positive number.";
+  if (empty($bio)) $bio_err = "Bio is required.";
+  if (empty($contact_info)) $contact_err = "Contact info is required.";
+  if (!is_numeric($price_per_day) || $price_per_day < 0) $price_err = "Price per day must be a positive number.";
 
-    if (empty($name_err) && empty($email_err) && empty($password_err) && empty($re_password_err) && empty($languages_err) && empty($experience_err) && empty($bio_err) && empty($contact_err) && empty($price_err)) {
-        $stmt = $conn->prepare("SELECT * FROM guide WHERE email = ?");
-        $stmt->execute([$email]);
-        if ($stmt->rowCount() > 0) {
-            $email_err = "Email is already registered.";
+  if (empty($name_err) && empty($email_err) && empty($password_err) && empty($re_password_err) && empty($languages_err) && empty($experience_err) && empty($bio_err) && empty($contact_err) && empty($price_err)) {
+    $stmt = $conn->prepare("SELECT * FROM guide WHERE email = ?");
+    $stmt->execute([$email]);
+    if ($stmt->rowCount() > 0) {
+      $email_err = "Email is already registered.";
+    } else {
+      $photo = null;
+      if (!empty($_FILES["photo"]["name"])) {
+        $target_dir = "../uploads/guides/";
+        if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
+        $filename = time() . '_' . basename($_FILES["photo"]["name"]);
+        $target_file = $target_dir . $filename;
+        if (move_uploaded_file($_FILES["photo"]["tmp_name"], $target_file)) {
+          $photo = $filename;
         } else {
-            $photo = null;
-            if (!empty($_FILES["photo"]["name"])) {
-                $target_dir = "../uploads/guides/";
-                if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
-                $filename = time() . '_' . basename($_FILES["photo"]["name"]);
-                $target_file = $target_dir . $filename;
-                if (move_uploaded_file($_FILES["photo"]["tmp_name"], $target_file)) {
-                    $photo = $filename;
-                } else {
-                    $register_err = "Failed to upload photo.";
-                }
-            }
-
-            if (!$register_err) {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $conn->prepare("INSERT INTO guide (name, email, password, languages, experience_years, bio, photo, contact_info, price_per_day, rating, is_verified, created_at, status)
-                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, NOW(), 'active')");
-                $result = $stmt->execute([$name, $email, $hashed_password, $languages, $experience_years, $bio, $photo, $contact_info, $price_per_day]);
-
-                if ($result) {
-                    header("Location: guide_login.php?success=1");
-                    exit;
-                } else {
-                    $register_err = "Something went wrong. Please try again.";
-                }
-            }
+          $register_err = "Failed to upload photo.";
         }
+      }
+
+      if (!$register_err) {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("INSERT INTO guide (name, email, password, languages, experience_years, bio, photo, contact_info, price_per_day, rating, is_verified, created_at, status)
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, NOW(), 'active')");
+        $result = $stmt->execute([$name, $email, $hashed_password, $languages, $experience_years, $bio, $photo, $contact_info, $price_per_day]);
+
+        if ($result) {
+          header("Location: guide_login.php?success=1");
+          exit;
+        } else {
+          $register_err = "Something went wrong. Please try again.";
+        }
+      }
     }
+  }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -87,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .register-card {
       background-color: #1b2735;
       border-radius: 18px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
       padding: 40px 30px;
       width: 100%;
       max-width: 640px;
@@ -105,18 +106,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       font-weight: 500;
     }
 
-    input.form-control, textarea.form-control {
+    input.form-control,
+    textarea.form-control {
       background: rgba(255, 255, 255, 0.05);
       border: none;
       color: #fff;
       border-radius: 10px;
     }
 
-    input.form-control::placeholder, textarea.form-control::placeholder {
+    input.form-control::placeholder,
+    textarea.form-control::placeholder {
       color: #aaa;
     }
 
-    input.form-control:focus, textarea.form-control:focus {
+    input.form-control:focus,
+    textarea.form-control:focus {
       background-color: rgba(255, 255, 255, 0.1);
       border-color: #f1c40f;
       box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
@@ -162,11 +166,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="register-card">
     <h3><i class="bi bi-person-plus-fill me-2"></i>Register as a Guide</h3>
@@ -245,4 +257,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
   </div>
 </body>
+
 </html>

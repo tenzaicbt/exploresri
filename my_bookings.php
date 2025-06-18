@@ -15,7 +15,6 @@ $stmt = $conn->prepare("
     SELECT 
         b.*, 
         h.name AS hotel_name, 
-        h.image AS hotel_image,
         h.location AS hotel_location,
         p.amount,
         p.payment_method,
@@ -34,7 +33,6 @@ $guideStmt = $conn->prepare("
     SELECT 
         gb.*, 
         g.name AS guide_name, 
-        g.photo AS photo, 
         g.country, 
         gp.amount, 
         gp.payment_method, 
@@ -47,10 +45,31 @@ $guideStmt = $conn->prepare("
 ");
 $guideStmt->execute([$user_id]);
 $guideBookings = $guideStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Vehicle Bookings
+$vehicleStmt = $conn->prepare("
+    SELECT 
+        vb.*, 
+        v.model, 
+        v.type, 
+        v.capacity, 
+        vp.amount, 
+        vp.payment_method, 
+        vp.payment_date
+    FROM vehicle_bookings vb
+    JOIN vehicles v ON vb.vehicle_id = v.vehicle_id
+    LEFT JOIN vehicle_payments vp ON vb.booking_id = vp.booking_id
+    WHERE vb.user_id = ?
+    ORDER BY vb.created_at DESC
+");
+$vehicleStmt->execute([$user_id]);
+$vehicleBookings = $vehicleStmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>MY BOOKINGS</title>
@@ -64,224 +83,254 @@ $guideBookings = $guideStmt->fetchAll(PDO::FETCH_ASSOC);
             min-height: 100vh;
             overflow-x: hidden;
         }
+
         h1 {
-            font-size: 2.4rem;
             font-weight: 600;
             text-align: center;
-            margin: 30px 0;
+            color: #facc15;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .booking-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .booking-card h5 {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .booking-card p {
+            font-size: 0.9rem;
+            margin: 3px 0;
+            color: #cbd5e1;
+        }
+
+        .status-line {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 8px 0 5px 0;
+            color: #facc15;
+            /* bright yellow for captions */
+        }
+
+        .status-line span.status-text {
+            font-weight: 700;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        .status-confirmed {
+            color: #16a34a;
+        }
+
+        /* Green */
+        .status-pending {
             color: #facc15;
         }
-        .booking-card {
-            position: relative;
-            display: flex;
-            overflow: hidden;
-            border-radius: 16px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-            background-color: rgba(#1b2735);
-            height: auto;
-            width: 100%;
+
+        /* Yellow */
+        .status-cancelled {
+            color: #dc2626;
         }
-        .booking-bg {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-size: cover;
-            background-position: center;
-            opacity: 0.12;
-            filter: blur(12px);
-            z-index: 1;
+
+        /* Red */
+        .status-paid {
+            color: #22c55e;
         }
-        .booking-content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            align-items: flex-start;
-            padding: 20px 30px;
-            width: 100%;
-            gap: 30px;
+
+        /* Green */
+        .status-unpaid {
+            color: #b91c1c;
         }
-        .hotel-img {
-            width: 230px;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 14px;
-            flex-shrink: 0;
+
+        /* Dark Red */
+
+        .info-section {
+            margin-top: 10px;
         }
-        .text-info {
-            flex-grow: 1;
-        }
-        .text-info h5 {
-            margin: 0 0 12px;
-            color: #fff;
-            font-size: 1.6rem;
-        }
-        .text-info p {
-            margin: 6px 0;
-            color: #e2e8f0;
-            font-size: 1rem;
-        }
-        .status-line {
-            font-size: 1rem;
-            font-weight: 500;
-            margin: 8px 0;
-        }
-        .status-text {
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 500;
+
+        .info-section span {
             display: inline-block;
-        }
-        .status-confirmed { background-color: #16a34a; color: #fff; }
-        .status-pending   { background-color: #facc15; color: #000; }
-        .status-cancelled { background-color: #dc2626; color: #fff; }
-        .status-paid      { background-color: #22c55e; color: #fff; }
-        .status-unpaid    { background-color: #b91c1c; color: #fff; }
-        .cancel-btn {
-            text-align: right;
-        }
-        .btn-cancel {
-            padding: 8px 18px;
-            font-size: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 12px;
             border-radius: 8px;
+            font-size: 0.85rem;
+            margin: 5px 10px 5px 0;
+            color: #cbd5e1;
+        }
+
+        .btn-cancel {
+            margin-top: 15px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            border-radius: 6px;
             background-color: #ef4444;
             color: #fff;
             border: none;
-            transition: background 0.3s ease;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
+
         .btn-cancel:hover {
             background-color: #dc2626;
         }
-        .info-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        .info-section span {
-            font-size: 0.95rem;
-            background: rgba(255, 255, 255, 0.07);
-            padding: 6px 12px;
-            border-radius: 8px;
-            color: #cbd5e1;
+
+        .category-section {
+            margin-bottom: 40px;
         }
     </style>
+
 </head>
+
 <body>
-<div class="container">
-    <h1>MY BOOKINGS</h1>
+    <div class="container">
+        <h1>MY BOOKINGS</h1>
 
-    <?php if (count($bookings) > 0): ?>
-        <?php foreach ($bookings as $booking): ?>
-            <div class="booking-card">
-                <div class="booking-bg" style="background-image: url('images/<?= htmlspecialchars($booking['hotel_image']) ?>');"></div>
-                <div class="booking-content">
-                    <img src="images/<?= htmlspecialchars($booking['hotel_image']) ?>" class="hotel-img" alt="Hotel Image" />
-                    <div class="text-info">
-                        <h5><?= htmlspecialchars($booking['hotel_name']) ?></h5>
-                        <p><strong>Location:</strong> <?= htmlspecialchars($booking['hotel_location']) ?></p>
-                        <div class="status-line">
-                            Booking Status:
-                            <?php
-                                $status = strtolower($booking['status'] ?? 'pending');
-                                $status_class = match ($status) {
-                                    'confirmed' => 'status-confirmed',
-                                    'pending' => 'status-pending',
-                                    'cancelled' => 'status-cancelled',
-                                    default => 'status-pending',
-                                };
-                                echo "<span class='status-text $status_class'>" . ucfirst($status) . "</span>";
-                            ?>
-                        </div>
-                        <div class="status-line">
-                            Payment Status:
-                            <?php
-                                $payment = strtolower($booking['payment_status'] ?? 'unpaid');
-                                $payment_class = $payment === 'paid' ? 'status-paid' : 'status-unpaid';
-                                echo "<span class='status-text $payment_class'>" . ucfirst($payment) . "</span>";
-                            ?>
-                        </div>
-                        <div class="info-section">
-                            <span><strong>Check-in:</strong> <?= htmlspecialchars($booking['check_in_date']) ?></span>
-                            <span><strong>Check-out:</strong> <?= htmlspecialchars($booking['check_out_date']) ?></span>
-                            <span><strong>Nights:</strong> <?= htmlspecialchars($booking['nights']) ?></span>
-                            <span><strong>Total Price:</strong> $<?= htmlspecialchars(number_format($booking['amount'] ?? 0, 2)) ?></span>
-                            <?php if (!empty($booking['payment_method'])): ?>
-                                <span><strong>Payment Method:</strong> <?= htmlspecialchars($booking['payment_method']) ?></span>
-                            <?php endif; ?>
-                        </div>
+        <!-- HOTEL BOOKINGS -->
+        <?php if (count($bookings) > 0): ?>
+            <?php foreach ($bookings as $booking): ?>
+                <div class="booking-card">
+                    <h5><?= htmlspecialchars($booking['hotel_name']) ?></h5>
+                    <p><strong>Location:</strong> <?= htmlspecialchars($booking['hotel_location']) ?></p>
+                    <div class="status-line">
+                        Booking Status:
+                        <?php
+                        $status = strtolower($booking['status'] ?? 'pending');
+                        $status_class = match ($status) {
+                            'confirmed' => 'status-confirmed',
+                            'pending' => 'status-pending',
+                            'cancelled' => 'status-cancelled',
+                            default => 'status-pending',
+                        };
+                        echo "<span class='status-text $status_class'>" . ucfirst($status) . "</span>";
+                        ?>
                     </div>
-                    <div class="cancel-btn">
-                        <form action="delete_booking_user.php" method="POST" onsubmit="return confirm('Cancel this booking?')">
-                            <input type="hidden" name="booking_id" value="<?= htmlspecialchars($booking['booking_id']) ?>" />
-                            <button type="submit" class="btn-cancel">Cancel</button>
-                        </form>
+                    <div class="status-line">
+                        Payment Status:
+                        <?php
+                        $payment = strtolower($booking['payment_status'] ?? 'unpaid');
+                        $payment_class = $payment === 'paid' ? 'status-paid' : 'status-unpaid';
+                        echo "<span class='status-text $payment_class'>" . ucfirst($payment) . "</span>";
+                        ?>
                     </div>
+                    <div class="info-section">
+                        <span><strong>Check-in:</strong> <?= htmlspecialchars($booking['check_in_date']) ?></span>
+                        <span><strong>Check-out:</strong> <?= htmlspecialchars($booking['check_out_date']) ?></span>
+                        <span><strong>Nights:</strong> <?= htmlspecialchars($booking['nights']) ?></span>
+                        <span><strong>Total Price:</strong> $<?= htmlspecialchars(number_format($booking['amount'] ?? 0, 2)) ?></span>
+                        <?php if (!empty($booking['payment_method'])): ?>
+                            <span><strong>Payment Method:</strong> <?= htmlspecialchars($booking['payment_method']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <form action="delete_booking_user.php" method="POST" onsubmit="return confirm('Cancel this booking?')">
+                        <input type="hidden" name="booking_id" value="<?= htmlspecialchars($booking['booking_id']) ?>" />
+                        <button type="submit" class="btn-cancel">Cancel</button>
+                    </form>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
 
-    <?php if (count($guideBookings) > 0): ?>
-        <?php foreach ($guideBookings as $booking): ?>
-            <?php 
-                $guidePhoto = !empty($booking['photo']) ? $booking['photo'] : 'default-guide.jpg';
-            ?>
-            <div class="booking-card">
-                <div class="booking-bg" style="background-image: url('images/<?= htmlspecialchars($guidePhoto) ?>');"></div>
-                <div class="booking-content">
-                    <img src="images/<?= htmlspecialchars($guidePhoto) ?>" class="hotel-img" alt="Guide Photo" />
-                    <div class="text-info">
-                        <h5><?= htmlspecialchars($booking['guide_name']) ?> (Guide Person)</h5>
-                        <p><strong>Country:</strong> <?= htmlspecialchars($booking['country']) ?></p>
-                        <div class="status-line">
-                            Booking Status:
-                            <?php
-                                $status = strtolower($booking['status'] ?? 'pending');
-                                $status_class = match ($status) {
-                                    'confirmed' => 'status-confirmed',
-                                    'pending' => 'status-pending',
-                                    'cancelled' => 'status-cancelled',
-                                    default => 'status-pending',
-                                };
-                                echo "<span class='status-text $status_class'>" . ucfirst($status) . "</span>";
-                            ?>
-                        </div>
-                        <div class="status-line">
-                            Payment Status:
-                            <?php
-                                $payment = strtolower($booking['payment_status'] ?? 'unpaid');
-                                $payment_class = $payment === 'paid' ? 'status-paid' : 'status-unpaid';
-                                echo "<span class='status-text $payment_class'>" . ucfirst($payment) . "</span>";
-                            ?>
-                        </div>
-                        <div class="info-section">
-                            <span><strong>Travel Date:</strong> <?= htmlspecialchars($booking['travel_date']) ?></span>
-                            <span><strong>Duration:</strong> <?= htmlspecialchars($booking['duration_days']) ?> days</span>
-                            <span><strong>Total Price:</strong> $<?= htmlspecialchars(number_format($booking['amount'] ?? 0, 2)) ?></span>
-                            <?php if (!empty($booking['payment_method'])): ?>
-                                <span><strong>Payment Method:</strong> <?= htmlspecialchars($booking['payment_method']) ?></span>
-                            <?php endif; ?>
-                        </div>
+        <!-- GUIDE BOOKINGS -->
+        <?php if (count($guideBookings) > 0): ?>
+            <?php foreach ($guideBookings as $booking): ?>
+                <div class="booking-card">
+                    <h5><?= htmlspecialchars($booking['guide_name']) ?> (Guide Person)</h5>
+                    <p><strong>Country:</strong> <?= htmlspecialchars($booking['country']) ?></p>
+                    <div class="status-line">
+                        Booking Status:
+                        <?php
+                        $status = strtolower($booking['status'] ?? 'pending');
+                        $status_class = match ($status) {
+                            'confirmed' => 'status-confirmed',
+                            'pending' => 'status-pending',
+                            'cancelled' => 'status-cancelled',
+                            default => 'status-pending',
+                        };
+                        echo "<span class='status-text $status_class'>" . ucfirst($status) . "</span>";
+                        ?>
                     </div>
-                    <div class="cancel-btn">
-                        <form action="guides/guide_delete.php" method="POST" onsubmit="return confirm('Cancel this guide booking?')">
-                            <input type="hidden" name="booking_id" value="<?= htmlspecialchars($booking['booking_id']) ?>" />
-                            <button type="submit" class="btn-cancel">Cancel</button>
-                        </form>
+                    <div class="status-line">
+                        Payment Status:
+                        <?php
+                        $payment = strtolower($booking['payment_status'] ?? 'unpaid');
+                        $payment_class = $payment === 'paid' ? 'status-paid' : 'status-unpaid';
+                        echo "<span class='status-text $payment_class'>" . ucfirst($payment) . "</span>";
+                        ?>
                     </div>
+                    <div class="info-section">
+                        <span><strong>Travel Date:</strong> <?= htmlspecialchars($booking['travel_date']) ?></span>
+                        <span><strong>Duration:</strong> <?= htmlspecialchars($booking['duration_days']) ?> days</span>
+                        <span><strong>Total Price:</strong> $<?= htmlspecialchars(number_format($booking['amount'] ?? 0, 2)) ?></span>
+                        <?php if (!empty($booking['payment_method'])): ?>
+                            <span><strong>Payment Method:</strong> <?= htmlspecialchars($booking['payment_method']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <form action="guides/guide_delete.php" method="POST" onsubmit="return confirm('Cancel this guide booking?')">
+                        <input type="hidden" name="booking_id" value="<?= htmlspecialchars($booking['booking_id']) ?>" />
+                        <button type="submit" class="btn-cancel">Cancel</button>
+                    </form>
                 </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <!-- VEHICLE BOOKINGS -->
+        <?php if (count($vehicleBookings) > 0): ?>
+            <?php foreach ($vehicleBookings as $booking): ?>
+                <div class="booking-card">
+                    <h5><?= htmlspecialchars($booking['model']) ?> (Vehicle)</h5>
+                    <p><strong>Type:</strong> <?= htmlspecialchars($booking['type']) ?> | <strong>Capacity:</strong> <?= htmlspecialchars($booking['capacity']) ?> seats</p>
+                    <div class="status-line">
+                        Booking Status:
+                        <?php
+                        $status = strtolower($booking['status'] ?? 'pending');
+                        $status_class = match ($status) {
+                            'confirmed' => 'status-confirmed',
+                            'pending' => 'status-pending',
+                            'cancelled' => 'status-cancelled',
+                            default => 'status-pending',
+                        };
+                        echo "<span class='status-text $status_class'>" . ucfirst($status) . "</span>";
+                        ?>
+                    </div>
+                    <div class="status-line">
+                        Payment Status:
+                        <?php
+                        $payment_class = !empty($booking['amount']) ? 'status-paid' : 'status-unpaid';
+                        $payment_status = !empty($booking['amount']) ? 'Paid' : 'Unpaid';
+                        echo "<span class='status-text $payment_class'>" . $payment_status . "</span>";
+                        ?>
+                    </div>
+                    <div class="info-section">
+                        <span><strong>From:</strong> <?= htmlspecialchars($booking['booking_start']) ?></span>
+                        <span><strong>To:</strong> <?= htmlspecialchars($booking['booking_end']) ?></span>
+                        <span><strong>Total Price:</strong> $<?= htmlspecialchars(number_format($booking['amount'] ?? 0, 2)) ?></span>
+                        <?php if (!empty($booking['payment_method'])): ?>
+                            <span><strong>Payment Method:</strong> <?= htmlspecialchars($booking['payment_method']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <form action="company/vehicle_delete.php" method="POST" onsubmit="return confirm('Cancel this vehicle booking?')">
+                        <input type="hidden" name="booking_id" value="<?= htmlspecialchars($booking['booking_id']) ?>" />
+                        <button type="submit" class="btn-cancel">Cancel</button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <?php if (count($bookings) === 0 && count($guideBookings) === 0 && count($vehicleBookings) === 0): ?>
+            <div class="text-center text-white mt-5">
+                <h4>No bookings found</h4>
             </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+        <?php endif; ?>
 
-    <?php if (count($bookings) === 0 && count($guideBookings) === 0): ?>
-        <div class="text-center text-white mt-5">
-            <h4>No bookings found</h4>
-        </div>
-    <?php endif; ?>
-</div>
-
-<?php include 'includes/footer.php'; ?>
+    </div>
+    <?php include 'includes/footer.php'; ?>
 </body>
+
 </html>

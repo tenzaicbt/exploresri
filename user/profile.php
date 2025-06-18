@@ -23,7 +23,7 @@ $country = $user['country'] ?? '';
 $profile_pic = $user['profile_pic'];
 
 // Default country code
-$country_code = '+94'; 
+$country_code = '+94';
 $contact_number = '';
 
 // Extract country code and local number from stored contact_number if possible
@@ -92,6 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>My Profile - ExploreSri</title>
@@ -113,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .profile-card {
             background-color: #1b2735;
             border-radius: 18px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
             padding: 40px 30px;
             width: 100%;
             max-width: 500px;
@@ -148,7 +149,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             text-align: left;
         }
 
-        input.form-control, select.form-select {
+        input.form-control,
+        select.form-select {
             background: rgba(255, 255, 255, 0.05);
             border: none;
             color: #fff;
@@ -160,7 +162,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #aaa;
         }
 
-        input.form-control:focus, select.form-select:focus {
+        input.form-control:focus,
+        select.form-select:focus {
             background-color: rgba(255, 255, 255, 0.1);
             border-color: #f1c40f;
             box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
@@ -236,11 +239,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="profile-card">
         <h3><i class="bi bi-person-circle"></i>My Profile</h3>
@@ -267,17 +278,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Contact Number</label>
-              <div class="d-flex gap-2">
-                <select name="country_code" id="country_code" class="form-select w-auto" required>
-                  <option value="+94" <?= ($country_code == '+94') ? 'selected' : ''; ?>>+94 (Sri Lanka)</option>
-                  <option value="+91" <?= ($country_code == '+91') ? 'selected' : ''; ?>>+91 (India)</option>
-                  <option value="+1" <?= ($country_code == '+1') ? 'selected' : ''; ?>>+1 (USA)</option>
-                  <option value="+44" <?= ($country_code == '+44') ? 'selected' : ''; ?>>+44 (UK)</option>
-                </select>
-                <input type="tel" id="contactNumber" name="contact_number" class="form-control <?= $contact_err ? 'is-invalid' : ''; ?>" placeholder="712345678" value="<?= htmlspecialchars($contact_number); ?>" required>
-              </div>
-              <?php if ($contact_err): ?><div class="invalid-feedback d-block"><?= htmlspecialchars($contact_err); ?></div><?php endif; ?>
+                <label class="form-label">Contact Number</label>
+                <div class="d-flex gap-2">
+                    <select name="country_code" id="country_code" class="form-select w-auto" required>
+                        <option value="+94" <?= ($country_code == '+94') ? 'selected' : ''; ?>>+94 (Sri Lanka)</option>
+                        <option value="+91" <?= ($country_code == '+91') ? 'selected' : ''; ?>>+91 (India)</option>
+                        <option value="+1" <?= ($country_code == '+1') ? 'selected' : ''; ?>>+1 (USA)</option>
+                        <option value="+44" <?= ($country_code == '+44') ? 'selected' : ''; ?>>+44 (UK)</option>
+                    </select>
+                    <input type="tel" id="contactNumber" name="contact_number" class="form-control <?= $contact_err ? 'is-invalid' : ''; ?>" placeholder="712345678" value="<?= htmlspecialchars($contact_number); ?>" required>
+                </div>
+                <?php if ($contact_err): ?><div class="invalid-feedback d-block"><?= htmlspecialchars($contact_err); ?></div><?php endif; ?>
             </div>
 
             <div class="mb-3 text-start">
@@ -303,15 +314,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 </body>
+
 </html>
 
 
-    <script>
-      // Allow only digits in contact number input
-      const phoneInput = document.getElementById("contactNumber");
-      phoneInput.addEventListener("input", function () {
-          this.value = this.value.replace(/\D/g, '');
-      });
-    </script>
+<script>
+    // Allow only digits in contact number input
+    const phoneInput = document.getElementById("contactNumber");
+    phoneInput.addEventListener("input", function() {
+        this.value = this.value.replace(/\D/g, '');
+    });
+</script>
 </body>
+
 </html>

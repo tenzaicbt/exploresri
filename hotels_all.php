@@ -18,6 +18,7 @@ $hotels = $stmt->fetchAll();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Hotels - ExploreSri</title>
@@ -115,49 +116,51 @@ $hotels = $stmt->fetchAll();
     }
   </style>
 </head>
+
 <body>
 
-<div class="container">
-  <h1>FIND COMFORTABLE HOTELS</h1>
+  <div class="container">
+    <h1>FIND COMFORTABLE HOTELS</h1>
 
-  <div class="row g-4">
-    <?php if (count($hotels) > 0): ?>
-      <?php foreach ($hotels as $hotel): ?>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-          <div class="card hotel-card-dark position-relative h-100">
-            <img src="images/<?php echo htmlspecialchars($hotel['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($hotel['name']); ?>" />
+    <div class="row g-4">
+      <?php if (count($hotels) > 0): ?>
+        <?php foreach ($hotels as $hotel): ?>
+          <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card hotel-card-dark position-relative h-100">
+              <img src="images/<?php echo htmlspecialchars($hotel['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($hotel['name']); ?>" />
 
-            <div class="card-body text-start d-flex flex-column">
-              <h5 class="card-title"><?php echo htmlspecialchars($hotel['name']); ?></h5>
-              <p class="card-text"><i class="bi bi-geo-alt-fill"></i> <?php echo htmlspecialchars($hotel['location']); ?></p>
+              <div class="card-body text-start d-flex flex-column">
+                <h5 class="card-title"><?php echo htmlspecialchars($hotel['name']); ?></h5>
+                <p class="card-text"><i class="bi bi-geo-alt-fill"></i> <?php echo htmlspecialchars($hotel['location']); ?></p>
 
-              <div class="d-flex align-items-center mb-2">
-                <span class="badge bg-warning text-dark me-2"><?php echo number_format($hotel['rating'], 1); ?></span>
-                <div class="text-warning rating-stars">
-                  <?php for ($i = 1; $i <= 5; $i++): ?>
-                    <i class="bi <?= $i <= round($hotel['rating']) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
-                  <?php endfor; ?>
+                <div class="d-flex align-items-center mb-2">
+                  <span class="badge bg-warning text-dark me-2"><?php echo number_format($hotel['rating'], 1); ?></span>
+                  <div class="text-warning rating-stars">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                      <i class="bi <?= $i <= round($hotel['rating']) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
+                    <?php endfor; ?>
+                  </div>
                 </div>
+
+                <p class="text-light fw-semibold mb-2">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / per night</p>
+
+                <?php if ($is_logged_in): ?>
+                  <a href="book.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-outline-light w-100">Book Now</a>
+                <?php else: ?>
+                  <a href="/exploresri/user/login.php" class="btn btn-outline-light w-100">Login to Book</a>
+                <?php endif; ?>
               </div>
-
-              <p class="text-light fw-semibold mb-2">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / per night</p>
-
-              <?php if ($is_logged_in): ?>
-                <a href="book.php?hotel_id=<?= $hotel['hotel_id']; ?>" class="btn btn-outline-light w-100">Book Now</a>
-              <?php else: ?>
-                <a href="/exploresri/user/login.php" class="btn btn-outline-light w-100">Login to Book</a>
-              <?php endif; ?>
             </div>
           </div>
-        </div>
-      <?php endforeach; ?>
-    <?php else: ?>
-      <p class="no-hotels">No hotels available right now.</p>
-    <?php endif; ?>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p class="no-hotels">No hotels available right now.</p>
+      <?php endif; ?>
+    </div>
   </div>
-</div>
 
 </body>
+
 </html>
 
 <?php include 'includes/footer.php'; ?>

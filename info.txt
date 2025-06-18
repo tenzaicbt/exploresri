@@ -1,3 +1,4 @@
 admin : http://localhost/exploresri/admin/login.php
 user : http://localhost/exploresri/index.php
 guide : http://localhost/exploresri/guides/guide_login.php
+compay : http://localhost/exploresri/company/login.php

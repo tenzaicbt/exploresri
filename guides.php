@@ -15,6 +15,7 @@ $offset = ($page - 1) * $limit;
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Hotels - ExploreSri</title>
@@ -24,7 +25,7 @@ $offset = ($page - 1) * $limit;
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
 
-<style>
+  <style>
     body {
       font-family: 'Rubik', sans-serif;
       background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
@@ -41,84 +42,84 @@ $offset = ($page - 1) * $limit;
       color: #f1c40f;
     }
 
-  .hotel-card-modern {
-    position: relative;
-    border-radius: 18px;
-    overflow: hidden;
-    background: #1b2735;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
+    .hotel-card-modern {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #1b2735;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
 
-  .hotel-card-modern:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
-  }
+    .hotel-card-modern:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+    }
 
-  .hotel-card-modern img {
-    width: 100%;
-    height: 170px;
-    object-fit: cover;
-  }
+    .hotel-card-modern img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+    }
 
-  .image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 170px;
-    width: 100%;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8));
-  }
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 170px;
+      width: 100%;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8));
+    }
 
-  .hotel-card-modern .card-body {
-    padding: 1rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
+    .hotel-card-modern .card-body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
-  .hotel-card-modern .card-title {
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-  }
+    .hotel-card-modern .card-title {
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
 
-  .hotel-card-modern .card-text {
-    color: #bfbfbf;
-    font-size: 0.85rem;
-    margin-bottom: 0.6rem;
-  }
+    .hotel-card-modern .card-text {
+      color: #bfbfbf;
+      font-size: 0.85rem;
+      margin-bottom: 0.6rem;
+    }
 
-  .hotel-card-modern .price {
-    color: #ffdd57;
-    font-weight: 600;
-    font-size: 0.95rem;
-    margin-bottom: 0.6rem;
-  }
+    .hotel-card-modern .price {
+      color: #ffdd57;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
+    }
 
-  .rating-stars i {
-    font-size: 0.85rem;
-  }
+    .rating-stars i {
+      font-size: 0.85rem;
+    }
 
-  .btn-book {
-    font-size: 0.85rem;
-    border-radius: 30px;
-    background-color: transparent;
-    border: 1px solid #f1c40f;
-    color: #f1c40f;
-    transition: all 0.3s ease;
-  }
+    .btn-book {
+      font-size: 0.85rem;
+      border-radius: 30px;
+      background-color: transparent;
+      border: 1px solid #f1c40f;
+      color: #f1c40f;
+      transition: all 0.3s ease;
+    }
 
-  .btn-book:hover {
-    background-color: #f1c40f;
-    color: #1e1e2f;
-  }
-</style>
+    .btn-book:hover {
+      background-color: #f1c40f;
+      color: #1e1e2f;
+    }
+  </style>
 
 </head>
 
@@ -162,6 +163,7 @@ $offset = ($page - 1) * $limit;
     </div>
   </div>
 
-<?php include 'includes/footer.php'; ?>
+  <?php include 'includes/footer.php'; ?>
 </body>
+
 </html>
