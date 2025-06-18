@@ -208,8 +208,19 @@ $total_booking_price = $total_booking_price_stmt->fetch()['total_booking_price']
   <div class="sidebar">
     <div class="text-center text-white mb-4">
       <h5>Transport Dashboard</h5>
-      <p class="small"><?= htmlspecialchars($company['company_name']) ?></p>
     </div>
+    <div class="text-center text-white mb-4">
+      <?php if (!empty($company['logo']) && file_exists('../' . $company['logo'])): ?>
+        <img src="../<?= htmlspecialchars($company['logo']) ?>" alt="Company Logo"
+          style="max-width: 120px; max-height: 80px; object-fit: contain; border-radius: 8px; margin-bottom: 0.5rem;">
+      <?php else: ?>
+        <div style="width: 120px; height: 80px; background-color: #2a2a2a; border-radius: 8px; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; color: #ccc;">
+          No Logo
+        </div>
+      <?php endif; ?>
+      <h6 class="mb-0"><?= htmlspecialchars($company['company_name']) ?></h6>
+    </div>
+
     <ul class="nav flex-column px-3">
       <li class="nav-item"><a href="transport_dashboard.php" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
       <li class="nav-item"><a href="manage_vehicles.php" class="nav-link"><i class="bi bi-plus-circle me-2"></i> Manage vehicles</a></li>
@@ -225,7 +236,7 @@ $total_booking_price = $total_booking_price_stmt->fetch()['total_booking_price']
       <div class="row mb-4 text-white">
         <div class="col-md-4">
           <div class="card p-3 d-flex flex-column align-items-start">
-            <h6 class="mb-1"><i class="bi bi-truck me-2"></i>Total Vehicles</h6>
+            <h6 class="mb-1"><i class=""></i>Total Vehicles</h6>
             <h3><?= $total_vehicles ?></h3>
           </div>
         </div>
@@ -247,13 +258,13 @@ $total_booking_price = $total_booking_price_stmt->fetch()['total_booking_price']
       <div class="row mb-4 text-white">
         <div class="col-md-6">
           <div class="card p-3 d-flex flex-column align-items-start">
-            <h6 class="mb-1"><i class="bi bi-card-list me-2 text-info"></i>Total Bookings</h6>
+            <h6 class="mb-1"><i class=""></i>Total Bookings</h6>
             <h3><?= $total_bookings ?></h3>
           </div>
         </div>
         <div class="col-md-6">
           <div class="card p-3 d-flex flex-column align-items-start">
-            <h6 class="mb-1"><i class="bi bi-currency-dollar me-2 text-warning"></i>Total Booking Value</h6>
+            <h6 class="mb-1"><i class=""></i>Total Booking Value</h6>
             <h3>$<?= number_format($total_booking_price, 2) ?></h3>
           </div>
         </div>

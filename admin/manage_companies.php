@@ -7,7 +7,24 @@ if (!isset($_SESSION['admin'])) {
 
 include '../config/db.php'; // Ensure $conn is your PDO connection
 
-// Fetch companies with vehicle count
+// Toggle company status if requested
+if (isset($_GET['toggle_id'])) {
+    $toggle_id = $_GET['toggle_id'];
+
+    $stmt = $conn->prepare("SELECT status FROM transport_companies WHERE company_id = ?");
+    $stmt->execute([$toggle_id]);
+    $company = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($company) {
+        $newStatus = ($company['status'] === 'active') ? 'inactive' : 'active';
+        $update = $conn->prepare("UPDATE transport_companies SET status = ?, updated_at = NOW() WHERE company_id = ?");
+        $update->execute([$newStatus, $toggle_id]);
+        header("Location: manage_companies.php");
+        exit;
+    }
+}
+
+// Fetch all companies with vehicle count
 $companies = [];
 try {
     $stmt = $conn->query("
@@ -52,6 +69,14 @@ try {
         .table th {
             vertical-align: middle;
         }
+
+        .badge {
+            font-size: 0.85rem;
+        }
+
+        .btn-sm {
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 
@@ -64,6 +89,7 @@ try {
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Logo</th>
                     <th>Company Name</th>
                     <th>Email</th>
                     <th>Phone</th>
@@ -72,13 +98,22 @@ try {
                     <th>Vehicles</th>
                     <th>Created At</th>
                     <th>Updated At</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
+
             <tbody>
                 <?php if (count($companies) > 0): ?>
                     <?php foreach ($companies as $company): ?>
                         <tr>
                             <td><?= htmlspecialchars($company['company_id']) ?></td>
+                            <td>
+                                <?php if (!empty($company['logo']) && file_exists('../' . $company['logo'])): ?>
+                                    <img src="../<?= htmlspecialchars($company['logo']) ?>" alt="Logo" style="width: 60px; height: 40px; object-fit: contain; border-radius: 4px;">
+                                <?php else: ?>
+                                    <span class="text-muted small">No Logo</span>
+                                <?php endif; ?>
+                            </td>
                             <td><?= htmlspecialchars($company['company_name']) ?></td>
                             <td><?= htmlspecialchars($company['email']) ?></td>
                             <td><?= htmlspecialchars($company['phone']) ?></td>
@@ -92,19 +127,24 @@ try {
                                     'suspended' => 'bg-danger',
                                     default => 'bg-light text-dark'
                                 };
-                                echo "<span class='badge $badgeClass'>" . ucfirst($status) . "</span>";
+                                echo "<span class='badge $badgeClass me-2'>" . ucfirst($status) . "</span>";
                                 ?>
                             </td>
-                            <td>
-                                <span class="badge bg-info text-dark"><?= $company['vehicle_count'] ?></span>
-                            </td>
+                            <td><span class="badge bg-info text-dark"><?= $company['vehicle_count'] ?></span></td>
                             <td><?= htmlspecialchars($company['created_at']) ?></td>
                             <td><?= htmlspecialchars($company['updated_at']) ?></td>
+                            <td>
+                                <a href="?toggle_id=<?= $company['company_id'] ?>"
+                                   class="btn btn-sm <?= $company['status'] === 'active' ? 'btn-danger' : 'btn-success' ?>"
+                                   onclick="return confirm('Are you sure you want to change the status of this company?')">
+                                    <?= $company['status'] === 'active' ? 'Deactivate' : 'Activate' ?>
+                                </a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="9" class="text-center">No transport companies found.</td>
+                        <td colspan="11" class="text-center">No transport companies found.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

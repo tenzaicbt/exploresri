@@ -5,10 +5,11 @@ include 'includes/header.php';
 
 $is_logged_in = isset($_SESSION['user_id']);
 
-// Join vehicles with company data
+// Only show vehicles from companies that are 'active'
 $sql = "SELECT v.*, c.company_name, c.logo
         FROM vehicles v
         JOIN transport_companies c ON v.company_id = c.company_id
+        WHERE c.status = 'active'
         ORDER BY v.vehicle_id DESC";
 $stmt = $conn->query($sql);
 $vehicles = $stmt->fetchAll();
@@ -107,7 +108,6 @@ $vehicles = $stmt->fetchAll();
       height: 50px;
       overflow: hidden;
       border-radius: 0;
-      /* no rounding */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -132,13 +132,11 @@ $vehicles = $stmt->fetchAll();
       <?php if (count($vehicles) > 0): ?>
         <?php foreach ($vehicles as $vehicle): ?>
           <?php
-          // Vehicle image
           $vehicle_img_path = "uploads/vehicles/" . $vehicle['image'];
           $vehicle_img = (!empty($vehicle['image']) && file_exists(__DIR__ . '/' . $vehicle_img_path))
             ? "/exploresri/" . $vehicle_img_path
             : "/exploresri/assets/default-vehicle.jpg";
 
-          // Company logo
           $company_logo_path = $vehicle['logo'];
           $company_logo = (!empty($company_logo_path) && file_exists(__DIR__ . '/' . $company_logo_path))
             ? "/exploresri/" . $company_logo_path
@@ -147,11 +145,9 @@ $vehicles = $stmt->fetchAll();
           <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="card vehicle-card-dark h-100">
               <img src="<?= htmlspecialchars($vehicle_img) ?>" class="vehicle-image" alt="<?= htmlspecialchars($vehicle['model']) ?>" />
-
               <div class="company-logo-badge" title="<?= htmlspecialchars($vehicle['company_name']) ?>">
                 <img src="<?= htmlspecialchars($company_logo) ?>" alt="<?= htmlspecialchars($vehicle['company_name']) ?>" />
               </div>
-
               <div class="card-body">
                 <h5 class="card-title"><?= htmlspecialchars($vehicle['model']) ?></h5>
                 <p class="card-text"><i class="bi bi-truck-front-fill"></i> Type: <?= htmlspecialchars($vehicle['type']) ?></p>

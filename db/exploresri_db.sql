@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 18, 2025 at 09:58 AM
+-- Generation Time: Jun 18, 2025 at 02:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -343,8 +343,8 @@ CREATE TABLE `transport_companies` (
 --
 
 INSERT INTO `transport_companies` (`company_id`, `company_name`, `email`, `phone`, `address`, `password`, `website`, `logo`, `created_at`, `updated_at`, `status`) VALUES
-(1, 'Uber', 'uber@gmail.com', '0766446354', 'colombo', '$2y$10$komKAKkZbY2Gih4.KpiwCuME0lONv0g5Rwi85CDsfyKgF2emOJSvy', 'www.uber.com/lk/en/', 'uploads/logos/logo_68522a51984388.67441189.jpg', '2025-06-07 14:31:38', '2025-06-18 06:37:00', 'active'),
-(2, 'Pick Me', 'pickme@gmail.com', '0766446355', 'colombo', '$2y$10$Jplo8rcnSt.qjiut9Pvn3Oc/L3Fxm1bMiC6xeWVNHJdo/cqhicwRq', 'www.pickme.com/lk/en/', 'uploads/logos/logo_68525e578e8113.51688393.png', '2025-06-18 06:36:07', '2025-06-18 06:36:07', 'active');
+(1, 'Pick Me', 'pickme@gmail.com', '0766446355', 'colombo', '$2y$10$eXLjjLuOU3CM82IFUEeOguEDiUGOGlfgpe4CDpId7xHDRuSUk6XJ2', 'pickme@gmail.com', 'uploads/logos/logo_68529b1e8c3659.63014477.png', '2025-06-18 10:55:26', '2025-06-18 11:52:28', 'active'),
+(2, 'Uber', 'uber@gmail.com', '0766446354', 'colombo', '$2y$10$IfVCIFtuKSEW4V1Jmz48I.aBsOJssZmnkHt9/brEBs3U7quvBo6Si', 'uber@gmail.com', 'uploads/logos/logo_68529cf70484f0.03828624.png', '2025-06-18 11:01:51', '2025-06-18 11:49:21', 'active');
 
 -- --------------------------------------------------------
 
@@ -405,7 +405,7 @@ CREATE TABLE `vehicles` (
 INSERT INTO `vehicles` (`vehicle_id`, `company_id`, `model`, `type`, `capacity`, `rental_price`, `image`, `description`, `features`, `registration_number`, `fuel_type`, `availability`, `created_at`, `image_gallery`) VALUES
 (3, 1, 'BYD ATTO 3', 'SUV', 4, 200.00, '1750158806_byd-tang-2024.jpg', 'The BYD ATTO 3 redefines electric driving with cutting-edge BYD Blade Battery technology, Dragon Face design, Integrated Sports Seats and intelligent features-offering a thrilling, efficient, and futuristic driving experience.\r\nAdvanced\r\nSuperior', 'Air Conditioning,Bluetooth,GPS,Rear Camera', 'ABC-5678', 'Electric', 1, '2025-06-17 11:13:26', '1750158806_BYD-ATTO-3-b-800x800-1.png,1750158806_BYD-ATTO-3-s-800x800-1.png,1750158806_BYD-ATTO-3-f-800x800-1.png'),
 (4, 1, 'BYD M6', 'Van', 5, 200.00, '1750159041_black.webp', 'Discover spacious comfort and cutting-edge technology. Enjoy a luxurious, smooth 6-seater ride designed for ultimate convenience and unparalleled driving pleasure.', 'Air Conditioning,Bluetooth,GPS,Rear Camera', 'ABC-1234', 'Electric', 1, '2025-06-17 11:17:21', '1750159041_BYD-M6-b-800x800-1.png,1750159041_BYD-M6-s-800x800-1.png,1750159041_BYD-M6-f-800x800-1.png'),
-(5, 1, 'BYD SEALION 6 (Superior)', 'SUV', 4, 150.00, '1750159309_composit.jpg', 'Experience the future with cutting-edge DM-i Plug-in Hybrid technology with an Ocean Aesthetics’ design, and fusion performance. Drive smarter, cleaner, and seamlessly.', 'Air Conditioning,Bluetooth,GPS,Rear Camera,Drive smarter, cleaner,seamlessly', 'ABC-1345', 'Electric', 1, '2025-06-17 11:21:49', '1750159309_BYD-SEALION-6-b-800x800-1.png,1750159309_BYD-SEALION-6-s-800x800-1.png,1750159309_BYD-SEALION-6-f-800x800-1.png'),
+(5, 2, 'BYD SEALION 6 (Superior)', 'SUV', 4, 150.00, '1750159309_composit.jpg', 'Experience the future with cutting-edge DM-i Plug-in Hybrid technology with an Ocean Aesthetics’ design, and fusion performance. Drive smarter, cleaner, and seamlessly.', 'Air Conditioning,Bluetooth,GPS,Rear Camera,Drive smarter, cleaner,seamlessly', 'ABC-1345', 'Electric', 1, '2025-06-17 11:21:49', '1750159309_BYD-SEALION-6-b-800x800-1.png,1750159309_BYD-SEALION-6-s-800x800-1.png,1750159309_BYD-SEALION-6-f-800x800-1.png'),
 (6, 2, 'NISSAN TRITON L200', 'Cab', 3, 350.00, '1750229412_2024-mitsubishi-l200-triton-unofficial-rendering-front.jpg', 'Triton Club Cab Pick Up is on its way. Pick up a Triton that conquers tough conditions without compromising on comfort. With improved driver control, a spacious and safer cabin, as well as a 3.5 tonne towing capacity, your workday duties and outdoor weekends are sorted. Enquire today to find out more.', 'Air Conditioning,Bluetooth,GPS,Rear Camera, FPB Pack, includes Winch Cradle, Under Ride Protection , Black Steel Front Protection Bar for LED headlamp models', 'ABC-1238', 'Petrol', 1, '2025-06-18 06:50:12', '1750229412_img_car_03_03.png,1750229412_img_car_03_02.png,1750229412_img_car_03_01.png');
 
 -- --------------------------------------------------------
@@ -472,6 +472,13 @@ CREATE TABLE `vehicle_reviews` (
   `comment` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `vehicle_reviews`
+--
+
+INSERT INTO `vehicle_reviews` (`review_id`, `vehicle_id`, `user_id`, `rating`, `comment`, `created_at`) VALUES
+(1, 4, 1, 5, 'good service', '2025-06-18 12:24:27');
 
 --
 -- Indexes for dumped tables
@@ -673,7 +680,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `transport_companies`
 --
 ALTER TABLE `transport_companies`
-  MODIFY `company_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `company_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -703,7 +710,7 @@ ALTER TABLE `vehicle_payments`
 -- AUTO_INCREMENT for table `vehicle_reviews`
 --
 ALTER TABLE `vehicle_reviews`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
