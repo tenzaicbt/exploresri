@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h3>Payment for Guide: <?= htmlspecialchars($booking['guide_name']) ?></h3>
     <p><strong>Travel Date:</strong> <?= htmlspecialchars($booking['travel_date']) ?></p>
     <p><strong>Duration:</strong> <?= $booking['duration_days'] ?> day(s)</p>
-    <p><strong>Total Amount:</strong> <span class="text-success fw-bold">Rs. <?= number_format($total_price, 2) ?></span></p>
+    <p><strong>Total Amount:</strong> <span class="text-success fw-bold">$ <?= number_format($total_price, 2) ?></span></p>
 
     <form method="post" id="paymentForm">
       <div class="mb-3">

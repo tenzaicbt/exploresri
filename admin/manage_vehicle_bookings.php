@@ -8,13 +8,15 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
     header('Content-Disposition: attachment; filename="vehicle_bookings.xls"');
     header('Cache-Control: max-age=0');
 
-    echo "Booking ID\tUser Name\tVehicle Model\tStart Date\tEnd Date\tAmount\tPayment Method\tPayment Status\tStatus\tCreated At\n";
+    echo "Booking ID\tUser Name\tVehicle Model\tCompany Name\tStart Date\tEnd Date\tAmount\tPayment Method\tPayment Status\tStatus\tCreated At\n";
 
     $stmt = $conn->query("SELECT vb.booking_id, u.name AS user_name, v.model AS vehicle_model,
                                  vb.booking_start, vb.booking_end, vp.amount, vp.payment_method,
-                                 vp.status AS pay_status, vb.status, vb.created_at
+                                 vp.status AS pay_status, vb.status, vb.created_at,
+                                 tc.company_name
                           FROM vehicle_bookings vb
                           JOIN vehicles v ON vb.vehicle_id = v.vehicle_id
+                          JOIN transport_companies tc ON v.company_id = tc.company_id
                           JOIN users u ON vb.user_id = u.user_id
                           LEFT JOIN vehicle_payments vp ON vb.booking_id = vp.booking_id
                           ORDER BY vb.created_at DESC");
@@ -23,6 +25,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
         echo $row['booking_id'] . "\t" .
             $row['user_name'] . "\t" .
             $row['vehicle_model'] . "\t" .
+            $row['company_name'] . "\t" .
             $row['booking_start'] . "\t" .
             $row['booking_end'] . "\t" .
             ($row['amount'] ?? '') . "\t" .
@@ -62,9 +65,11 @@ if (!empty($_GET['date'])) {
 $whereClause = $filters ? 'WHERE ' . implode(' AND ', $filters) : '';
 
 $stmt = $conn->prepare("SELECT vb.*, v.model AS vehicle_model, u.name AS user_name,
-                               vp.amount, vp.payment_method, vp.status AS pay_status, vp.payment_date
+                               vp.amount, vp.payment_method, vp.status AS pay_status, vp.payment_date,
+                               tc.company_name
                         FROM vehicle_bookings vb
                         JOIN vehicles v ON vb.vehicle_id = v.vehicle_id
+                        JOIN transport_companies tc ON v.company_id = tc.company_id
                         JOIN users u ON vb.user_id = u.user_id
                         LEFT JOIN vehicle_payments vp ON vb.booking_id = vp.booking_id
                         $whereClause
@@ -128,6 +133,7 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>ID</th>
                     <th>User</th>
                     <th>Vehicle</th>
+                    <th>Company</th>
                     <th>Start</th>
                     <th>End</th>
                     <th>Amount</th>
@@ -144,6 +150,7 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= $b['booking_id'] ?></td>
                             <td><?= htmlspecialchars($b['user_name']) ?></td>
                             <td><?= htmlspecialchars($b['vehicle_model']) ?></td>
+                            <td><?= htmlspecialchars($b['company_name']) ?></td>
                             <td><?= $b['booking_start'] ?></td>
                             <td><?= $b['booking_end'] ?></td>
                             <td>$<?= number_format($b['amount'] ?? 0, 2) ?></td>
@@ -180,7 +187,7 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="10" class="text-center">No bookings found.</td>
+                        <td colspan="11" class="text-center">No bookings found.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

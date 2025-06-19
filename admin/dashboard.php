@@ -139,9 +139,7 @@ try {
     .btn-light {
       font-weight: bold;
     }
-  </style>
 
-  <style>
     .card-metric {
       position: relative;
       border-radius: 15px;
@@ -196,32 +194,24 @@ try {
 
     .sidebar {
       position: fixed;
-      /* Fix sidebar */
       top: 0;
       left: 0;
       width: 230px;
-      /* Fixed width */
       height: 100vh;
-      /* Full viewport height */
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       border-right: 2px solid #444;
       padding-top: 1rem;
       color: white;
       overflow-y: auto;
-      /* Optional: if sidebar content overflows */
       transition: all 0.3s ease-in-out;
       z-index: 1030;
-      /* Above content */
     }
 
     .content {
       margin-left: 250px;
-      /* Same as sidebar width */
       padding: 2rem;
       min-height: 100vh;
-      /* Ensure content fills viewport */
       background-color: #fff;
-      /* or whatever background you want */
     }
 
 

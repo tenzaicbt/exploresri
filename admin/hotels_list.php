@@ -37,7 +37,7 @@ $hotels = $stmt->fetchAll();
             <td><?= htmlspecialchars($hotel['name']) ?></td>
             <td><?= htmlspecialchars($hotel['location']) ?></td>
             <td><?= htmlspecialchars($hotel['destination']) ?></td>
-            <td>Rs. <?= htmlspecialchars($hotel['price_per_night']) ?></td>
+            <td>$ <?= htmlspecialchars($hotel['price_per_night']) ?></td>
             <td><?= htmlspecialchars($hotel['rating']) ?></td>
             <td>
               <a href="edit_hotel.php?id=<?= $hotel['hotel_id'] ?>" class="btn btn-sm btn-primary">Edit</a>

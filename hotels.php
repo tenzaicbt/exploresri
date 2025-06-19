@@ -88,7 +88,7 @@ $hotels = $stmt->fetchAll();
               <div class="card-body">
                 <h5 class="card-title"><?php echo htmlspecialchars($hotel['name']); ?></h5>
                 <p class="text-muted mb-1"><?php echo htmlspecialchars($hotel['location']); ?></p>
-                <p class="mb-1">Rs. <?php echo htmlspecialchars($hotel['price_per_night']); ?> / night</p>
+                <p class="mb-1">$ <?php echo htmlspecialchars($hotel['price_per_night']); ?> / night</p>
                 <p class="rating mb-2">★ <?php echo htmlspecialchars($hotel['rating']); ?> / 5</p>
                 <a href="book.php?hotel_id=<?php echo $hotel['hotel_id']; ?>&destination_id=<?php echo $destination_id; ?>" class="btn btn-book w-100">Book Now</a>
               </div>

@@ -149,7 +149,7 @@ $hotels = $stmt->fetchAll();
                 <h5 class="card-title text-warning"><?php echo htmlspecialchars($hotel['name']); ?></h5>
                 <p class="card-text mb-1"><i class="bi bi-geo-alt-fill"></i> <?php echo htmlspecialchars($hotel['location']); ?></p>
 
-                <p class="price mb-1">Rs. <?php echo number_format($hotel['price_per_night'], 2); ?> / night</p>
+                <p class="price mb-1">$ <?php echo number_format($hotel['price_per_night'], 2); ?> / night</p>
 
                 <div class="d-flex align-items-center mb-3">
                   <span class="badge bg-warning text-dark me-2"><?php echo number_format($hotel['rating'], 1); ?></span>

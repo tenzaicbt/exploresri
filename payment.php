@@ -191,9 +191,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p><strong>Check-in:</strong> <?= htmlspecialchars($booking['check_in_date']) ?></p>
     <p><strong>Check-out:</strong> <?= htmlspecialchars($booking['check_out_date']) ?></p>
     <p><strong>Status:</strong> <?= htmlspecialchars($booking['status']) ?></p>
-    <p><strong>Price Per Night:</strong> Rs. <?= htmlspecialchars($booking['price']) ?></p>
+    <p><strong>Price Per Night:</strong> $ <?= htmlspecialchars($booking['price']) ?></p>
     <p><strong>Duration:</strong> <?= $nights ?> night(s)</p>
-    <p><strong>Total Amount:</strong> <span class="text-success fw-bold">Rs. <?= number_format($totalAmount, 2) ?></span></p>
+    <p><strong>Total Amount:</strong> <span class="text-success fw-bold">$ <?= number_format($totalAmount, 2) ?></span></p>
 
     <form id="paymentForm" method="post">
       <div class="mb-3">

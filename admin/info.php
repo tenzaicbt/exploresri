@@ -91,7 +91,7 @@ $uploadsWritable = is_writable(__DIR__ . '/../uploads'); // adjust if you have a
         <div class="card">
             <div class="card-header">Developer Info</div>
             <div class="card-body developer-info">
-                <p><strong>Developer:</strong> Yohan Koshala</p>
+                <p><strong>Developer:</strong>Yohan Koshala</p>
                 <p><strong>Location:</strong> Sri Lanka</p>
 
                 <div class="mt-3">
@@ -148,43 +148,63 @@ $uploadsWritable = is_writable(__DIR__ . '/../uploads'); // adjust if you have a
         <div class="card">
             <div class="card-header">System Status & Security</div>
             <div class="card-body">
-                <ul class="list-group">
+                <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         Session Status:
-                        <?= session_status() === PHP_SESSION_ACTIVE ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>' ?>
+                        <?= session_status() === PHP_SESSION_ACTIVE
+                            ? '<span class="text-success fw-bold">Active</span>'
+                            : '<span class="text-danger fw-bold">Inactive</span>' ?>
                     </li>
-                    <li class="list-group-item">HTTPS: <span class="badge bg-warning text-dark">Check manually on server</span></li>
-                    <li class="list-group-item">Admin Auth: <span class="badge bg-success">Secured (Session)</span></li>
-                    <li class="list-group-item">Database Connection: <span class="badge bg-success">Connected</span></li>
-                    <li class="list-group-item">Prepared Queries: <span class="badge bg-info">Recommended</span></li>
+                    <li class="list-group-item">
+                        HTTPS:
+                        <span class="text-warning fw-bold">Check manually on server</span>
+                    </li>
+                    <li class="list-group-item">
+                        Admin Auth:
+                        <span class="text-success fw-bold">Secured (Session)</span>
+                    </li>
+                    <li class="list-group-item">
+                        Database Connection:
+                        <span class="text-success fw-bold">Connected</span>
+                    </li>
+                    <li class="list-group-item">
+                        Prepared Queries:
+                        <span class="text-info fw-bold">Recommended</span>
+                    </li>
                     <li class="list-group-item">
                         Display Errors:
-                        <?= $displayErrors ? '<span class="badge bg-danger">ON</span> (Should be OFF in production)' : '<span class="badge bg-success">OFF</span>' ?>
+                        <?= $displayErrors
+                            ? '<span class="text-danger fw-bold">ON (Should be OFF in production)</span>'
+                            : '<span class="text-success fw-bold">OFF</span>' ?>
                     </li>
-
                     <li class="list-group-item">
                         Session Cookies (HTTPOnly):
-                        <?= $sessionCookieParams['httponly'] ? '<span class="badge bg-success">Enabled</span>' : '<span class="badge bg-danger">Disabled</span>' ?>
+                        <?= $sessionCookieParams['httponly']
+                            ? '<span class="text-success fw-bold">Enabled</span>'
+                            : '<span class="text-danger fw-bold">Disabled</span>' ?>
                     </li>
-
                     <li class="list-group-item">
                         Session Cookies (Secure):
-                        <?= $sessionCookieParams['secure'] ? '<span class="badge bg-success">Enabled</span>' : '<span class="badge bg-warning text-dark">Not forced</span>' ?>
+                        <?= $sessionCookieParams['secure']
+                            ? '<span class="text-success fw-bold">Enabled</span>'
+                            : '<span class="text-warning fw-bold">Not forced</span>' ?>
                     </li>
-
                     <li class="list-group-item">
                         X-Powered-By Header:
-                        <?= $poweredByExposed ? '<span class="badge bg-warning text-dark">Exposed (Can leak PHP version)</span>' : '<span class="badge bg-success">Hidden</span>' ?>
+                        <?= $poweredByExposed
+                            ? '<span class="text-warning fw-bold">Exposed (Can leak PHP version)</span>'
+                            : '<span class="text-success fw-bold">Hidden</span>' ?>
                     </li>
-
                     <li class="list-group-item">
                         Uploads Directory Writable:
-                        <?= $uploadsWritable ? '<span class="badge bg-warning text-dark">Writable</span> (Restrict in production)' : '<span class="badge bg-success">Safe</span>' ?>
+                        <?= $uploadsWritable
+                            ? '<span class="text-warning fw-bold">Writable (Restrict in production)</span>'
+                            : '<span class="text-success fw-bold">Safe</span>' ?>
                     </li>
-
                 </ul>
             </div>
         </div>
+
 
         <div class="text-center mt-4">
             <a href="dashboard.php" class="btn btn-dark">Back to Dashboard</a>

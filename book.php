@@ -307,7 +307,7 @@ $otherHotels = $otherHotelsStmt->fetchAll();
         <div class="info-card">
           <h2><?= htmlspecialchars($hotel['name']) ?></h2>
           <p><strong>Location:</strong> <?= htmlspecialchars($hotel['location']) ?></p>
-          <p><strong>Price:</strong> Rs. <?= htmlspecialchars($hotel['price_per_night']) ?> / per night</p>
+          <p><strong>Price:</strong> $ <?= htmlspecialchars($hotel['price_per_night']) ?> / per night</p>
           <p><strong>Rating:</strong> <?= htmlspecialchars($hotel['rating']) ?> / 5</p>
           <p><?= nl2br(htmlspecialchars($hotel['description'])) ?></p>
 
