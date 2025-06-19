@@ -307,11 +307,6 @@ ob_end_flush();
 
     .sidebar-card {
       background-color: #1e293b;
-      /* Dark blue-gray background */
-      border: 1px solid #334155;
-      /* Slightly lighter border */
-      backdrop-filter: blur(12px);
-      /* Blur effect for glass look */
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
@@ -367,6 +362,49 @@ ob_end_flush();
       display: inline-block;
       font-size: 14px;
       font-weight: 500;
+    }
+
+    .vehicle-highlights {
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+      border-radius: 16px;
+      padding: 25px 22px;
+      color: #eaeaea;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .vehicle-highlights-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      border-bottom: 1px solid rgba(241, 196, 15, 0.4);
+      padding-bottom: 10px;
+      color: #f1c40f;
+      letter-spacing: 0.5px;
+      margin-bottom: 1.5rem;
+    }
+
+    .vehicle-highlights-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .vehicle-highlights-list li {
+      margin-bottom: 12px;
+    }
+
+    .vehicle-highlights-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .vehicle-highlights-list .label {
+      opacity: 0.8;
+    }
+
+    .vehicle-highlights-list .value {
+      color: #ffffff;
+      margin-left: 6px;
     }
   </style>
 </head>
@@ -498,7 +536,7 @@ ob_end_flush();
               </div>
 
               <button type="submit" class="btn btn-warning text-dark fw-semibold w-100 mt-3 shadow-sm glow-btn">
-                <i class="bi bi-credit-card-2-front-fill me-2"></i>Proceed to Payment
+                <i class=""></i>Proceed to Payment
               </button>
             </form>
           <?php endif; ?>
@@ -532,27 +570,34 @@ ob_end_flush();
         </div>
 
         <!-- Vehicle Highlights Card -->
-        <div class="sidebar-card mb-4" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; color: #f0f0f0;">
-          <h5 class="mb-3" style="border-bottom: 2px solid #f1c40f; padding-bottom: 8px;">Vehicle Highlights</h5>
 
-          <ul style="list-style: none; padding-left: 0; margin: 0; font-size: 0.95rem;">
-            <li style="margin-bottom: 10px;">
-              <strong>Model:</strong> <span style="color: #f1c40f;"><?= htmlspecialchars($vehicle['model']) ?></span>
-            </li>
-            <li style="margin-bottom: 10px;">
-              <strong>Type:</strong> <span style="color: #f1c40f;"><?= htmlspecialchars($vehicle['type']) ?></span>
-            </li>
-            <li style="margin-bottom: 10px;">
-              <strong>Seats:</strong> <span style="color: #f1c40f;"><?= (int)$vehicle['capacity'] ?></span>
-            </li>
-            <li style="margin-bottom: 10px;">
-              <strong>Fuel Type:</strong> <span style="color: #f1c40f;"><?= htmlspecialchars($vehicle['fuel_type']) ?></span>
+        <div class="vehicle-highlights sidebar-card mb-4">
+          <h5 class="vehicle-highlights-title">Vehicle Highlights</h5>
+
+          <ul class="vehicle-highlights-list">
+            <li>
+              <span class="label">Model:</span>
+              <strong class="value"><?= htmlspecialchars($vehicle['model']) ?></strong>
             </li>
             <li>
-              <strong>Registration #:</strong> <span style="color: #f1c40f;"><?= htmlspecialchars($vehicle['registration_number']) ?></span>
+              <span class="label">Type:</span>
+              <strong class="value"><?= htmlspecialchars($vehicle['type']) ?></strong>
+            </li>
+            <li>
+              <span class="label">Seats:</span>
+              <strong class="value"><?= (int)$vehicle['capacity'] ?></strong>
+            </li>
+            <li>
+              <span class="label">Fuel Type:</span>
+              <strong class="value"><?= htmlspecialchars($vehicle['fuel_type']) ?></strong>
+            </li>
+            <li>
+              <span class="label">Registration #:</span>
+              <strong class="value"><?= htmlspecialchars($vehicle['registration_number']) ?></strong>
             </li>
           </ul>
         </div>
+
 
         <!-- Contact Info Card -->
         <div class="sidebar-card bg-dark text-light mb-4 p-3">
@@ -561,6 +606,7 @@ ob_end_flush();
           <p>Email: <a href="mailto:support@example.com" class="text-warning">support@example.com</a></p>
         </div>
       </div>
+
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

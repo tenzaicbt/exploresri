@@ -1,0 +1,232 @@
+TABLE `vehicle_reviews` (
+  `review_id` int(11) NOT NULL,
+  `vehicle_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `rating` tinyint(4) NOT NULL CHECK (`rating` between 1 and 5),
+  `comment` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `vehicle_payments` (
+  `payment_id` int(11) NOT NULL,
+  `booking_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_method` varchar(50) NOT NULL,
+  `payment_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `status` varchar(50) NOT NULL DEFAULT 'Paid'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `vehicle_bookings` (
+  `booking_id` int(11) NOT NULL,
+  `vehicle_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `booking_start` date NOT NULL,
+  `booking_end` date NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `status` enum('pending','confirmed','cancelled','completed') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `payment_status` enum('unpaid','paid') NOT NULL DEFAULT 'unpaid',
+  `payment_method` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `vehicles` (
+  `vehicle_id` int(11) NOT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  `model` varchar(100) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `capacity` int(11) DEFAULT NULL,
+  `rental_price` decimal(10,2) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `features` text DEFAULT NULL,
+  `registration_number` varchar(50) DEFAULT NULL,
+  `fuel_type` varchar(50) DEFAULT NULL,
+  `availability` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `image_gallery` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `users` (
+  `user_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `contact` varchar(20) DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `is_verified` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` varchar(50) DEFAULT 'active',
+  `role` varchar(50) DEFAULT 'user',
+  `profile_pic` varchar(255) DEFAULT NULL,
+  `contact_number` varchar(20) DEFAULT NULL,
+  `country` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ TABLE `transport_companies` (
+  `company_id` int(11) NOT NULL,
+  `company_name` varchar(150) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(30) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `logo` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` enum('active','inactive','suspended') DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ TABLE `reviews` (
+  `review_id` int(11) NOT NULL,
+  `hotel_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `rating` int(11) DEFAULT NULL CHECK (`rating` >= 1 and `rating` <= 5),
+  `comment` text DEFAULT NULL,
+  `review_date` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `payments` (
+  `payment_id` int(11) NOT NULL,
+  `booking_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `payment_date` datetime DEFAULT current_timestamp(),
+  `status` varchar(20) DEFAULT 'pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `itinerary` (
+  `id` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `details` text DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `itineraries` (
+  `itinerary_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `destination_id` int(11) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `hotels` (
+  `hotel_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `price_per_night` decimal(10,2) DEFAULT NULL,
+  `contact_info` varchar(255) DEFAULT NULL,
+  `rating` decimal(2,1) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `destination_id` int(11) DEFAULT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'active',
+  `facilities` text DEFAULT NULL,
+  `image_gallery` text DEFAULT NULL,
+  `popular_features` text DEFAULT NULL,
+  `map_embed_link` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `guide_reviews` (
+  `review_id` int(11) NOT NULL,
+  `guide_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `rating` int(11) NOT NULL CHECK (`rating` between 1 and 5),
+  `comment` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `guide_payments` (
+  `payment_id` int(11) NOT NULL,
+  `booking_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `payment_date` datetime DEFAULT current_timestamp(),
+  `status` varchar(20) DEFAULT 'paid'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `guide_bookings` (
+  `booking_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `guide_id` int(11) NOT NULL,
+  `travel_date` date NOT NULL,
+  `duration_days` int(11) NOT NULL,
+  `status` varchar(50) DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `payment_status` varchar(50) DEFAULT 'unpaid',
+  `payment_method` varchar(50) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `check_in_date` date DEFAULT NULL,
+  `check_out_date` date DEFAULT NULL,
+  `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `guide` (
+  `guide_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `languages` varchar(255) DEFAULT NULL,
+  `experience_years` int(11) DEFAULT 0,
+  `bio` text DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL,
+  `contact_info` varchar(100) DEFAULT NULL,
+  `price_per_day` decimal(10,2) DEFAULT 0.00,
+  `rating` float DEFAULT 0,
+  `is_verified` tinyint(1) DEFAULT 0,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `status` varchar(50) DEFAULT 'active',
+  `is_available` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `destinations` (
+  `destination_id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `category` varchar(50) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `province` varchar(255) DEFAULT NULL,
+  `top_attractions` varchar(255) DEFAULT NULL,
+  `latitude` varchar(50) DEFAULT NULL,
+  `longitude` varchar(50) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `bookings` (
+  `booking_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `destination_id` int(11) DEFAULT NULL,
+  `hotel_id` int(11) NOT NULL,
+  `booking_date` datetime DEFAULT current_timestamp(),
+  `travel_date` date NOT NULL,
+  `status` varchar(50) DEFAULT 'pending',
+  `payment_status` varchar(50) DEFAULT 'unpaid',
+  `nights` int(11) DEFAULT 1,
+  `total_price` decimal(10,2) DEFAULT NULL,
+  `check_in_date` date DEFAULT NULL,
+  `check_out_date` date DEFAULT NULL,
+  `guide_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `attendance` (
+  `attendance_id` int(11) NOT NULL,
+  `guide_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `status` enum('Present','Absent','Late') NOT NULL DEFAULT 'Present',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TABLE `admins` (
+  `admin_id` int(11) NOT NULL,
+  `username` varchar(100) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

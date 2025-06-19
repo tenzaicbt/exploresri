@@ -113,9 +113,6 @@ $otherHotelsStmt->execute([$hotel_id]);
 $otherHotels = $otherHotelsStmt->fetchAll();
 ?>
 
-<!-- Your HTML content for the booking page goes here -->
-<!-- Make sure no echo/HTML comes before the ob_start() section to preserve header() usage -->
-
 <?php ob_end_flush(); ?>
 
 <!DOCTYPE html>
@@ -180,10 +177,6 @@ $otherHotels = $otherHotelsStmt->fetchAll();
       font-weight: 500;
     }
 
-    .sidebar-card {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
     .btn-book {
       background-color: #f1c40f;
       color: #000;
@@ -227,6 +220,15 @@ $otherHotels = $otherHotelsStmt->fetchAll();
       box-shadow: 0 0 0 0.2rem rgba(241, 196, 15, 0.25);
     }
 
+    .input-group-text {
+      display: none;
+    }
+
+
+    .form-control[type="date"] {
+      border-radius: 0 8px 8px 0;
+    }
+
     .card-title {
       font-size: 1.3rem;
       color: #f1c40f;
@@ -248,87 +250,34 @@ $otherHotels = $otherHotelsStmt->fetchAll();
       color: #ddd;
     }
 
-    .booking-container {
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 30px;
-      background: linear-gradient(145deg, #1f1f1f, 255, 255, 255, 0.05);
-      border-radius: 15px;
-      color: #fff;
-      font-family: 'Poppins', sans-serif;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      animation: fadeInUp 0.8s ease forwards;
-    }
-
-    .booking-container h2 {
-      text-align: center;
+    .sidebar-card h5 {
+      font-size: 1.1rem;
       font-weight: 600;
-      font-size: 24px;
-      margin-bottom: 25px;
-      color: #fcbf49;
+      color: #f1c40f;
+      margin-bottom: 15px;
     }
 
-    .booking-container label {
-      font-weight: 500;
-      display: block;
-      margin-bottom: 6px;
-      margin-top: 15px;
-    }
-
-    .booking-container input[type="date"] {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: none;
-      background: #3a3a3a;
-      color: #fff;
+    .sidebar-card ul li {
+      color: #ccc;
       font-size: 14px;
-      transition: all 0.3s ease;
+      margin-bottom: 8px;
     }
 
-    .booking-container input[type="date"]:focus {
-      outline: none;
-      background: #444;
-    }
-
-    .booking-container button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 25px;
-      border: none;
-      border-radius: 8px;
-      background: #fcbf49;
-      color: #000;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-
-    .booking-container button:hover {
-      background: #fcbf49;
-      transform: translateY(-2px);
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .sidebar-card iframe {
+      border-radius: 10px;
     }
 
     @media (max-width: 600px) {
-      .booking-container {
-        margin: 20px;
+      .container-main {
+        padding: 0 15px;
+      }
+
+      .sidebar-card {
         padding: 20px;
       }
     }
   </style>
+
 
 </head>
 
@@ -419,54 +368,66 @@ $otherHotels = $otherHotelsStmt->fetchAll();
         <?php endif; ?>
       </div>
 
-      <!-- Right Sidebar -->
       <div class="col-md-4">
-        <div class="sidebar-card mb-4">
-          <div class="booking-container">
-            <h2>Book Hotel</h2>
-            <h2><?= htmlspecialchars($hotel['name']) ?></h2>
-            <form method="POST" action="">
-              <label for="checkin_date">Check-in Date:</label>
-              <input type="date" name="checkin_date" id="checkin_date" required>
+        <!-- Booking Section (No Icons) -->
+        <div class="sidebar-card text-light">
+          <h4 class="text-warning fw-bold mb-4">Book This Hotel</h4>
+          <form method="POST">
+            <div class="mb-3">
+              <label for="checkin_date" class="form-label">Check-in Date</label>
+              <input type="date" name="checkin_date" id="checkin_date" class="form-control" required>
+            </div>
 
-              <label for="checkout_date">Check-out Date:</label>
-              <input type="date" name="checkout_date" id="checkout_date" required>
+            <div class="mb-3">
+              <label for="checkout_date" class="form-label">Check-out Date</label>
+              <input type="date" name="checkout_date" id="checkout_date" class="form-control" required>
+            </div>
 
-              <button type="submit">Book Now</button>
-            </form>
-          </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-warning text-dark fw-semibold w-100 mt-3 shadow-sm glow-btn">Book Now</button>
+            </div>
+          </form>
+        </div>
 
-          <div class="sidebar-card mb-4">
-            <h5>Property Highlights</h5>
-            <p><strong>Top Location:</strong> <?= htmlspecialchars($hotel['location']) ?></p>
-            <p><strong>Rating:</strong> <?= htmlspecialchars($hotel['rating']) ?> / 5</p>
-            <p><strong>Popular Features:</strong></p>
+        <!-- Property Highlights -->
+        <div class="sidebar-card mt-4">
+          <h5><i class=""></i> Property Highlights</h5>
+          <ul class="list-unstyled mt-3 mb-2 ps-1">
+            <li><strong>Location:</strong> <?= htmlspecialchars($hotel['location']) ?></li>
+            <li><strong>Rating:</strong> <?= htmlspecialchars($hotel['rating']) ?> / 5</li>
+          </ul>
+          <p><strong>Popular Features:</strong></p>
+          <div class="d-flex flex-wrap gap-2">
             <?php foreach ($popular_features as $feature): ?>
-              <span class="badge bg-info text-dark mb-1"><?= htmlspecialchars($feature) ?></span><br>
+              <span class="badge bg-info text-dark"><?= htmlspecialchars($feature) ?></span>
             <?php endforeach; ?>
-          </div>
-
-          <div class="sidebar-card bg-dark text-light mb-4 p-3">
-            <h5>Hotel Contact Info</h5>
-            <p><strong>Phone:</strong> <?= htmlspecialchars($hotel['contact_info']) ?></p>
-            <p><strong>Address:</strong> <?= htmlspecialchars($hotel['address']) ?></p>
-            <?php if (!empty($hotel['email'])): ?>
-              <p><strong>Email:</strong> <?= htmlspecialchars($hotel['email']) ?></p>
-            <?php endif; ?>
-            <?php if (!empty($hotel['website'])): ?>
-              <p><strong>Website:</strong> <a href="<?= htmlspecialchars($hotel['website']) ?>" class="text-warning" target="_blank">Visit</a></p>
-            <?php endif; ?>
-          </div>
-
-          <div class="sidebar-card p-0 overflow-hidden" style="border: none;">
-            <iframe
-              src="<?= htmlspecialchars($hotel['map_embed_link']) ?: 'https://www.google.com/maps?q=' . urlencode($hotel['location']) . '&output=embed' ?>"
-              width="100%" height="200" style="border:0;" allowfullscreen loading="lazy">
-            </iframe>
           </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Contact Info -->
+        <div class="sidebar-card mt-4">
+          <h5><i class=""></i> Contact Info</h5>
+          <ul class="list-unstyled mt-3 ps-1">
+            <li><strong>Phone:</strong> <?= htmlspecialchars($hotel['contact_info']) ?></li>
+            <li><strong>Address:</strong> <?= htmlspecialchars($hotel['address']) ?></li>
+            <?php if (!empty($hotel['email'])): ?>
+              <li><strong>Email:</strong> <a href="mailto:<?= htmlspecialchars($hotel['email']) ?>" class="text-warning"><?= htmlspecialchars($hotel['email']) ?></a></li>
+            <?php endif; ?>
+            <?php if (!empty($hotel['website'])): ?>
+              <li><strong>Website:</strong> <a href="<?= htmlspecialchars($hotel['website']) ?>" class="text-warning" target="_blank">Visit</a></li>
+            <?php endif; ?>
+          </ul>
+        </div>
+
+        <!-- Map Embed -->
+        <div class="sidebar-card mt-4 p-0 overflow-hidden">
+          <iframe
+            src="<?= htmlspecialchars($hotel['map_embed_link']) ?: 'https://www.google.com/maps?q=' . urlencode($hotel['location']) . '&output=embed' ?>"
+            width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

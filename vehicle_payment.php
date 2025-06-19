@@ -86,15 +86,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Vehicle Payment - ExploreSri</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <style>
     body {
       background: linear-gradient(135deg, #0d1117, #1a1f2c);
       color: #f1f1f1;
       font-family: 'Rubik', sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
     .payment-card {
@@ -120,6 +122,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
 
+    .payment-card h3 {
+      font-weight: 600;
+      color: #0a0f29;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #0a0f29;
+    }
+
+    .form-select {
+      background-color: #f5f5f5;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .payment-icons i {
+      font-size: 1.4rem;
+      margin-right: 12px;
+      color: #444;
+    }
+
+    .payment-icons img {
+      height: 24px;
+      margin-right: 10px;
+    }
+
     .btn-pay {
       background-color: #238636;
       color: white;
@@ -135,14 +171,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       transform: scale(1.03);
     }
 
-    .hidden {
-      display: none;
+    .method-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   </style>
 </head>
 
 <body>
-
   <div class="payment-card">
     <h3>Payment for <?= htmlspecialchars($booking['vehicle_model']) ?></h3>
     <p><strong>Pickup Date:</strong> <?= htmlspecialchars($booking['booking_start']) ?></p>
@@ -154,43 +191,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form id="paymentForm" method="post">
       <div class="mb-3">
-        <label class="form-label">Payment Method</label>
-        <select name="payment_method" class="form-select" onchange="toggleFields()" required>
+        <label for="method" class="form-label">Select Payment Method</label>
+        <select id="method" name="payment_method" class="form-select" onchange="toggleFields()" required>
           <option value="credit_card">Credit Card</option>
           <option value="debit_card">Debit Card</option>
           <option value="paypal">PayPal</option>
         </select>
         <div class="payment-icons mt-2">
-          <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa">
-          <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard">
-          <img src="https://img.icons8.com/color/48/000000/paypal.png" alt="PayPal">
+          <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" />
+          <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" />
+          <img src="https://img.icons8.com/color/48/000000/paypal.png" alt="PayPal" />
         </div>
       </div>
 
       <div id="card-fields">
         <div class="mb-3">
           <label class="form-label">Card Number</label>
-          <input type="text" class="form-control" name="card_number" placeholder="XXXX-XXXX-XXXX-XXXX">
+          <input type="text" class="form-control" name="card_number" placeholder="XXXX-XXXX-XXXX-XXXX" />
         </div>
         <div class="mb-3">
           <label class="form-label">Cardholder Name</label>
-          <input type="text" class="form-control" name="card_name" placeholder="Full Name">
+          <input type="text" class="form-control" name="card_name" placeholder="Full Name" />
         </div>
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">Expiry Date</label>
-            <input type="text" class="form-control" name="expiry" placeholder="MM/YY">
+            <input type="text" class="form-control" name="expiry" placeholder="MM/YY" />
           </div>
           <div class="col-md-6 mb-3">
             <label class="form-label">CVV</label>
-            <input type="text" class="form-control" name="cvv" placeholder="123">
+            <input type="text" class="form-control" name="cvv" placeholder="123" />
           </div>
         </div>
       </div>
 
-      <div id="paypal-field" class="mb-3 hidden">
+      <div class="mb-3 hidden" id="paypal-field">
         <label class="form-label">PayPal Email</label>
-        <input type="email" class="form-control" name="paypal_email" placeholder="example@paypal.com">
+        <input type="email" class="form-control" name="paypal_email" placeholder="example@paypal.com" />
       </div>
 
       <button type="submit" class="btn btn-pay w-100 mt-3">Pay Now</button>
@@ -199,13 +236,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <script>
     function toggleFields() {
-      const method = document.querySelector('[name="payment_method"]').value;
+      const method = document.getElementById('method').value;
       document.getElementById('card-fields').classList.toggle('hidden', method === 'paypal');
       document.getElementById('paypal-field').classList.toggle('hidden', method !== 'paypal');
     }
-    toggleFields();
-  </script>
 
+    toggleFields();
+
+    document.getElementById('paymentForm').addEventListener('submit', function (e) {
+      const method = document.getElementById('method').value;
+
+      if (method === 'paypal') {
+        const paypalEmail = document.querySelector('[name="paypal_email"]').value.trim();
+        if (!paypalEmail || !/^\S+@\S+\.\S+$/.test(paypalEmail)) {
+          alert('Please enter a valid PayPal email.');
+          e.preventDefault();
+          return;
+        }
+      } else {
+        const cardNumber = document.querySelector('[name="card_number"]').value.trim();
+        const cardName = document.querySelector('[name="card_name"]').value.trim();
+        const expiry = document.querySelector('[name="expiry"]').value.trim();
+        const cvv = document.querySelector('[name="cvv"]').value.trim();
+
+        if (!cardNumber || !cardName || !expiry || !cvv) {
+          alert('Please fill in all card details.');
+          e.preventDefault();
+          return;
+        }
+      }
+
+      if (!confirm('Proceed with payment?')) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </body>
 
 </html>

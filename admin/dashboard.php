@@ -268,16 +268,6 @@ try {
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="admin_profile.php">
-                <i class="bi bi-person-circle me-2"></i> Admin Profile
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white" href="settings.php">
-                <i class="bi bi-gear me-2"></i> Settings
-              </a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link text-white" href="manage_users.php">
                 <i class="bi bi-people me-2"></i> Users
               </a>
@@ -297,7 +287,11 @@ try {
                 <i class="bi bi-chat-dots me-2"></i> Manage Reviews
               </a>
             </li>
-
+            <li class="nav-item">
+              <a class="nav-link text-white" href="info.php">
+                <i class="bi bi-person-circle me-2"></i> Info
+              </a>
+            </li>
             <div class="container mt-5">
               <li class="nav-item">
                 <a class="nav-link text-danger" href="logout.php">

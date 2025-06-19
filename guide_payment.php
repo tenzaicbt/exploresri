@@ -108,8 +108,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
 
+    .form-label {
+      font-weight: 500;
+    }
+
+    .form-select {
+      background-color: #f5f5f5;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+    }
+
     .hidden {
       display: none;
+    }
+
+    .payment-icons i {
+      font-size: 1.4rem;
+      margin-right: 12px;
+      color: #444;
+    }
+
+    .payment-icons img {
+      height: 24px;
+      margin-right: 10px;
     }
 
     .btn-pay {
@@ -139,12 +163,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="post" id="paymentForm">
       <div class="mb-3">
-        <label class="form-label">Select Payment Method</label>
+        <label for="method" class="form-label">Select Payment Method</label>
         <select id="method" name="payment_method" class="form-select" onchange="toggleFields()" required>
           <option value="credit_card">Credit Card</option>
           <option value="debit_card">Debit Card</option>
           <option value="paypal">PayPal</option>
         </select>
+        <div class="payment-icons mt-2">
+          <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa">
+          <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard">
+          <img src="https://img.icons8.com/color/48/000000/paypal.png" alt="PayPal">
+        </div>
       </div>
 
       <div id="card-fields">

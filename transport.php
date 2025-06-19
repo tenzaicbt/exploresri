@@ -5,7 +5,7 @@ include 'includes/header.php';
 
 $is_logged_in = isset($_SESSION['user_id']);
 
-// Only show vehicles from companies that are 'active'
+// Join vehicles with company data where company is active
 $sql = "SELECT v.*, c.company_name, c.logo
         FROM vehicles v
         JOIN transport_companies c ON v.company_id = c.company_id
@@ -44,60 +44,79 @@ $vehicles = $stmt->fetchAll();
       color: #f1c40f;
     }
 
-    .vehicle-card-dark {
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 16px;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-      transition: transform 0.3s ease;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
+    .vehicle-card-modern {
       position: relative;
-    }
-
-    .vehicle-card-dark:hover {
-      transform: translateY(-4px);
-    }
-
-    .vehicle-card-dark img.vehicle-image {
-      height: 150px;
-      object-fit: cover;
-      width: 100%;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .vehicle-card-dark .card-body {
-      padding: 1rem;
-      flex-grow: 1;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #1b2735;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       display: flex;
       flex-direction: column;
+      height: 100%;
     }
 
-    .card-title {
-      color: #fff;
-      font-size: 1.1rem;
-      font-weight: 600;
+    .vehicle-card-modern:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
     }
 
-    .card-text {
-      font-size: 0.85rem;
-      color: #bbbbbb;
+    .vehicle-card-modern img.vehicle-image {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
     }
 
-    .btn-outline-light {
-      font-size: 0.85rem;
-      padding: 6px 14px;
-      border-radius: 30px;
-      margin-top: auto;
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 170px;
+      width: 100%;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8));
+      pointer-events: none;
     }
 
-    .no-vehicles {
-      text-align: center;
+    .vehicle-card-modern .card-body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .vehicle-card-modern .card-title {
+      color: #f1c40f;
       font-size: 1.2rem;
-      color: #ccc;
-      margin-top: 50px;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .vehicle-card-modern .card-text {
+      color: #bfbfbf;
+      font-size: 0.85rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .price {
+      color: #ffdd57;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .btn-rent {
+      font-size: 0.85rem;
+      border-radius: 30px;
+      background-color: transparent;
+      border: 1px solid #f1c40f;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .btn-rent:hover {
+      background-color: #f1c40f;
+      color: #1e1e2f;
     }
 
     .company-logo-badge {
@@ -120,6 +139,13 @@ $vehicles = $stmt->fetchAll();
       border-radius: 0;
       display: block;
     }
+
+    .no-vehicles {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-top: 50px;
+    }
   </style>
 </head>
 
@@ -130,8 +156,7 @@ $vehicles = $stmt->fetchAll();
 
     <div class="row g-4">
       <?php if (count($vehicles) > 0): ?>
-        <?php foreach ($vehicles as $vehicle): ?>
-          <?php
+        <?php foreach ($vehicles as $vehicle):
           $vehicle_img_path = "uploads/vehicles/" . $vehicle['image'];
           $vehicle_img = (!empty($vehicle['image']) && file_exists(__DIR__ . '/' . $vehicle_img_path))
             ? "/exploresri/" . $vehicle_img_path
@@ -143,21 +168,24 @@ $vehicles = $stmt->fetchAll();
             : "/exploresri/assets/default-company.png";
           ?>
           <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="card vehicle-card-dark h-100">
+            <div class="card vehicle-card-modern h-100 position-relative">
               <img src="<?= htmlspecialchars($vehicle_img) ?>" class="vehicle-image" alt="<?= htmlspecialchars($vehicle['model']) ?>" />
+              <div class="image-overlay"></div>
+
               <div class="company-logo-badge" title="<?= htmlspecialchars($vehicle['company_name']) ?>">
                 <img src="<?= htmlspecialchars($company_logo) ?>" alt="<?= htmlspecialchars($vehicle['company_name']) ?>" />
               </div>
-              <div class="card-body">
+
+              <div class="card-body d-flex flex-column">
                 <h5 class="card-title"><?= htmlspecialchars($vehicle['model']) ?></h5>
                 <p class="card-text"><i class="bi bi-truck-front-fill"></i> Type: <?= htmlspecialchars($vehicle['type']) ?></p>
                 <p class="card-text"><i class="bi bi-people-fill"></i> Capacity: <?= htmlspecialchars($vehicle['capacity']) ?> persons</p>
-                <p class="text-light fw-semibold mb-2">USD. <?= htmlspecialchars($vehicle['rental_price']) ?> / day</p>
+                <p class="price">USD <?= htmlspecialchars($vehicle['rental_price']) ?> / day</p>
 
                 <?php if ($is_logged_in): ?>
-                  <a href="vehicle_details.php?vehicle_id=<?= (int)$vehicle['vehicle_id'] ?>" class="btn btn-outline-light w-100">Rent Now</a>
+                  <a href="vehicle_details.php?vehicle_id=<?= (int)$vehicle['vehicle_id'] ?>" class="btn btn-rent mt-auto">Rent Now</a>
                 <?php else: ?>
-                  <a href="/exploresri/user/login.php" class="btn btn-outline-light w-100">Login to Rent</a>
+                  <a href="/exploresri/user/login.php" class="btn btn-rent mt-auto">Login to Rent</a>
                 <?php endif; ?>
               </div>
             </div>
@@ -169,8 +197,7 @@ $vehicles = $stmt->fetchAll();
     </div>
   </div>
 
+  <?php include 'includes/footer.php'; ?>
 </body>
 
 </html>
-
-<?php include 'includes/footer.php'; ?>
