@@ -51,9 +51,10 @@ try {
 // Fetch Guide Reviews
 $guide_reviews = [];
 try {
-    $sql = "SELECT gr.*, u.name AS user_name
+    $sql = "SELECT gr.*, u.name AS user_name, g.name AS guide_name
         FROM guide_reviews gr
         JOIN users u ON gr.user_id = u.user_id
+        JOIN guide g ON gr.guide_id = g.guide_id
         ORDER BY gr.created_at DESC";
 
     $stmt = $conn->query($sql);
@@ -61,6 +62,7 @@ try {
 } catch (PDOException $e) {
     echo "Error loading guide reviews: " . $e->getMessage();
 }
+
 
 // Fetch Vehicle Reviews
 $vehicle_reviews = [];
@@ -266,6 +268,20 @@ try {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('type');
+
+            if (activeTab) {
+                const tabTriggerEl = document.querySelector(`#${activeTab}-tab`);
+                if (tabTriggerEl) {
+                    const tab = new bootstrap.Tab(tabTriggerEl);
+                    tab.show();
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -13,6 +13,29 @@ $sql = "SELECT v.*, c.company_name, c.logo
         ORDER BY v.vehicle_id DESC";
 $stmt = $conn->query($sql);
 $vehicles = $stmt->fetchAll();
+
+// Fetch reviews
+$reviewData = [];
+$reviewStmt = $conn->query("SELECT vehicle_id, rating FROM vehicle_reviews");
+$reviews = $reviewStmt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($reviews as $r) {
+  $vid = $r['vehicle_id'];
+  $rating = (int)$r['rating'];
+  if (!isset($reviewData[$vid])) {
+    $reviewData[$vid] = ['total' => 0, 'positive' => 0];
+  }
+  $reviewData[$vid]['total']++;
+  if ($rating >= 4) {
+    $reviewData[$vid]['positive']++;
+  }
+}
+
+foreach ($reviewData as $vid => $data) {
+  $reviewData[$vid]['percentage'] = $data['total'] > 0
+    ? round(($data['positive'] / $data['total']) * 100, 1)
+    : 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -136,8 +159,6 @@ $vehicles = $stmt->fetchAll();
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 0;
-      display: block;
     }
 
     .no-vehicles {
@@ -145,6 +166,15 @@ $vehicles = $stmt->fetchAll();
       font-size: 1.2rem;
       color: #ccc;
       margin-top: 50px;
+    }
+
+    .review-info {
+      font-size: 0.8rem;
+      color: #ccc;
+    }
+
+    .review-info span {
+      color: #f1c40f;
     }
   </style>
 </head>
@@ -157,6 +187,9 @@ $vehicles = $stmt->fetchAll();
     <div class="row g-4">
       <?php if (count($vehicles) > 0): ?>
         <?php foreach ($vehicles as $vehicle):
+          $vid = $vehicle['vehicle_id'];
+          $rev = $reviewData[$vid] ?? ['total' => 0, 'positive' => 0, 'percentage' => 0];
+
           $vehicle_img_path = "uploads/vehicles/" . $vehicle['image'];
           $vehicle_img = (!empty($vehicle['image']) && file_exists(__DIR__ . '/' . $vehicle_img_path))
             ? "/exploresri/" . $vehicle_img_path
@@ -166,7 +199,7 @@ $vehicles = $stmt->fetchAll();
           $company_logo = (!empty($company_logo_path) && file_exists(__DIR__ . '/' . $company_logo_path))
             ? "/exploresri/" . $company_logo_path
             : "/exploresri/assets/default-company.png";
-          ?>
+        ?>
           <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="card vehicle-card-modern h-100 position-relative">
               <img src="<?= htmlspecialchars($vehicle_img) ?>" class="vehicle-image" alt="<?= htmlspecialchars($vehicle['model']) ?>" />
@@ -181,6 +214,12 @@ $vehicles = $stmt->fetchAll();
                 <p class="card-text"><i class="bi bi-truck-front-fill"></i> Type: <?= htmlspecialchars($vehicle['type']) ?></p>
                 <p class="card-text"><i class="bi bi-people-fill"></i> Capacity: <?= htmlspecialchars($vehicle['capacity']) ?> persons</p>
                 <p class="price">USD <?= htmlspecialchars($vehicle['rental_price']) ?> / day</p>
+
+                <div class="review-info mb-2">
+                  <strong><?= $rev['total'] ?></strong> reviews,
+                  <strong><?= $rev['positive'] ?></strong> positive
+                  (<span><?= $rev['percentage'] ?>%</span>)
+                </div>
 
                 <?php if ($is_logged_in): ?>
                   <a href="vehicle_details.php?vehicle_id=<?= (int)$vehicle['vehicle_id'] ?>" class="btn btn-rent mt-auto">Rent Now</a>

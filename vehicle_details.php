@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $vehicle_id = $_GET['vehicle_id'] ?? 0;
 
+// Fetch vehicle
 $stmt = $conn->prepare("SELECT * FROM vehicles WHERE vehicle_id = ?");
 $stmt->execute([$vehicle_id]);
 $vehicle = $stmt->fetch();
@@ -20,13 +21,13 @@ if (!$vehicle) {
   exit;
 }
 
-// Fetch company info for the vehicle
+// Fetch company info
 $company_id = $vehicle['company_id'];
 $stmt = $conn->prepare("SELECT * FROM transport_companies WHERE company_id = ?");
 $stmt->execute([$company_id]);
 $company = $stmt->fetch();
 
-// Process booking
+// Booking logic
 $bookingError = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_vehicle'])) {
   $start = $_POST['rental_start_date'] ?? '';
@@ -55,29 +56,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_vehicle'])) {
 }
 
 // Submit review
+$reviewError = '';
 if (isset($_POST['submit_review'])) {
-  $rating = $_POST['rating'];
-  $comment = trim($_POST['comment']);
+  $rating = $_POST['rating'] ?? '';
+  $comment = trim($_POST['comment'] ?? '');
   $user_id = $_SESSION['user_id'];
 
   if (!empty($rating) && !empty($comment)) {
-    $stmt = $conn->prepare("INSERT INTO vehicle_reviews (user_id, vehicle_id, rating, comment, created_at) VALUES (?, ?, ?, ?, NOW())");
-    $stmt->execute([$user_id, $vehicle_id, $rating, $comment]);
-    header("Location: vehicle_book.php?vehicle_id=" . $vehicle_id);
-    exit;
+    try {
+      $stmt = $conn->prepare("INSERT INTO vehicle_reviews (user_id, vehicle_id, rating, comment, created_at) VALUES (?, ?, ?, ?, NOW())");
+      $stmt->execute([$user_id, $vehicle_id, $rating, $comment]);
+      // Safer redirect to same page
+      header("Location: " . $_SERVER['REQUEST_URI']);
+      exit;
+    } catch (PDOException $e) {
+      $reviewError = "Failed to submit review: " . $e->getMessage();
+    }
+  } else {
+    $reviewError = "Please provide both rating and comment.";
   }
 }
 
-// Prepare image gallery and features
+// Prepare data
 $imageGallery = array_filter(array_map('trim', explode(',', $vehicle['image_gallery'] ?? '')));
 $features = array_filter(array_map('trim', explode(',', $vehicle['features'] ?? '')));
 
 // Fetch reviews
-$reviewStmt = $conn->prepare("SELECT vr.*, u.name FROM vehicle_reviews vr JOIN users u ON vr.user_id = u.user_id WHERE vr.vehicle_id = ? ORDER BY vr.created_at DESC");
+$reviewStmt = $conn->prepare("SELECT vr.*, u.name FROM vehicle_reviews vr 
+  JOIN users u ON vr.user_id = u.user_id 
+  WHERE vr.vehicle_id = ? ORDER BY vr.created_at DESC");
 $reviewStmt->execute([$vehicle_id]);
 $reviews = $reviewStmt->fetchAll();
 
-// Fetch 3 other vehicles (optional UI feature)
+// Fetch other vehicles
 $otherVehiclesStmt = $conn->prepare("SELECT * FROM vehicles WHERE vehicle_id != ? ORDER BY RAND() LIMIT 3");
 $otherVehiclesStmt->execute([$vehicle_id]);
 $otherVehicles = $otherVehiclesStmt->fetchAll();
@@ -103,6 +114,8 @@ ob_end_flush();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Rubik', sans-serif;
@@ -406,6 +419,74 @@ ob_end_flush();
       color: #ffffff;
       margin-left: 6px;
     }
+
+    .btn-gold {
+      background-color: #f1c40f;
+      color: #000;
+    }
+
+    .btn-gold:hover {
+      background-color: #d4ac0d;
+      color: #000;
+    }
+
+    .btn-animated-sm {
+      background-color: #f1c40f;
+      color: #000;
+      padding: 6px 12px;
+      /* smaller padding */
+      font-size: 0.75rem;
+      /* smaller font */
+      font-weight: 600;
+      border-radius: 20px;
+
+    }
+
+    .btn-animated-sm:hover {
+      background-color: #d4ac0d;
+      color: #000;
+      text-decoration: none;
+
+    }
+
+    .rating-label {
+      font-size: 0.75rem;
+      color: #f1c40f;
+      font-weight: 500;
+    }
+
+    .rating-select {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid #f1c40f;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .rating-select:focus {
+      outline: none;
+      border-color: #ffe57f;
+      box-shadow: 0 0 8px rgba(241, 196, 15, 0.4);
+    }
+
+    .rating-select option {
+      background: #1b2735;
+      color: #fff;
+    }
+
+    header a,
+    .navbar a,
+    .navbar-nav a {
+      text-decoration: none !important;
+    }
+
+    header a:hover,
+    .navbar a:hover,
+    .navbar-nav a:hover {
+      text-decoration: none !important;
+    }
   </style>
 </head>
 
@@ -451,51 +532,38 @@ ob_end_flush();
         </div>
 
         <div class="info-card mt-5">
-          <h3>Customer Reviews</h3>
-          <?php if (count($reviews) === 0): ?>
-            <p>No reviews yet. Be the first to review!</p>
-          <?php else: ?>
-            <?php foreach ($reviews as $review): ?>
-              <div class="review-box">
-                <strong><?= htmlspecialchars($review['name']) ?></strong> - <small><?= date('F j, Y', strtotime($review['created_at'])) ?></small>
-                <div>
-                  <?php for ($i = 0; $i < 5; $i++): ?>
-                    <?php if ($i < $review['rating']): ?>
-                      <i class="bi bi-star-fill text-warning"></i>
-                    <?php else: ?>
-                      <i class="bi bi-star text-warning"></i>
-                    <?php endif; ?>
-                  <?php endfor; ?>
-                </div>
-                <p><?= nl2br(htmlspecialchars($review['comment'])) ?></p>
-              </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
+
+          <a href="vehicle_reviews.php?vehicle_id=<?= $vehicle_id ?>" class="btn btn-animated-sm btn-sm mt-2">View All Reviews</a>
 
           <?php if (isset($_SESSION['user_id'])): ?>
-            <div class="review-box mt-4">
-              <h5>Add Your Review</h5>
+            <div class="mt-3">
               <form method="post">
-                <div class="mb-3">
-                  <label for="rating" class="form-label">Rating</label>
-                  <select name="rating" id="rating" class="form-select" required>
-                    <option value="">Select</option>
-                    <option value="5">★★★★★ - Excellent</option>
-                    <option value="4">★★★★☆ - Good</option>
-                    <option value="3">★★★☆☆ - Average</option>
-                    <option value="2">★★☆☆☆ - Poor</option>
-                    <option value="1">★☆☆☆☆ - Terrible</option>
-                  </select>
+                <div class="row g-2 align-items-end">
+                  <div class="col-4">
+                    <label for="rating" class="form-label rating-label mb-1">Rating</label>
+                    <select name="rating" id="rating" class="form-select rating-select" required>
+                      <option value="">Select</option>
+                      <option value="5">★★★★★ Excellent</option>
+                      <option value="4">★★★★☆ Good</option>
+                      <option value="3">★★★☆☆ Average</option>
+                      <option value="2">★★☆☆☆ Poor</option>
+                      <option value="1">★☆☆☆☆ Terrible</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label for="comment" class="form-label small mb-1">Comment</label>
+                    <textarea name="comment" id="comment" class="form-control form-control-sm" rows="1" required></textarea>
+                  </div>
+                  <div class="col-2">
+                    <button type="submit" name="submit_review" class="btn btn-animated-sm w-100">Submit</button>
+                  </div>
                 </div>
-                <div class="mb-3">
-                  <label for="comment" class="form-label">Comment</label>
-                  <textarea name="comment" id="comment" class="form-control" rows="3" required></textarea>
-                </div>
-                <button type="submit" name="submit_review" class="btn btn-primary">Submit Review</button>
               </form>
             </div>
           <?php endif; ?>
         </div>
+
+
       </div>
 
       <!-- Right Sidebar -->
@@ -610,5 +678,6 @@ ob_end_flush();
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+<?php include __DIR__ . '/includes/footer.php'; ?>
 
 </html>

@@ -8,9 +8,31 @@ $guides = $stmt->fetchAll();
 $search = $_GET['search'] ?? '';
 $province = $_GET['province'] ?? '';
 $page = max(1, (int)($_GET['page'] ?? 1));
-$limit = 8;  // changed to 8 cards per page
+$limit = 8;
 $offset = ($page - 1) * $limit;
 
+// Fetch guide reviews and process analytics
+$reviewData = [];
+$reviewStmt = $conn->query("SELECT guide_id, rating FROM guide_reviews");
+$reviews = $reviewStmt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($reviews as $r) {
+  $gid = $r['guide_id'];
+  $rating = (int)$r['rating'];
+  if (!isset($reviewData[$gid])) {
+    $reviewData[$gid] = ['total' => 0, 'positive' => 0];
+  }
+  $reviewData[$gid]['total']++;
+  if ($rating >= 4) {
+    $reviewData[$gid]['positive']++;
+  }
+}
+
+foreach ($reviewData as $gid => $data) {
+  $reviewData[$gid]['percentage'] = $data['total'] > 0
+    ? round(($data['positive'] / $data['total']) * 100, 1)
+    : 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -18,7 +40,7 @@ $offset = ($page - 1) * $limit;
 
 <head>
   <meta charset="UTF-8" />
-  <title>Hotels - ExploreSri</title>
+  <title>Guides - ExploreSri</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -119,8 +141,16 @@ $offset = ($page - 1) * $limit;
       background-color: #f1c40f;
       color: #1e1e2f;
     }
-  </style>
 
+    .review-info {
+      font-size: 0.8rem;
+      color: #ccc;
+    }
+
+    .review-info span {
+      color: #f1c40f;
+    }
+  </style>
 </head>
 
 <body>
@@ -129,6 +159,10 @@ $offset = ($page - 1) * $limit;
 
     <div class="row g-4">
       <?php foreach ($guides as $guide): ?>
+        <?php
+          $gid = $guide['guide_id'];
+          $rev = $reviewData[$gid] ?? ['total' => 0, 'positive' => 0, 'percentage' => 0];
+        ?>
         <div class="col-sm-6 col-md-4 col-lg-3">
           <div class="card hotel-card-modern h-100 position-relative">
             <img src="uploads/guides/<?php echo htmlspecialchars($guide['photo']); ?>" alt="<?php echo htmlspecialchars($guide['name']); ?>">
@@ -136,26 +170,30 @@ $offset = ($page - 1) * $limit;
 
             <div class="card-body text-start d-flex flex-column">
               <h5 class="card-title text-warning"><?php echo htmlspecialchars($guide['name']); ?></h5>
-
               <p class="card-text mb-1"><strong>Languages:</strong> <?php echo htmlspecialchars($guide['languages']); ?></p>
               <p class="card-text mb-1"><strong>Experience:</strong> <?php echo $guide['experience_years']; ?> years</p>
               <p class="price mb-1">$<?php echo number_format($guide['price_per_day'], 2); ?> / day</p>
 
-              <div class="d-flex align-items-center mb-3">
+              <div class="review-info mb-2">
+                <strong><?= $rev['total'] ?></strong> reviews,
+                <strong><?= $rev['positive'] ?></strong> positive
+                (<span><?= $rev['percentage'] ?>%</span>)
+              </div>
+
+              <!-- <div class="d-flex align-items-center mb-3">
                 <span class="badge bg-warning text-dark me-2"><?php echo number_format($guide['rating'], 1); ?></span>
                 <div class="text-warning rating-stars">
                   <?php for ($i = 1; $i <= 5; $i++): ?>
                     <i class="bi <?= $i <= round($guide['rating']) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
                   <?php endfor; ?>
                 </div>
-              </div>
+              </div> -->
 
               <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="/exploresri/guide_bookings.php?guide_id=<?= $guide['guide_id']; ?>" class="btn btn-book w-100 mt-auto">Book Guide</a>
               <?php else: ?>
                 <a href="http://localhost/exploresri/user/login.php" class="btn btn-book w-100 mt-auto">Login to Book</a>
               <?php endif; ?>
-
             </div>
           </div>
         </div>

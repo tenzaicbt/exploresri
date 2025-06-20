@@ -2,7 +2,7 @@
 ob_start(); // Start output buffering to fix header issues
 session_start();
 include 'config/db.php';
-include 'includes/header.php';
+include __DIR__ . '/includes/header.php';
 
 if (!isset($_SESSION['user_id'])) {
   header('Location: login.php');
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkin_date'], $_POS
   }
 }
 
-// Submit review
+// Submit Review Handling
 if (isset($_POST['submit_review'])) {
   $rating = $_POST['rating'];
   $comment = trim($_POST['comment']);
@@ -77,6 +77,11 @@ if (isset($_POST['submit_review'])) {
     exit;
   }
 }
+
+$reviewStmt = $conn->prepare("SELECT r.*, u.name FROM reviews r JOIN users u ON r.user_id = u.user_id WHERE r.hotel_id = ? ORDER BY r.review_date DESC");
+$reviewStmt->execute([$hotel_id]);
+$reviews = $reviewStmt->fetchAll(PDO::FETCH_ASSOC);
+
 
 // Prepare for gallery and features
 $imageGallery = array_filter(array_map('trim', explode(',', $hotel['image_gallery'] ?? '')));
@@ -124,6 +129,8 @@ $otherHotels = $otherHotelsStmt->fetchAll();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="path/to/your/animation.css" />
   <style>
     body {
       font-family: 'Rubik', sans-serif;
@@ -207,6 +214,18 @@ $otherHotels = $otherHotelsStmt->fetchAll();
       text-decoration: underline;
     }
 
+    header a,
+    .navbar a,
+    .navbar-nav a {
+      text-decoration: none !important;
+    }
+
+    header a:hover,
+    .navbar a:hover,
+    .navbar-nav a:hover {
+      text-decoration: none !important;
+    }
+
     .form-control,
     .btn-secondary {
       background-color: rgba(27, 39, 53, 0.7);
@@ -276,8 +295,111 @@ $otherHotels = $otherHotelsStmt->fetchAll();
         padding: 20px;
       }
     }
-  </style>
 
+    .btn-animated-sm {
+      background-color: #f1c40f;
+      color: #000;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 25px;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-animated-sm:hover {
+      background-color: #ffe57f;
+      transform: scale(1.05);
+      color: #000;
+      text-decoration: none !important;
+    }
+
+    .form-select,
+    .form-control {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid #f1c40f;
+      font-size: 0.85rem;
+      border-radius: 8px;
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+      border-color: #ffe57f;
+      box-shadow: 0 0 6px rgba(241, 196, 15, 0.3);
+    }
+
+    container-main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+
+    .review-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      font-size: 0.9rem;
+    }
+
+    .btn-gold {
+      background-color: #f1c40f;
+      color: #000;
+    }
+
+    .btn-gold:hover {
+      background-color: #d4ac0d;
+      color: #000;
+    }
+
+    .btn-animated-sm {
+      background-color: #f1c40f;
+      color: #000;
+      padding: 6px 12px;
+      /* smaller padding */
+      font-size: 0.75rem;
+      /* smaller font */
+      font-weight: 600;
+      border-radius: 20px;
+
+    }
+
+    .btn-animated-sm:hover {
+      background-color: #d4ac0d;
+      color: #000;
+      text-decoration: none;
+
+    }
+
+    .rating-label {
+      font-size: 0.75rem;
+      color: #f1c40f;
+      font-weight: 500;
+    }
+
+    .rating-select {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid #f1c40f;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .rating-select:focus {
+      outline: none;
+      border-color: #ffe57f;
+      box-shadow: 0 0 8px rgba(241, 196, 15, 0.4);
+    }
+
+    .rating-select option {
+      background: #1b2735;
+      color: #fff;
+    }
+  </style>
 
 </head>
 
@@ -319,79 +441,63 @@ $otherHotels = $otherHotelsStmt->fetchAll();
           </div>
         </div>
 
-        <!-- Guest Reviews -->
-        <div class="review-box">
-          <h5>Guest Reviews</h5>
-          <?php
-          $stmt = $conn->prepare("SELECT r.*, u.name FROM reviews r JOIN users u ON r.user_id = u.user_id WHERE r.hotel_id = ? ORDER BY r.review_date DESC");
-          $stmt->execute([$hotel_id]);
-          $reviews = $stmt->fetchAll();
-          if ($reviews):
-            foreach ($reviews as $rev):
-          ?>
-              <div class="mb-3">
-                <strong><?= htmlspecialchars($rev['name']) ?></strong>
-                <div>Rating: <?= str_repeat("⭐", (int)$rev['rating']) ?></div>
-                <p><?= nl2br(htmlspecialchars($rev['comment'])) ?></p>
-                <small class="text-muted"><?= date("F j, Y", strtotime($rev['review_date'])) ?></small>
-              </div>
-              <hr>
-            <?php endforeach;
-          else: ?>
-            <p>No reviews yet.</p>
+        <div class="info-card mt-5">
+
+          <a href="hotel_reviews.php?hotel_id=<?= $hotel_id ?>" class="btn btn-animated-sm btn-sm mt-2">View All Reviews</a>
+
+          <?php if (isset($_SESSION['user_id'])): ?>
+            <div class="mt-3">
+              <form method="post">
+                <div class="row g-2 align-items-end">
+                  <div class="col-4">
+                    <label for="rating" class="form-label rating-label mb-1">Rating</label>
+                    <select name="rating" id="rating" class="form-select rating-select" required>
+                      <option value="">Select</option>
+                      <option value="5">★★★★★ Excellent</option>
+                      <option value="4">★★★★☆ Good</option>
+                      <option value="3">★★★☆☆ Average</option>
+                      <option value="2">★★☆☆☆ Poor</option>
+                      <option value="1">★☆☆☆☆ Terrible</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label for="comment" class="form-label small mb-1">Comment</label>
+                    <textarea name="comment" id="comment" class="form-control form-control-sm" rows="1" required></textarea>
+                  </div>
+                  <div class="col-2">
+                    <button type="submit" name="submit_review" class="btn btn-animated-sm w-100">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </div>
           <?php endif; ?>
         </div>
-
-        <!-- Add Review -->
-        <?php if (isset($_SESSION['user_id'])): ?>
-          <div class="review-box mt-4">
-            <h5>Add Your Review</h5>
-            <form method="post">
-              <div class="mb-3">
-                <label for="rating" class="form-label">Rating</label>
-                <select name="rating" id="rating" class="form-select" required>
-                  <option value="">Select</option>
-                  <option value="5">★★★★★ - Excellent</option>
-                  <option value="4">★★★★☆ - Good</option>
-                  <option value="3">★★★☆☆ - Average</option>
-                  <option value="2">★★☆☆☆ - Poor</option>
-                  <option value="1">★☆☆☆☆ - Terrible</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="comment" class="form-label">Comment</label>
-                <textarea name="comment" id="comment" class="form-control" rows="3" required></textarea>
-              </div>
-              <button type="submit" name="submit_review" class="btn btn-primary">Submit Review</button>
-            </form>
-          </div>
-        <?php endif; ?>
       </div>
 
+      <!-- Right Sidebar -->
       <div class="col-md-4">
-        <!-- Booking Section (No Icons) -->
-        <div class="sidebar-card text-light">
+
+        <!-- Booking Section -->
+        <div class="sidebar-card text-light mb-4">
           <h4 class="text-warning fw-bold mb-4">Book This Hotel</h4>
           <form method="POST">
             <div class="mb-3">
               <label for="checkin_date" class="form-label">Check-in Date</label>
               <input type="date" name="checkin_date" id="checkin_date" class="form-control" required>
             </div>
-
             <div class="mb-3">
               <label for="checkout_date" class="form-label">Check-out Date</label>
               <input type="date" name="checkout_date" id="checkout_date" class="form-control" required>
             </div>
-
             <div class="d-grid">
-              <button type="submit" class="btn btn-warning text-dark fw-semibold w-100 mt-3 shadow-sm glow-btn">Book Now</button>
+              <button type="submit" class="btn btn-warning text-dark fw-semibold w-100 mt-3 shadow-sm">Book Now</button>
             </div>
           </form>
         </div>
 
         <!-- Property Highlights -->
-        <div class="sidebar-card mt-4">
-          <h5><i class=""></i> Property Highlights</h5>
+        <div class="sidebar-card mb-4">
+          <h5>Property Highlights</h5>
           <ul class="list-unstyled mt-3 mb-2 ps-1">
             <li><strong>Location:</strong> <?= htmlspecialchars($hotel['location']) ?></li>
             <li><strong>Rating:</strong> <?= htmlspecialchars($hotel['rating']) ?> / 5</li>
@@ -405,8 +511,8 @@ $otherHotels = $otherHotelsStmt->fetchAll();
         </div>
 
         <!-- Contact Info -->
-        <div class="sidebar-card mt-4">
-          <h5><i class=""></i> Contact Info</h5>
+        <div class="sidebar-card mb-4">
+          <h5>Contact Info</h5>
           <ul class="list-unstyled mt-3 ps-1">
             <li><strong>Phone:</strong> <?= htmlspecialchars($hotel['contact_info']) ?></li>
             <li><strong>Address:</strong> <?= htmlspecialchars($hotel['address']) ?></li>
@@ -420,15 +526,17 @@ $otherHotels = $otherHotelsStmt->fetchAll();
         </div>
 
         <!-- Map Embed -->
-        <div class="sidebar-card mt-4 p-0 overflow-hidden">
-          <iframe
-            src="<?= htmlspecialchars($hotel['map_embed_link']) ?: 'https://www.google.com/maps?q=' . urlencode($hotel['location']) . '&output=embed' ?>"
-            width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        <div class="sidebar-card p-0 overflow-hidden">
+          <iframe src="<?= htmlspecialchars($hotel['map_embed_link']) ?: 'https://www.google.com/maps?q=' . urlencode($hotel['location']) . '&output=embed' ?>" width="100%" height="200" style="border:0;" allowfullscreen loading="lazy"></iframe>
         </div>
-      </div>
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+<?php include __DIR__ . '/includes/footer.php'; ?>
 
 </html>
